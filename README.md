@@ -29,7 +29,7 @@ The panel file is an excel file with the following column names: "fcs_colname", 
 Introduction_to_CytofRUV.Rmd
 ```
 
--** R-Shiny interface for the identification of batch effects before and after normalisation** 
+**R-Shiny interface for the identification of batch effects before and after normalisation**
 To examine the batch effects found when comparing CyTOF data from samples replicated across batches, we built an R-Shiny application that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots: Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. 
 
 ## R-Shiny interface for the identification of batch effects using samples replicated across batches
@@ -38,7 +38,7 @@ To examine the batch effects found when comparing CyTOF data from samples replic
 launch_Shiny()
 ```
 
--** Normalisation procedure**
+**Normalisation procedure**
 The normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm, such as the replicated samples to use, the clusters to be nornmalised and the value of k. 
 
 ## CytofRUV procedure to remove the batch effects
