@@ -6,9 +6,29 @@
 
 CytofRUV: Removing unwanted variation to integrate multiple CyTOF datasets.
 
-## Installation
+## CytofRUV Installation
 
-This R library can be installed by running the following lines:
+Before installing CytofRUV, users need to install those libraries:
+
+# Library dependencies
+``` r
+library(CATALYST)
+library(flowCore)
+library(ggplot2)
+library(readxl)
+library(ruv)
+library(purrr)
+library(FlowSOM)
+library(SummarizedExperiment)
+library(ConsensusClusterPlus)
+library(SingleCellExperiment)
+library(shiny)
+library(shinyjs)
+library(shinydashboard)
+library(writexl)
+
+```
+# CytofRUV can be installed by running the following lines
 
 ``` r
 library(devtools)
@@ -29,10 +49,11 @@ The panel file is an excel file with the following column names: "fcs_colname", 
 Introduction_to_CytofRUV.Rmd
 ```
 
+## R-Shiny interface for the identification of batch effects using samples replicated across batches
+
 **R-Shiny interface for the identification of batch effects before and after normalisation**
 To examine the batch effects found when comparing CyTOF data from samples replicated across batches, we built an R-Shiny application that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots: Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. 
 
-## R-Shiny interface for the identification of batch effects using samples replicated across batches
 
 ``` r
 launch_Shiny()
