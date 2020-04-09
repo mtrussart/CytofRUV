@@ -8,27 +8,7 @@ CytofRUV: Removing unwanted variation to integrate multiple CyTOF datasets.
 
 ## CytofRUV Installation
 
-Before installing CytofRUV, users need to install those libraries:
-
-### Library dependencies
-``` r
-library(CATALYST)
-library(flowCore)
-library(ggplot2)
-library(readxl)
-library(ruv)
-library(purrr)
-library(FlowSOM)
-library(SummarizedExperiment)
-library(ConsensusClusterPlus)
-library(SingleCellExperiment)
-library(shiny)
-library(shinyjs)
-library(shinydashboard)
-library(writexl)
-
-```
-### CytofRUV can be installed by running the following lines
+CytofRUV can be installed by running the following lines
 
 ``` r
 library(devtools)
