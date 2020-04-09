@@ -10,7 +10,7 @@ CytofRUV: Removing unwanted variation to integrate multiple CyTOF datasets.
 
 Before installing CytofRUV, users need to install those libraries:
 
-# Library dependencies
+### Library dependencies
 ``` r
 library(CATALYST)
 library(flowCore)
@@ -28,7 +28,7 @@ library(shinydashboard)
 library(writexl)
 
 ```
-# CytofRUV can be installed by running the following lines
+### CytofRUV can be installed by running the following lines
 
 ``` r
 library(devtools)
@@ -59,10 +59,10 @@ To examine the batch effects found when comparing CyTOF data from samples replic
 launch_Shiny()
 ```
 
+## CytofRUV procedure to remove the batch effects
+
 **Normalisation procedure**
 The normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm, such as the replicated samples to use, the clusters to be nornmalised and the value of k. 
-
-## CytofRUV procedure to remove the batch effects
 
 ``` r
 normalise_data()
