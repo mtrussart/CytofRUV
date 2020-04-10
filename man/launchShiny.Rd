@@ -4,7 +4,7 @@
 \alias{launch_Shiny}
 \title{Launch Shiny
 
-launch_Shiny is used to  launch the CytofRUV Shiny app. It examines any batch effects present when comparing CyTOF data
+is used to  launch the CytofRUV Shiny app. It examines any batch effects present when comparing CyTOF data
 from samples replicated across batches using four different diagnostics plots:
 Median Protein Expression, Protein Expression Distributions, Clustering Results
 and Cluster Proportions.}
@@ -17,7 +17,7 @@ Opens a browser window with an interactive Shiny application.
 \description{
 Launch Shiny
 
-launch_Shiny is used to  launch the CytofRUV Shiny app. It examines any batch effects present when comparing CyTOF data
+is used to  launch the CytofRUV Shiny app. It examines any batch effects present when comparing CyTOF data
 from samples replicated across batches using four different diagnostics plots:
 Median Protein Expression, Protein Expression Distributions, Clustering Results
 and Cluster Proportions.

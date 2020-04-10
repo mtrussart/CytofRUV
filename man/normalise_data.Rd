@@ -2,7 +2,10 @@
 % Please edit documentation in R/normalise_data.R
 \name{normalise_data}
 \alias{normalise_data}
-\title{normalise_data}
+\title{normalise_data
+
+contains all the functions to normalise several Cytof datasets by removing the
+unwanted variation between datasets arising from experimental artefacts.}
 \usage{
 normalise_data(
   data,
@@ -38,6 +41,8 @@ and the panel file}
 Normalised metadata file
 }
 \description{
-normalise_data contains all the functions to normalise several Cytof datasets by removing the
+normalise_data
+
+contains all the functions to normalise several Cytof datasets by removing the
 unwanted variation between datasets arising from experimental artefacts.
 }

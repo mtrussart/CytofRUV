@@ -46,17 +46,20 @@ Users are required to provide: the path to the fcs files from all the samples in
 The metadata file is an excel file with the following column names: "file_name", "sample_id", "condition", "patient_id", "batch".
 The panel file is an excel file with the following column names: "fcs_colname", "antigen", "marker_class".
 
-We provided an example dataset to help you prepare your data. The command below will
-load all the dataset including the metadata file, the panel file and the fcs files in the working directory.
+We provided an example dataset to help you prepare your data. The command below will load all the dataset including the metadata file, the panel file and the fcs files in the working directory.
 
 ```{r loading example dataset}
-  wd_data="/Users/trussart.m/WEHI/data_raw/"
-  write.FCS(x=CytofRUV::A1,filename = paste(wd_data,"A1.fcs",sep=""))
-  write.FCS(x=CytofRUV::A2,filename = paste(wd_data,"A2.fcs",sep=""))
-  write.FCS(x=CytofRUV::Run3_A1,filename = paste(wd_data,"Run3_A1.fcs",sep=""))
-  write.FCS(x=CytofRUV::Run3_A2,filename = paste(wd_data,"Run3_A2.fcs",sep=""))
-  write_xlsx(x=CytofRUV::md,path = paste(wd_data,"Metadata.xlsx",sep=""))
-  write_xlsx(x=CytofRUV::panel,path = paste(wd_data,"Panel.xlsx",sep=""))
+  output_dir="CytofRUV_output"
+  if (!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+  wd_data=file.path(getwd(),output_dir)
+  write.FCS(x=CytofRUV::A1,filename =file.path(wd_data,"A1.fcs"))
+  write.FCS(x=CytofRUV::A2,filename = file.path(wd_data,"A2.fcs"))
+  write.FCS(x=CytofRUV::Run3_A1,filename = file.path(wd_data,"Run3_A1.fcs"))
+  write.FCS(x=CytofRUV::Run3_A2,filename = file.path(wd_data,"Run3_A2.fcs"))
+  write_xlsx(x=CytofRUV::md,path = file.path(wd_data,"Metadata.xlsx"))
+  write_xlsx(x=CytofRUV::panel,path = file.path(wd_data,"Panel.xlsx"))
 ```
 
 ## Loading datasets
@@ -65,7 +68,11 @@ The first step is to load the metadata file, all the .fcs files, the panel file 
 
 ```{r load and cluster data before CytofRUV normalisation}
   ## Define parameters to load and cluster the data
-  wd_data="/Users/trussart.m/WEHI/data_raw/"
+  output_dir="CytofRUV_output"
+  if (!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+  wd_data=file.path(getwd(),output_dir)
   metadata_filename="Metadata.xlsx"
   panel_filename="Panel.xlsx"
   seed=1234
@@ -85,7 +92,7 @@ To examine the batch effects found when comparing CyTOF data from samples replic
 
 The user needs to select the data to use (before or after normalisation) to visualise the diagnostic plots using the R-Shiny interface. The user can choose to visualise all the data or only a subset of the data which might be advisable for exploratory analysis.
 
-```{r ShinyApp on the raw data}
+```{r ShinyApp on the raw data,eval=FALSE}
   ## Define parameters to use for R-Shiny
   daf=data$daf
   md=data$md
@@ -125,7 +132,7 @@ The user needs to select the data to use (before or after normalisation) to visu
 
 ## CytofRUV normalisation procedure
 
-The normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm to be selected by user, such as the replicated samples to use, the clusters to be nornmalised and the value of k. 
+The normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm to be selected by user, such as the replicated samples to use, the clusters to be nornmalised and the value of k. The user can specify below the name of the directory to save the normalised data (dir_name_norm_data).
 
 ```{r CytofRUV normalisation}
 dir_name_norm_data="CytofRUV_Norm_data_HC2_all_cl_20"
@@ -144,7 +151,7 @@ normalise_data(data=data,raw_data=raw_data,rep_samples=rep_samples, norm_cluster
 
 ```{r load and cluster data after CytofRUV normalisation}
   ## Define parameters to load and cluster the data
-  wd_norm=paste(wd_data,dir_name_norm_data,"/",sep="")
+  wd_norm=file.path(wd_data,dir_name_norm_data)
   metadata_norm_filename="Norm_Metadata.xlsx"
   panel_norm_filename="Norm_Panel.xlsx"
   seed=1234
@@ -163,7 +170,7 @@ normalise_data(data=data,raw_data=raw_data,rep_samples=rep_samples, norm_cluster
 
 The R-shiny interface can also be used to visualise the normalised data.
 
-``` {r Shiny App on the normalised data}
+``` {r Shiny App on the normalised data,eval=FALSE}
   ## Define parameters to use for R-Shiny
   daf=norm_data$daf
   md=norm_data$md

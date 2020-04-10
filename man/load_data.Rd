@@ -2,7 +2,11 @@
 % Please edit documentation in R/load_data.R
 \name{load_data}
 \alias{load_data}
-\title{load_data}
+\title{load_data
+
+is used to load the fcs files from all the samples in the study,
+the metadata file containing the details of each sample
+and a panel file containing the details of all proteins used in the study.}
 \usage{
 load_data(wd_data, metadata_filename, panel_filename)
 }
@@ -18,7 +22,9 @@ and the panel file}
 Datasets before normalisation
 }
 \description{
-load_data is used to load the fcs files from all the samples in the study,
+load_data
+
+is used to load the fcs files from all the samples in the study,
 the metadata file containing the details of each sample
 and a panel file containing the details of all proteins used in the study.
 }
