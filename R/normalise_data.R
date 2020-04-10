@@ -1,6 +1,7 @@
-#' normalise_data
+#' @rdname normalise_data
+#' @title normalise_data
 #'
-#' normalise_data contains all the functions to normalise several Cytof datasets by removing the
+#' contains all the functions to normalise several Cytof datasets by removing the
 #' unwanted variation between datasets arising from experimental artefacts.
 #'
 #' @param daf Datasets before normalisation
@@ -22,23 +23,23 @@ normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clus
   # Normalise the cells
   norm_cells <- run_RUVIII(raw_data, norm_clusters,k,rep_samples)
   # Output to save files
-  output_dir <- file.path(paste(wd_data, dir_norm_data,"/",sep = ""))
+  output_dir <- file.path(wd_data, dir_norm_data)
   if (!dir.exists(output_dir)){
     dir.create(output_dir)
   }
   # Save data into fcs files
   new_md=save_norm_files(norm_cells, data$fcs_raw, data$md, norm_clusters,data$panel,output_dir,k)
   # Save Metadata file
-  writexl::write_xlsx(new_md, path=paste(output_dir,"Norm_Metadata.xlsx",sep=""),
+  writexl::write_xlsx(new_md, path=file.path(output_dir,"Norm_Metadata.xlsx"),
                       col_names=TRUE, format_headers = TRUE)
 
-  writexl::write_xlsx(data$panel, path=paste(output_dir,"Norm_Panel.xlsx",sep=""),
+  writexl::write_xlsx(data$panel, path=file.path(output_dir,"Norm_Panel.xlsx"),
                       col_names=TRUE, format_headers = TRUE)
   ## Save normalisation details
   norm_setup=list(rep_samples=rep_samples,cluster_to_norm=norm_clusters,k=k,metadata_norm=new_md)
-  saveRDS(norm_setup,file = paste(output_dir,"Norm_setup.rds",sep=""))
+  saveRDS(norm_setup,file =file.path(output_dir,"Norm_setup.rds"))
   ## Save norm data
-  saveRDS(norm_cells,file = paste(output_dir,"Norm_data.rds",sep=""))
+  saveRDS(norm_cells,file = file.path(output_dir,"Norm_data.rds"))
 
 }
 
@@ -82,7 +83,7 @@ save_norm_files<- function(norm_cells, fcs_raw, md, num_clusters,panel,output_di
     # Line the inds up with the flowframe
     if (length(inds)>1){
       corrected_inds <- inds - correction_vec[i]
-      new_md$file_name[i] <- paste(output_dir,"Norm_RUVIII_k",k,"_",md$file_name[i], sep = "")
+      new_md$file_name[i] <- file.path(output_dir,paste("Norm_RUVIII_k",k,"_",md$file_name[i],sep=""))
       tmp_exp=exprs(fcs_norm[[i]])
       tmp_exp[,all_fullname_markers[2:length(all_fullname_markers)]]= norm_cells[inds,c(data$lineage_markers,data$functional_markers)]
       exprs(fcs_norm[[i]])=tmp_exp

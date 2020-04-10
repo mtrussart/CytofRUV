@@ -1,6 +1,7 @@
-#' load_data
+#' @rdname load_data
+#' @title load_data
 #'
-#' load_data is used to load the fcs files from all the samples in the study,
+#' is used to load the fcs files from all the samples in the study,
 #' the metadata file containing the details of each sample
 #' and a panel file containing the details of all proteins used in the study.
 #'
@@ -16,6 +17,24 @@
 #' @export
 #'
 
+get_directory <- function() {
+  print("Please refer to the console.")
+  directory<-""
+  while (nchar(directory) == 0) {
+    directory <- readline("Name the directory you want the normalized files to be saved in: ")
+    if (nchar(directory) == 0) {
+      print("Error: Nothing was provided, please enter a working directory.")
+    }
+  }
+  if (!dir.exists(directory)) {
+    dir.create(directory)
+    print(sprintf("The folder: %s was created as the directory.", directory))
+    return(directory)
+  }
+  print(sprintf("%s was chosen as the directory.", directory))
+  return(directory)
+}
+
 
 #load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")
 load_data<- function(wd_data,metadata_filename,panel_filename){
@@ -28,7 +47,7 @@ read_data<- function(wd_data,metadata_filename,panel_filename){
 
   ## Load the metadata file
   print("Reading MetaData")
-  md <- readxl::read_excel(paste(wd_data, metadata_filename, sep = ""))
+  md <- readxl::read_excel(file.path(wd_data, metadata_filename))
 
   ## Check the metadata file
   #print("Checking md ColNames")
@@ -41,14 +60,14 @@ read_data<- function(wd_data,metadata_filename,panel_filename){
   ## Load the fcs files
   setwd(wd_data)
   print("Reading fcs files")
-  fcs_raw <- flowCore::read.flowSet(paste(md$file_name,sep=""), transformation = FALSE,
+  fcs_raw <- flowCore::read.flowSet(file.path(md$file_name), transformation = FALSE,
                           truncate_max_range = FALSE)
   #print(flowCore::colnames(fcs_raw[[1]]))
   #setwd(wd_data)
   #print("Read Fcs Files.")
 
   ## Load the panel file
-  panel <- readxl::read_excel(paste(wd_data, panel_filename, sep = ""))
+  panel <- readxl::read_excel(file.path(wd_data, panel_filename))
   panel_fcs <- pData(parameters(fcs_raw[[1]]))
   #print(panel_fcs)
   print("Read Panel File")

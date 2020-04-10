@@ -1,6 +1,7 @@
-#' cluster_data
+#' @rdname cluster_data
+#' @title cluster_data
 #'
-#' cluster_data is used to cluster all the samples in the study using FlowSOM clustering
+#' is used to cluster all the samples in the study using FlowSOM clustering
 #' and metaclustering into with ConsensusClusterPlus.
 #'
 #'

@@ -2,7 +2,10 @@
 % Please edit documentation in R/cluster_data.R
 \name{cluster_data}
 \alias{cluster_data}
-\title{cluster_data}
+\title{cluster_data
+
+is used to cluster all the samples in the study using FlowSOM clustering
+and metaclustering into with ConsensusClusterPlus.}
 \usage{
 cluster_data(daf, seed, markers_to_use, clusters_nb)
 }
@@ -19,7 +22,9 @@ cluster_data(daf, seed, markers_to_use, clusters_nb)
 daf data single cell experiment after clustering
 }
 \description{
-cluster_data is used to cluster all the samples in the study using FlowSOM clustering
+cluster_data
+
+is used to cluster all the samples in the study using FlowSOM clustering
 and metaclustering into with ConsensusClusterPlus.
 }
 \examples{
