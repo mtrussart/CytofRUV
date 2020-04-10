@@ -69,20 +69,22 @@ The first step is to load the metadata file, all the .fcs files, the panel file 
 ```{r load and cluster data before CytofRUV normalisation}
   ## Define parameters to load and cluster the data
   output_dir="CytofRUV_output"
-  if (!dir.exists(output_dir)){
-    dir.create(output_dir)
+  if (dir.exists(output_dir)) {
+    wd_data=file.path(getwd(),output_dir)
+    metadata_filename="Metadata.xlsx"
+    panel_filename="Panel.xlsx"
+    seed=1234
+    clusters_nb=20
+  
+    ## Loading the data
+    data=load_data(wd_data,metadata_filename,panel_filename)
+  
+    ## Cluster the data
+    data$daf=cluster_data(data$daf,seed,markers_to_use=data$lineage_markers,clusters_nb)
+  } else {
+    warning("The output folder CytofRUV_output does not exist, please recreate the original folder.")
   }
-  wd_data=file.path(getwd(),output_dir)
-  metadata_filename="Metadata.xlsx"
-  panel_filename="Panel.xlsx"
-  seed=1234
-  clusters_nb=20
-
-  ## Loading the data
-  data=load_data(wd_data,metadata_filename,panel_filename)
-
-  ## Cluster the data
-  data$daf=cluster_data(data$daf,seed,markers_to_use=data$lineage_markers,clusters_nb)
+  
 
 ```
 
