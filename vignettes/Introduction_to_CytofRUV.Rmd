@@ -49,10 +49,6 @@ The panel file is an excel file with the following column names: "fcs_colname", 
 We provided an example dataset to help you prepare your data. The command below will load all the dataset including the metadata file, the panel file and the fcs files in the working directory.
 
 ```{r loading example dataset}
-  output_dir="CytofRUV_output"
-  if (!dir.exists(output_dir)){
-    dir.create(output_dir)
-  }
   wd_data=file.path(getwd(),output_dir)
   write.FCS(x=CytofRUV::A1,filename =file.path(wd_data,"A1.fcs"))
   write.FCS(x=CytofRUV::A2,filename = file.path(wd_data,"A2.fcs"))
@@ -77,8 +73,10 @@ The first step is to load the metadata file, all the .fcs files, the panel file 
   panel_filename="Panel.xlsx"
   seed=1234
   clusters_nb=20
+  
   ## Loading the data
   data=load_data(wd_data,metadata_filename,panel_filename)
+  
   ## Cluster the data
   data$daf=cluster_data(data$daf,seed,markers_to_use=data$lineage_markers,clusters_nb)
 ```
