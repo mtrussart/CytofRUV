@@ -10,7 +10,7 @@
 #' and the panel file
 #' @param metadata_name Metadata filename containing the details of each sample
 #' @param panel_filename Panel filename containing the details of each marker
-#'
+#' @param cofactor Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data
 #'
 #'
 #' @return Datasets before normalisation
@@ -19,8 +19,8 @@
 
 
 #load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")
-load_data<- function(wd_data,metadata_filename,panel_filename,cofact=5){
-  data=read_data(wd_data,metadata_filename,panel_filename,cofact=5)
+load_data<- function(wd_data,metadata_filename,panel_filename,cofactor=5){
+  data=read_data(wd_data,metadata_filename,panel_filename,cofact=cofactor)
   return(data)
 }
 

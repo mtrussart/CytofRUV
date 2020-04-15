@@ -159,7 +159,7 @@ normalise_data(data=data,raw_data=raw_data,rep_samples=rep_samples, norm_cluster
   clusters_nb=20
 
   ## Loading the data
-  norm_data=load_data(wd_norm,metadata_norm_filename,panel_norm_filename,cofact = NULL)
+  norm_data=load_data(wd_norm,metadata_norm_filename,panel_norm_filename,cofactor = NULL)
 
   ## Cluster the data
   norm_data$daf=cluster_data(norm_data$daf,seed,markers_to_use=norm_data$lineage_markers,clusters_nb)

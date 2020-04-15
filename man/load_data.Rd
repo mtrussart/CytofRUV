@@ -8,13 +8,15 @@ is used to load the fcs files from all the samples in the study,
 the metadata file containing the details of each sample
 and a panel file containing the details of all proteins used in the study.}
 \usage{
-load_data(wd_data, metadata_filename, panel_filename, cofact = 5)
+load_data(wd_data, metadata_filename, panel_filename, cofactor = 5)
 }
 \arguments{
 \item{wd_data}{Path to the directory containing all raw fcs files, the metadata file
 and the panel file}
 
 \item{panel_filename}{Panel filename containing the details of each marker}
+
+\item{cofactor}{Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data}
 
 \item{metadata_name}{Metadata filename containing the details of each sample}
 }
