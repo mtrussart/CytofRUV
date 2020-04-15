@@ -132,9 +132,10 @@ The user needs to select the data to use (before or after normalisation) to visu
 
 ## CytofRUV normalisation procedure
 
-The normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm to be selected by user, such as the replicated samples to use, the clusters to be nornmalised and the value of k. The user can specify below the name of the directory to save the normalised data (dir_name_norm_data).
+The normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm to be selected by user, such as the replicated samples to use, the clusters to be nornmalised and the value of k. The user can specify below the name of the directory to save the normalised data (dir_name_norm_data) or use the get_directory function which will ask the user to specify the directory.
 
 ```{r CytofRUV normalisation}
+#dir_name_norm_data = get_directory()
 dir_name_norm_data="CytofRUV_Norm_data_HC2_all_cl_20"
 raw_data <- data.frame(sample = data$daf$sample_id, cluster=cluster_ids(data$daf,"meta20"), t(SummarizedExperiment::assay(data$daf)))
 colnames(raw_data) <- gsub("^X", "",  colnames(raw_data))
@@ -158,7 +159,7 @@ normalise_data(data=data,raw_data=raw_data,rep_samples=rep_samples, norm_cluster
   clusters_nb=20
 
   ## Loading the data
-  norm_data=load_data(wd_norm,metadata_norm_filename,panel_norm_filename)
+  norm_data=load_data(wd_norm,metadata_norm_filename,panel_norm_filename,cofact = NULL)
 
   ## Cluster the data
   norm_data$daf=cluster_data(norm_data$daf,seed,markers_to_use=norm_data$lineage_markers,clusters_nb)

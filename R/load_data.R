@@ -19,13 +19,13 @@
 
 
 #load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")
-load_data<- function(wd_data,metadata_filename,panel_filename){
-  data=read_data(wd_data,metadata_filename,panel_filename)
+load_data<- function(wd_data,metadata_filename,panel_filename,cofact=5){
+  data=read_data(wd_data,metadata_filename,panel_filename,cofact=5)
   return(data)
 }
 
 
-read_data<- function(wd_data,metadata_filename,panel_filename){
+read_data<- function(wd_data,metadata_filename,panel_filename,cofact=5){
 
   ## Load the metadata file
   print("Reading MetaData")
@@ -84,12 +84,30 @@ read_data<- function(wd_data,metadata_filename,panel_filename){
   (functional_markers <- panel$antigen[panel$marker_class == "state"])
   (functional_markers_fullname <- panel$fcs_colname[panel$marker_class == "state"])
 
-  daf <- prepData(fcs_raw, panel, md, md_cols = list(file="file_name", id="sample_id", factors = c("batch", "condition", "patient_id")))
+  daf <- prepData(fcs_raw, panel, md, md_cols = list(file="file_name", id="sample_id", factors = c("batch", "condition", "patient_id")),cofactor = cofact)
   print("Completed creating DaFrame Objects")
 
   ## All data
   data=list(fcs_raw=fcs_raw,md=md,panel=panel,lineage_markers=lineage_markers,functional_markers=functional_markers,daf=daf)
   return(data)
+}
+
+get_directory <- function() {
+  print("Please refer to the console")
+  directory<-""
+  while (nchar(directory) == 0) {
+    directory <- readline("Please provide the directory name where the the normalized data will be saved: ")
+    if (nchar(directory) == 0) {
+      print("Error: Nothing was provided. Please enter the directory name")
+    }
+  }
+  if (!dir.exists(directory)) {
+    dir.create(directory)
+    print(sprintf("The folder: %s was created.", directory))
+    return(directory)
+  }
+  print(sprintf("%s was chosen as the directory.", directory))
+  return(directory)
 }
 
 
