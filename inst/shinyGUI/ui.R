@@ -117,8 +117,6 @@ clusteringResults <-fluidPage(
       hr(),
       h2(textOutput("textDR_1")),
       plotOutput("plotDR_1", width = "750px", height = "550px"),
-      downloadButton(outputId = "download_plotDR_1", label = "Download Plot"),
-      radioButtons("plotDR_1_tag", "Select the file type:", choices = list("pdf", "png")),
       fluidRow(
         column(
           6,
@@ -135,6 +133,8 @@ clusteringResults <-fluidPage(
     column(
       4,
       actionButton("plotDR_1", "update"),
+      downloadButton(outputId = "download_plotDR_1", label = "Download Plot"),
+      radioButtons("plotDR_1_tag", "Select the file type:", choices = list("pdf", "png")),
       hr()
     )
   ),
@@ -144,8 +144,6 @@ clusteringResults <-fluidPage(
       ## Plot 3
       h2(textOutput("textDR_facet")),
       plotOutput("plotDR_facet", width = "700px", height = "600px"),
-      downloadButton(outputId = "download_plotDR_facet", label = "Download Plot"),
-      radioButtons("plotDR_facet_tag", "Select the file type:", choices = list("pdf", "png")),
       fluidRow(
         column(
           6,
@@ -161,7 +159,9 @@ clusteringResults <-fluidPage(
   fluidRow(
     column(
       6,
-      actionButton("plotDR_2", "update")
+      actionButton("plotDR_2", "update"),
+      downloadButton(outputId = "download_plotDR_facet", label = "Download Plot"),
+      radioButtons("plotDR_facet_tag", "Select the file type:", choices = list("pdf", "png")),
     )
   ),
   fluidRow(
