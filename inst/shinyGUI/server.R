@@ -22,7 +22,7 @@ shinyServer(function(input, output, session) {
   # -------------------------------------------------------------------------------------------------
   observeEvent(input$mds, {def$choiceMDS=input$choiceMDS})
   # Page 1 plot 1:
-  output$plotMDS <- renderPlot({
+  mds <- reactive({
     plotMDS(sub_daf, color_by = def$choiceMDS) +
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
@@ -30,10 +30,47 @@ shinyServer(function(input, output, session) {
             legend.text = element_text(size = 12)
       )
   })
+
+  output$plotMDS <- renderPlot({
+    req(mds())
+    mds()
+  })
+
+  output$download_mds <- downloadHandler(
+    filename = function() {
+      paste("mds_plot", input$mds_tag, sep=".")
+    },
+    content = function(file) {
+      req(mds())
+      ggsave(file, plot = mds(), device = input$mds_tag)
+    }
+  )
+
   # Page 1 plot 2:
-  output$plotDendogram <- renderPlot({
+  dendogram <- reactive({
     plotExprHeatmap(sub_daf, bin_anno = FALSE, row_anno = TRUE)
   })
+
+  output$plotDendogram <- renderPlot({
+    req(dendogram())
+    dendogram()
+  })
+
+  output$download_dendogram <- downloadHandler(
+    filename = function() {
+      paste("dendogram_plot", input$dendogram_tag, sep=".")
+    },
+    content = function(file) {
+      req(dendogram())
+      if (input$dendogram_tag == "pdf") {
+        pdf(file)
+      } else {
+        png(file)
+      }
+      ComplexHeatmap::draw(dendogram())
+      dev.off()
+    }
+  )
 
   # =================================================================================================
   # Page: Markers Distribution
@@ -80,7 +117,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$exprsPlot, {def$choiceExprsClass=daf_temp()})
 
   # Plot
-  output$exprsPlot  <- renderPlot({
+  exprsPlot <- reactive({
     plotExprs(def$choiceExprsClass, color_by = def$choiceExprsParam) +
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
@@ -88,6 +125,21 @@ shinyServer(function(input, output, session) {
             legend.text = element_text(size = 12)
       )
   })
+
+  output$exprsPlot  <- renderPlot({
+    req(exprsPlot())
+    exprsPlot()
+  })
+
+  output$download_exprsPlot <- downloadHandler(
+    filename = function() {
+      paste("exprs_plot", input$exprsPlot_tag, sep=".")
+    },
+    content = function(file) {
+      req(exprsPlot())
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag)
+    }
+  )
 
   # =================================================================================================
   # Page: Clustering Results
@@ -110,10 +162,30 @@ shinyServer(function(input, output, session) {
   observeEvent(input$plotDR_1, {def$choice_plotDR1 = DR_grouping1()})
 
   # Plot 1 Page 3 -
-  output$cluster_heatmap <- renderPlot({
-    plotClusterHeatmap(sub_daf, hm2 = NULL, k = "meta20", m = NULL,
-                       cluster_anno = TRUE, draw_freqs = TRUE)
+  cluster_heatmap <- reactive({
+    plotClusterHeatmap(sub_daf, hm2 = NULL, k = "meta20", m = NULL, cluster_anno = TRUE, draw_freqs = TRUE)
   })
+
+  output$cluster_heatmap <- renderPlot({
+    req(cluster_heatmap())
+    cluster_heatmap()
+  })
+
+  output$download_cluster_Heatmap <- downloadHandler(
+    filename = function() {
+      paste("ClusterHeatmap_plot", input$cluster_Heatmap_tag, sep=".")
+    },
+    content = function(file) {
+      req(cluster_heatmap())
+      if (input$cluster_Heatmap_tag == "pdf") {
+        pdf(file)
+      } else {
+        png(file)
+      }
+      ComplexHeatmap::draw(cluster_heatmap()[[1]])
+      dev.off()
+    }
+  )
 
   # Reactive title for plot 2 page 3
   textDR_1 <- reactive({
@@ -125,13 +197,27 @@ shinyServer(function(input, output, session) {
 
   # Plot 2 Page 3 -
   output$textDR_1 <- renderText(paste0("TSNE: Coloured By ", textDR_1()))
-  output$plotDR_1 <- renderPlot({
+  plotDR_1 <- reactive({
     plotDR(daf, "TSNE", color_by = def$choice_plotDR1) +
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12))
   })
+  output$plotDR_1 <- renderPlot({
+    req(plotDR_1())
+    plotDR_1()
+  })
+
+  output$download_plotDR_1 <- downloadHandler(
+    filename = function() {
+      paste(paste0("TSNE: Coloured By ", textDR_1()), input$plotDR_1_tag, sep=".")
+    },
+    content = function(file) {
+      req(plotDR_1())
+      ggsave(file, plot = plotDR_1(), device = input$plotDR_1_tag)
+    }
+  )
 
   # Plot 3 Page 3 Antigen Selection
   output$antigen_choice2 <- renderUI({
@@ -179,8 +265,9 @@ shinyServer(function(input, output, session) {
 
   # Plot 3 Page 3 -
   output$textDR_facet <- renderText(paste0("TSNE: Coloured By ", textDR_2(), ", faceted by sample_id"))
-  output$plotDR_facet <- renderPlot({
-    plotDR(daf[, sample_ids(daf)%in%def$choice_plotDR2a],
+
+  plotDR_facet <- reactive({
+     plotDR(daf[, sample_ids(daf)%in%def$choice_plotDR2a],
            "TSNE",
            color_by = def$choice_plotDR2b) + facet_wrap("sample_id") +
       theme(axis.text=element_text(size=12),
@@ -188,10 +275,25 @@ shinyServer(function(input, output, session) {
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12))
   })
+
+  output$plotDR_facet <- renderPlot({
+    req(plotDR_facet())
+    plotDR_facet()
+  })
+
+  output$download_plotDR_facet <- downloadHandler(
+    filename = function() {
+      paste(paste0("TSNE: Coloured By ", textDR_2(), ", faceted by sample_id"), input$plotDR_facet_tag, sep=".")
+    },
+    content = function(file) {
+      req(plotDR_facet())
+      ggsave(file, plot = plotDR_facet(), device = input$plotDR_facet_tag)
+    }
+  )
   # =================================================================================================
   # Page: Cluster Proportions
   # -------------------------------------------------------------------------------------------------
-  output$Abundance_cluster <- renderPlot({
+  Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
     plotAbundances(daf, k = "meta20", by = "sample_id") +
       theme(axis.text=element_text(size=12),
@@ -202,5 +304,18 @@ shinyServer(function(input, output, session) {
       facet_wrap(facets = NULL, scales="fixed")
   })
 
+  output$Abundance_cluster <- renderPlot({
+    req(Abundance_cluster())
+    Abundance_cluster()
+  })
 
+  output$download_Abundance_cluster <- downloadHandler(
+    filename = function() {
+      paste("Abundance_cluster", input$Abundance_cluster_tag, sep=".")
+    },
+    content = function(file) {
+      req(Abundance_cluster())
+      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag)
+    }
+  )
 })

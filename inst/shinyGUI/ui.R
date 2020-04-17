@@ -25,14 +25,17 @@ medIntensities <-fluidPage(
       plotOutput(outputId="plotMDS", width="100%", height = "600px"),
       selectInput("choiceMDS", "Select to colour by:",
                   choices = list("condition", "batch")),  ##Colour By is limited to condition and batch!
-      actionButton("mds", "update")
+      actionButton("mds", "update"),
+      downloadButton(outputId = "download_mds", label = "Download Plot"),
+      radioButtons("mds_tag", "Select the file type:", choices = list("pdf", "png"))
     ),
     column(
       7,
       ## Plot 2
       h2("Heatmap of the median protein expression"),
       plotOutput(outputId="plotDendogram", width="80%", height = "600px"),
-      align = "center"
+      downloadButton(outputId = "download_dendogram", label = "Download Plot"),
+      radioButtons("dendogram_tag", "Select the file type:", choices = list("pdf", "png"))
     )
   )
 )
@@ -46,7 +49,7 @@ markerDistribution <-fluidPage(
       12,
       ## Plot 3
       h2("Distribution of protein expression"),
-      plotOutput("exprsPlot", height="700px"),
+      plotOutput("exprsPlot", height="700px")
     )
   ),
   fluidRow(
@@ -57,7 +60,9 @@ markerDistribution <-fluidPage(
                             "Sample ID" = "sample_id")),
            uiOutput("exprs2"),
            uiOutput("exprs3"),
-           actionButton("exprsPlot", "update")
+           actionButton("exprsPlot", "update"),
+           downloadButton(outputId = "download_exprsPlot", label = "Download Plot"),
+           radioButtons("exprsPlot_tag", "Select the file type:", choices = list("pdf", "png"))
     )
   )
 )
@@ -100,7 +105,9 @@ clusteringResults <-fluidPage(
       8,
       ## Plot 1
       h2("Heatmap of the median protein expression per cluster"),
-      plotOutput("cluster_heatmap", height="650px")
+      plotOutput("cluster_heatmap", height="650px"),
+      downloadButton(outputId = "download_cluster_Heatmap", label = "Download Plot"),
+      radioButtons("cluster_Heatmap_tag", "Select the file type:", choices = list("pdf", "png"))
     )
   ),
   fluidRow(
@@ -110,6 +117,8 @@ clusteringResults <-fluidPage(
       hr(),
       h2(textOutput("textDR_1")),
       plotOutput("plotDR_1", width = "750px", height = "550px"),
+      downloadButton(outputId = "download_plotDR_1", label = "Download Plot"),
+      radioButtons("plotDR_1_tag", "Select the file type:", choices = list("pdf", "png")),
       fluidRow(
         column(
           6,
@@ -135,6 +144,8 @@ clusteringResults <-fluidPage(
       ## Plot 3
       h2(textOutput("textDR_facet")),
       plotOutput("plotDR_facet", width = "700px", height = "600px"),
+      downloadButton(outputId = "download_plotDR_facet", label = "Download Plot"),
+      radioButtons("plotDR_facet_tag", "Select the file type:", choices = list("pdf", "png")),
       fluidRow(
         column(
           6,
@@ -167,10 +178,11 @@ clusterProportions <- fluidPage(
   fluidRow(
     column(
       12,
-      align="center",
       h2("Cluster proportions across sample"),
       ## Plot 1
-      plotOutput("Abundance_cluster", height="800px")
+      plotOutput("Abundance_cluster", height="800px"),
+      downloadButton(outputId = "download_Abundance_cluster", label = "Download Plot"),
+      radioButtons("Abundance_cluster_tag", "Select the file type:", choices = list("pdf", "png")),
     )
   )
 )

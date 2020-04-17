@@ -38,6 +38,7 @@ library(shiny)
 library(shinyjs)
 library(shinydashboard)
 library(writexl)
+library(ComplexHeatmap)
 ```
 
 ## Dataset
