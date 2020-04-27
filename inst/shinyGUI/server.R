@@ -38,6 +38,14 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page: Markers Distribution
   # -------------------------------------------------------------------------------------------------
+
+  # ========================================================================
+  # Returns sample_IDs related to a given patient, found through patient_ID.
+  # ------------------------------------------------------------------------
+  patient_ids <- function(patient_id, dframe){
+    return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
+  }
+
   # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
     if (!input$exprs1 == "sample_id") return(NULL)

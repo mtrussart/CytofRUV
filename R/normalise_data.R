@@ -28,7 +28,7 @@ normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clus
     dir.create(output_dir)
   }
   # Save data into fcs files
-  new_md=save_norm_files(norm_cells, data$fcs_raw, data$md, norm_clusters,data$panel,output_dir,k)
+  new_md=save_norm_files(data,norm_cells, data$fcs_raw, data$md,data$panel,output_dir,k)
   # Save Metadata file
   writexl::write_xlsx(new_md, path=file.path(output_dir,"Norm_Metadata.xlsx"),
                       col_names=TRUE, format_headers = TRUE)
@@ -43,7 +43,7 @@ normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clus
 
 }
 
-save_norm_files<- function(norm_cells, fcs_raw, md, num_clusters,panel,output_dir,k){
+save_norm_files<- function(data,norm_cells, fcs_raw, md,panel,output_dir,k){
 
   # All the file names
   file_ids <- rep(md$file_name, flowCore::fsApply(fcs_raw, nrow))
