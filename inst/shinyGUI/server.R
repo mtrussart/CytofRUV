@@ -181,7 +181,7 @@ shinyServer(function(input, output, session) {
     }
   )
 
-  # Reactive title for plot 2 page 3 -----------------------
+  # Plot 2 page 3 -----------------------
   TSNE_TEXT1 <- reactive({
     if (def$choice_TSNE_Colour_By1 == "meta20") {
       return("Clusters")
@@ -189,13 +189,13 @@ shinyServer(function(input, output, session) {
     return(def$choice_TSNE_Colour_By1)
   })
 
-  # Plot 2 Page 3 Antigen Selection
+  # Antigen Selection
   output$TSNE_Ant_Choice1 <- renderUI({
     if (!input$TSNE_Colour_By1 == "Antigen") return(NULL)
     selectInput("TSNE_Ant_Choice1", "Select Antigen:", panel$antigen)
   })
 
-  # Returns String to determine Colour-By in Plot 2 Page 3
+  # String to determine Colour-By
   TSNE_grouping1 <- reactive({
     if (input$TSNE_Colour_By1 == "Antigen" & !is.null(input$TSNE_Ant_Choice1)) {
       return(input$TSNE_Ant_Choice1)

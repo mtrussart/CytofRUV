@@ -110,20 +110,25 @@ The user needs to select the data to use (before or after normalisation) to visu
   batch_ids <- is.factor(rep(md$batch, nrow(daf)))
   sampleID_sorted <- md$sample_id[order(md$patient_id)]
   
-  ## Running Dimension Reduction -> TSNE
+  # Running Dimension Reduction -> TSNE & UMAP
+  set.seed(seed)
   # Number of cells for tSNE plots marker specific
   TSNE_subset <- 2000
   print("Running TSNE")
-  set.seed(seed)
-  daf <- runDR(daf, "TSNE", cells = TSNE_subset)
+  daf <- CATALYST::runDR(daf, dr = "TSNE", cells = TSNE_subset)
+  
+  # Number of cells for UMAP plots marker specific
+  UMAP_subset <- 2000
+  print("Running UMAP")
+  daf <- runDR(daf, "UMAP", cells = UMAP_subset)
   
   ## Launch Shiny
   # For a subset of the data, define the number of cells for diagnostic plots
-  # n_subset <- 5000
-  # sub_daf <- daf[, sample(ncol(daf), n_subset)]
+  n_subset <- 5000
+  sub_daf <- daf[, sample(ncol(daf), n_subset)]
   
-  # For the full dataset: 
-  sub_daf <- daf
+  # # For the full dataset: 
+  # sub_daf <- daf
   panel=data$panel
   
   CytofRUV::launch_Shiny()
@@ -189,20 +194,26 @@ The R-shiny interface can also be used to visualise the normalised data.
   batch_ids <- is.factor(rep(md$batch, nrow(daf)))
   sampleID_sorted <- md$sample_id[order(md$patient_id)]
   
-  ## Running Dimension Reduction -> TSNE
+  ## Running Dimension Reduction -> TSNE & UMAP
+  set.seed(seed)
   # Number of cells for tSNE plots marker specific
   TSNE_subset <- 2000
   print("Running TSNE")
-  set.seed(seed)
   daf <- runDR(daf, "TSNE", cells = TSNE_subset)
   
-  ## Launch Shiny
-  # For a subset of the data, define the number of cells for diagnostic plots
-  # n_subset <- 5000
-  # sub_daf <- daf[, sample(ncol(daf), n_subset)]
+  # Number of cells for UMAP plots marker specific
+  UMAP_subset <- 2500
+  print("Running UMAP")
+  daf <- runDR(daf, "UMAP", cells = UMAP_subset)
   
-  # For the full dataset: 
-  sub_daf <- daf
+  # Launch Shiny
+  # For a subset of the data, define the number of cells for diagnostic plots
+  n_subset <- 5000
+  sub_daf <- daf[, sample(ncol(daf), n_subset)]
+  
+  # # For the full dataset: 
+  # sub_daf <- daf
+  
   panel=data$panel
   
   CytofRUV::launch_Shiny()
