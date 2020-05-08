@@ -336,7 +336,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Plot Title
-  output$TSNE_facet <- renderText(paste0("TSNE: Coloured By ", UMAP_facet_Text(), ", faceted by sample_id"))
+  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", faceted by sample_id"))
 
   # Define Plot
   plotTSNE_facet <- reactive({

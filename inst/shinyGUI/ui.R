@@ -71,19 +71,19 @@ markerDistribution <-fluidPage(
 # Page 3: Clustering Results
 # -------------------------------------------------------------------------------------------------
 TNSE_check_box <-fluidPage(
-    fluidRow(
-      column(
-        12,
-        list(tags$div(align = 'left',
-                      class = 'multicol',
-                      checkboxGroupInput("checkBox_TSNE", "Select Up To 10 SampleIDs",
-                                         choices = sampleID_sorted,
-                                         selected = sampleID_sorted[1:10],
-                                         inline = TRUE,
-                                         width = "100%"))),
-        actionButton("deselectAll_TSNE", "Deselect All Options")
-      )
+  fluidRow(
+    column(
+      12,
+      list(tags$div(align = 'left',
+                    class = 'multicol',
+                    checkboxGroupInput("checkBox_TSNE", "Select Up To 10 SampleIDs",
+                                       choices = sampleID_sorted,
+                                       selected = sampleID_sorted[1:10],
+                                       inline = TRUE,
+                                       width = "100%"))),
+      actionButton("deselectAll_TSNE", "Deselect All Options")
     )
+  )
 )
 
 checkBox_TSNE <- shinydashboard::box(
@@ -99,19 +99,19 @@ checkBox_TSNE <- shinydashboard::box(
 )
 
 UMAP_check_box <- fluidPage(
-    fluidRow(
-      column(
-        12,
-        list(tags$div(align = 'left',
-                      class = 'multicol',
-                      checkboxGroupInput("checkBox_UMAP", "Select Up To 10 SampleIDs",
-                                         choices = sampleID_sorted,
-                                         selected = sampleID_sorted[1:10],
-                                         inline = TRUE,
-                                         width = "100%"))),
-        actionButton("deselectAll_UMAP", "Deselect All Options")
-      )
+  fluidRow(
+    column(
+      12,
+      list(tags$div(align = 'left',
+                    class = 'multicol',
+                    checkboxGroupInput("checkBox_UMAP", "Select Up To 10 SampleIDs",
+                                       choices = sampleID_sorted,
+                                       selected = sampleID_sorted[1:10],
+                                       inline = TRUE,
+                                       width = "100%"))),
+      actionButton("deselectAll_UMAP", "Deselect All Options")
     )
+  )
 )
 
 checkBox_UMAP <- shinydashboard::box(
@@ -155,18 +155,7 @@ clusteringResults <-fluidPage(
           uiOutput("TSNE_Ant_Choice1")
         )
       )
-    )
-  ),
-  fluidRow(
-    column(
-      6,
-      actionButton("update_TSNE1", "update"),
-      downloadButton(outputId = "download_TSNE_1", label = "Download Plot"),
-      radioButtons("TSNE_1_tag", "Select the file type:", choices = list("pdf", "png")),
-      hr()
-    )
-  ),
-  fluidRow(
+    ),
     column(
       6,
       ## Plot 3
@@ -186,6 +175,13 @@ clusteringResults <-fluidPage(
     )
   ),
   fluidRow(
+    column(
+      6,
+      actionButton("update_TSNE1", "update"),
+      downloadButton(outputId = "download_TSNE_1", label = "Download Plot"),
+      radioButtons("TSNE_1_tag", "Select the file type:", choices = list("pdf", "png")),
+      hr()
+    ),
     column(
       6,
       actionButton("update_UMAP_1", "update"),
@@ -210,23 +206,7 @@ clusteringResults <-fluidPage(
           uiOutput("TSNE_Facet_Ant_Choice")
         )
       )
-    )
-  ),
-  fluidRow(
-    column(
-      6,
-      actionButton("update_TSNE_facet", "update"),
-      downloadButton(outputId = "download_TSNE_facet", label = "Download Plot"),
-      radioButtons("TSNE_facet_tag", "Select the file type:", choices = list("pdf", "png")),
-    )
-  ),
-  fluidRow(
-    column(
-      6,
-      checkBox_TSNE
     ),
-  ),
-  fluidPage(
     column(
       6,
       ## Plot 5
@@ -247,12 +227,22 @@ clusteringResults <-fluidPage(
   fluidRow(
     column(
       6,
+      actionButton("update_TSNE_facet", "update"),
+      downloadButton(outputId = "download_TSNE_facet", label = "Download Plot"),
+      radioButtons("TSNE_facet_tag", "Select the file type:", choices = list("pdf", "png")),
+    ),
+    column(
+      6,
       actionButton("update_UMAP_facet", "update"),
       downloadButton(outputId = "download_UMAP_facet", label = "Download Plot"),
       radioButtons("UMAP_2_tag", "Select the file type:", choices = list("pdf", "png")),
     )
   ),
   fluidRow(
+    column(
+      6,
+      checkBox_TSNE
+    ),
     column(
       6,
       checkBox_UMAP
