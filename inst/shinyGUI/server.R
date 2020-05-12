@@ -346,6 +346,7 @@ shinyServer(function(input, output, session) {
   # Plot Title
   output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", separated by sample_id"))
 
+
   # Define Plot
   plotTSNE_facet <- reactive({
     plotDR(daf[, sample_ids(daf)%in%def$choice_TSNE_facet_colourBy],

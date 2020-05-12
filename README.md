@@ -32,7 +32,7 @@ Introduction_to_CytofRUV.Rmd
 ## R-Shiny interface for the identification of batch effects using samples replicated across batches
 
 **R-Shiny interface for the identification of batch effects before and after normalisation**
-To examine the batch effects found when comparing CyTOF data from samples replicated across batches, we built an R-Shiny application that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots: Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. 
+To examine the batch effects found when comparing CyTOF data from samples replicated across batches, we built an R-Shiny application that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots on the data that has been arcsinh transformed with a cofactor of 5: Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. 
 
 
 ``` r

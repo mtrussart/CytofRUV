@@ -25,7 +25,8 @@ Imports:
     shiny,
     shinyjs,
     shinydashboard,
-    writexl
+    writexl,
+    uwot
 Suggests: 
     knitr,
     rmarkdown,
