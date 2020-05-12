@@ -344,7 +344,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Plot Title
-  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", faceted by sample_id"))
+  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", separated by sample_id"))
 
   # Define Plot
   plotTSNE_facet <- reactive({
@@ -365,7 +365,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_TSNE_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("TSNE: Coloured By ", textDR_2(), ", faceted by sample_id"), input$TSNE_facet_tag, sep=".")
+      paste(paste0("TSNE: Coloured By ", textDR_2(), ", separated by sample_id"), input$TSNE_facet_tag, sep=".")
     },
     content = function(file) {
       req(plotTSNE_facet())
