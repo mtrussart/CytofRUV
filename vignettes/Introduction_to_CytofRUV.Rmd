@@ -39,12 +39,6 @@ library(shinyjs)
 library(shinydashboard)
 library(writexl)
 library(ComplexHeatmap)
-
-# For the downloaded extra funcs for exprsHeatmap
-library(data.table)
-library(dplyr)
-library(S4Vectors)
-library(pals)
 ```
 
 ## Dataset
@@ -108,10 +102,10 @@ The user needs to select the data to use (before or after normalisation) to visu
   n_subset_marker_specific <- 10000
 
   # Define type of markers
-  daf_type <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
+  daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
   daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
   sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
-  sub_daf_type <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
+  sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
   # Define batch
   batch_ids <- is.factor(rep(md$batch, nrow(daf)))
   sampleID_sorted <- md$sample_id[order(md$patient_id)]
@@ -138,7 +132,6 @@ The user needs to select the data to use (before or after normalisation) to visu
   panel=data$panel
   
   CytofRUV::launch_Shiny()
-  
 ```
 
 ## CytofRUV normalisation procedure
