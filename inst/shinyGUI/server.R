@@ -1,4 +1,6 @@
 shinyServer(function(input, output, session) {
+  session$onSessionEnded(function() {stopApp()})
+
   #source("server-diagnostic_plots.R", local = TRUE)
   # =================================================================================================
   # Display Normalisation Pages:
@@ -58,7 +60,13 @@ shinyServer(function(input, output, session) {
 
   # Page 1 plot 2:
   dendogram <- reactive({
+    # ms <- t(.agg(sub_daf, "sample_id"))
+    # temp_md <- metadata(sub_daf)$experiment_info
+    # temp_m <- match(rownames(ms), temp_md$sample_id)
+    # df <- select(temp_md[temp_m, ], -"sample_id")
+    # df <- select_if(df, is.factor)
     plotExprHeatmap(sub_daf, bin_anno = FALSE, row_anno = TRUE)
+    #+ .anno_factors(df, "row")
   })
 
   output$plotDendogram <- renderPlot({
@@ -85,9 +93,17 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page: Markers Distribution
   # -------------------------------------------------------------------------------------------------
+
+  # ========================================================================
+  # Returns sample_IDs related to a given patient, found through patient_ID.
+  # ------------------------------------------------------------------------
+  patient_ids <- function(patient_id, dframe){
+    return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
+  }
+
   # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
-    if (!input$exprs1 == "sample_id") return(NULL)
+    if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs2", "Select the patient:",
                 # Unroll patient ID from a list of patient_IDs
                 choices = md$patient_id)
@@ -95,7 +111,7 @@ shinyServer(function(input, output, session) {
 
   # Second selectInput box appear when sample_id is selected in the first box, choices: antigens.
   output$exprs3 <- renderUI({
-    if (!input$exprs1 == "sample_id") return(NULL)
+    if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs3", "Class of Antigen:",
                 choices = levels(panel$marker_class))
   })
@@ -191,7 +207,7 @@ shinyServer(function(input, output, session) {
 
   # Antigen Selection
   output$TSNE_Ant_Choice1 <- renderUI({
-    if (!input$TSNE_Colour_By1 == "Antigen") return(NULL)
+    if (!(input$TSNE_Colour_By1 == "Antigen")) return(NULL)
     selectInput("TSNE_Ant_Choice1", "Select Antigen:", panel$antigen)
   })
 
@@ -241,7 +257,7 @@ shinyServer(function(input, output, session) {
 
   # Antigen Selection
   output$UMAP_Ant_Choice1 <- renderUI({
-    if (!input$Umap_Colour_By1 == "Antigen") return(NULL)
+    if (!(input$Umap_Colour_By1 == "Antigen")) return(NULL)
     selectInput("UMAP_Ant_Choice1", "Select Antigen:", panel$antigen)
   })
 
@@ -328,7 +344,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Plot Title
-  output$TSNE_facet <- renderText(paste0("TSNE: Coloured By ", UMAP_facet_Text(), ", faceted by sample_id"))
+  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", faceted by sample_id"))
 
   # Define Plot
   plotTSNE_facet <- reactive({
