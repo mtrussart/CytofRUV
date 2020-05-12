@@ -47,7 +47,7 @@ markerDistribution <-fluidPage(
   fluidRow(
     column(
       12,
-      ## Plot 3
+      ## Page 2 plot 1
       h2("Distribution of protein expression"),
       plotOutput("exprsPlot", height="700px")
     )
