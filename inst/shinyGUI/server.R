@@ -60,13 +60,8 @@ shinyServer(function(input, output, session) {
 
   # Page 1 plot 2:
   dendogram <- reactive({
-    # ms <- t(.agg(sub_daf, "sample_id"))
-    # temp_md <- metadata(sub_daf)$experiment_info
-    # temp_m <- match(rownames(ms), temp_md$sample_id)
-    # df <- select(temp_md[temp_m, ], -"sample_id")
-    # df <- select_if(df, is.factor)
     plotExprHeatmap(sub_daf, bin_anno = FALSE, row_anno = TRUE)
-    #+ .anno_factors(df, "row")
+
   })
 
   output$plotDendogram <- renderPlot({
@@ -81,9 +76,9 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(dendogram())
       if (input$dendogram_tag == "pdf") {
-        pdf(file)
+        pdf(file, width = 8)
       } else {
-        png(file)
+        png(file, width=720, units = "px")
       }
       ComplexHeatmap::draw(dendogram())
       dev.off()
@@ -163,7 +158,13 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, height = "700px")
+      multiplier = 0
+      if (nlevels(md$sample_id)%%5 == 0) {
+        multiplier = 5
+      } else {
+        multiplier = nlevels(md$sample_id)%%5
+      }
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = (6.5 * multiplier) + 6, height = 18, units = "cm")
     }
   )
 
@@ -188,9 +189,9 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(cluster_heatmap())
       if (input$cluster_Heatmap_tag == "pdf") {
-        pdf(file)
+        pdf(file, width = 10)
       } else {
-        png(file)
+        png(file, width=720, units = "px")
       }
       ComplexHeatmap::draw(cluster_heatmap()[[1]])
       dev.off()
@@ -201,8 +202,10 @@ shinyServer(function(input, output, session) {
   TSNE_TEXT1 <- reactive({
     if (def$choice_TSNE_Colour_By1 == "meta20") {
       return("Clusters")
+    } else if (def$choice_TSNE_Colour_By1 == "batch") {
+      return("batch")
     }
-    return(def$choice_TSNE_Colour_By1)
+    return(paste0("Antigen - ", def$choice_TSNE_Colour_By1))
   })
 
   # Antigen Selection
@@ -251,8 +254,10 @@ shinyServer(function(input, output, session) {
   text_UMAP_1 <- reactive({
     if (def$choice_UMAP_Colour_By1 == "meta20") {
       return("Clusters")
+    } else if (def$choice_UMAP_Colour_By1 == "batch") {
+      return("Batch")
     }
-    return(def$choice_UMAP_Colour_By1)
+    return(paste0("Antigen - ", def$choice_UMAP_Colour_By1))
   })
 
   # Antigen Selection
@@ -303,6 +308,8 @@ shinyServer(function(input, output, session) {
   TSNE_facet_Text <- reactive({
     if (def$choice_TSNE_Facet_Ant_Choice == "meta20") {
       return("Clusters")
+    } else if (def$choice_TSNE_Facet_Ant_Choice == "batch") {
+      return("Batch")
     }
     return(paste0("Antigen - ", def$choice_TSNE_Facet_Ant_Choice))
   })
@@ -344,7 +351,7 @@ shinyServer(function(input, output, session) {
   })
 
   # Plot Title
-  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", separated by sample_id"))
+  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample_id"))
 
 
   # Define Plot
@@ -366,7 +373,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_TSNE_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("TSNE: Coloured By ", textDR_2(), ", separated by sample_id"), input$TSNE_facet_tag, sep=".")
+      paste(paste0("TSNE: Coloured By ", textDR_2(), ", Separated by Sample_id"), input$TSNE_facet_tag, sep=".")
     },
     content = function(file) {
       req(plotTSNE_facet())
@@ -378,12 +385,14 @@ shinyServer(function(input, output, session) {
   UMAP_facet_Text <- reactive({
     if (def$choice_UMAP_Facet_Ant_Choice == "meta20") {
       return("Clusters")
+    } else if (def$choice_UMAP_Facet_Ant_Choice == "batch") {
+      return("Batch")
     }
     return(paste0("Antigen - ", def$choice_UMAP_Facet_Ant_Choice))
   })
 
   # Antigen Selection
-  output$umap_antigen_choice2 <- renderUI({
+  output$UMAP_Facet_Ant_Choice <- renderUI({
     if (!input$UMAP_facet_colour_by == "Antigen") return(NULL)
     selectInput("UMAP_Facet_Ant_Choice", "Select Antigen:", panel$antigen)
   })
@@ -418,7 +427,7 @@ shinyServer(function(input, output, session) {
     }
   })
   # Plot Title
-  output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", separated by sample_id"))
+  output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"))
 
   # Define Plot
   plot_UMAP_facet <- reactive({
@@ -438,7 +447,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_UMAP_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", separated by sample_id"), input$UMAP_2_tag, sep=".")
+      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"), input$UMAP_2_tag, sep=".")
     },
     content = function(file) {
       req(plot_UMAP_facet())
@@ -470,7 +479,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(Abundance_cluster())
-      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, height = "800px")
+      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = 21, units = "cm")
     }
   )
 })
