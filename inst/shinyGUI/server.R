@@ -163,7 +163,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag)
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, height = "700px")
     }
   )
 
@@ -417,7 +417,7 @@ shinyServer(function(input, output, session) {
     }
   })
   # Plot Title
-  output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", faceted by sample_id"))
+  output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", separated by sample_id"))
 
   # Define Plot
   plot_UMAP_facet <- reactive({
@@ -437,7 +437,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_UMAP_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", faceted by sample_id"), input$UMAP_2_tag, sep=".")
+      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", separated by sample_id"), input$UMAP_2_tag, sep=".")
     },
     content = function(file) {
       req(plot_UMAP_facet())
@@ -469,7 +469,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(Abundance_cluster())
-      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag)
+      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, height = "800px")
     }
   )
 })
