@@ -259,8 +259,8 @@ clusteringResults <-fluidPage(
     )
   ),
   fluidRow(
-    column(6, align = 'left', checkBox_TSNE),
-    column(6, align = 'left', checkBox_UMAP)
+    column(6, checkBox_TSNE),
+    column(6, checkBox_UMAP)
   )
 )
 # =================================================================================================
@@ -294,8 +294,6 @@ tab_plots <- shinydashboard::tabBox(
   tabPanel(h4("Cluster Proportions"), clusterProportions)
 )
 
-
-##############3
 header <- dashboardHeader(
   title = a(href="https://www.wehi.edu.au/",
             img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
@@ -303,30 +301,29 @@ header <- dashboardHeader(
                 height="70px")
   ),
   titleWidth = 250,
-  # title = span(img(src="Logo1.jpg", width = 190)
   tags$li(class = "dropdown",
           tags$style(".main-header {max-height: 65px}"),
           tags$style(".main-header .logo {height: 75px}"),
           tags$style(
             HTML(".box {
-                    margin: 10px;
-                    }
-                    .checkbox-inline {
-                        margin-left: 10px;
-                        margin-right: 10px;
-                    }
-                    .checkbox-inline+.checkbox-inline {
-                        margin-left: 10px;
-                        margin-right: 10px;
-                    }
-                    .multicol {
-                        height: 150px;
-                        -webkit-column-count: 4; /* Chrome, Safari, Opera */
-                        -moz-column-count: 4;    /* Firefox */
-                        column-count: 4;
-                        -moz-column-fill: auto;
-                        -column-fill: auto;
-                     }")
+                    margin-top: 10px;
+                  }
+                  .checkbox-inline {
+                    margin-left: 10px;
+                    margin-right: 10px;
+                  }
+                  .checkbox-inline+.checkbox-inline {
+                    margin-left: 10px;
+                    margin-right: 10px;
+                  }
+                  .multicol {
+                    height: 150px;
+                    -webkit-column-count: 4; /* Chrome, Safari, Opera */
+                    -moz-column-count: 4;    /* Firefox */
+                    column-count: 4;
+                    -moz-column-fill: auto;
+                    -column-fill: auto;
+                   }")
           )
   )
 )
