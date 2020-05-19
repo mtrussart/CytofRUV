@@ -12,27 +12,52 @@ shinyServer(function(input, output, session) {
   # -------------------------------------------------------------------------------------------------
   def <- reactiveValues(
     choiceMDS        = "condition",
+    MDS_update_text = "",
 
     choiceExprsParam = "condition",
     choiceExprsClass = sub_daf_type,
+    Exprs_update_text = "",
+    Exprs_patient = NULL,
+    Exprs_ant = NULL,
 
     choice_TSNE_Colour_By1   = "meta20",
+    TSNE_update_text_colourby = "",
+    TSNE_update_text_ant = "",
 
     choice_UMAP_Colour_By1   = "meta20",
+    UMAP_update_text_colourby = "",
+    UMAP_update_text_ant = "",
 
     choice_TSNE_facet_colourBy  = sampleID_sorted[1:10],
     choice_TSNE_Facet_Ant_Choice  ="meta20",
+    TSNE_facet_update_text_colourby = "",
+    TSNE_facet_update_text_ant = "",
 
     choice_UMAP_facet_colour_by   = sampleID_sorted[1:10],
-    choice_UMAP_Facet_Ant_Choice   ="meta20"
+    choice_UMAP_Facet_Ant_Choice   ="meta20",
+    UMAP_facet_update_text_colourby = "",
+    UMAP_facet_update_text_ant = ""
   )
 
   # =================================================================================================
   # Page 1: Median Intensities
   # -------------------------------------------------------------------------------------------------
+  # Update Button Logic:
   observeEvent(input$mds, {
-    def$choiceMDS=input$choiceMDS
+    def$choiceMDS = input$choiceMDS
+    def$MDS_update_text = ""
   })
+
+  # Logic: Reminder Text to Press Update Button.
+  observeEvent(input$choiceMDS, {
+    if (input$choiceMDS != def$choiceMDS){
+      def$MDS_update_text <- "Press Update to Update the Plot."
+    } else {
+      def$MDS_update_text <- ""
+    }
+  })
+
+  output$MDS_updateReminder <- renderText(def$MDS_update_text)
 
   # Page 1 plot 1:
   mds <- reactive({
@@ -90,9 +115,7 @@ shinyServer(function(input, output, session) {
   # Page: Markers Distribution
   # -------------------------------------------------------------------------------------------------
 
-  # ========================================================================
   # Returns sample_IDs related to a given patient, found through patient_ID.
-  # ------------------------------------------------------------------------
   patient_ids <- function(patient_id, dframe){
     return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
   }
@@ -101,8 +124,8 @@ shinyServer(function(input, output, session) {
   output$exprs2 <- renderUI({
     if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs2", "Select the patient:",
-                # Unroll patient ID from a list of patient_IDs
-                choices = md$patient_id)
+                choices = levels(md$patient_id),
+                selected = levels(md$patient_id)[[1]])
   })
 
   # Second selectInput box appear when sample_id is selected in the first box, choices: antigens.
@@ -125,18 +148,34 @@ shinyServer(function(input, output, session) {
     return(patient_state)
   })
 
-
-  # Determines Colour-By
+  # Upon Update
   observeEvent(input$exprsPlot, {
+    # Determines Colour-By parameter
     if (input$exprs1=="condition" | is.null(input$exprs2) | is.null(input$exprs3)) {
       def$choiceExprsParam="condition"
     } else {
       def$choiceExprsParam="sample_id"
     }
+    def$choiceExprsClass = daf_temp()
+    def$Exprs_update_text = ''
+    def$Exprs_patient = input$exprs2
+    def$Exprs_ant = input$exprs3
   })
 
-  # Update Plot Button
-  observeEvent(input$exprsPlot, {def$choiceExprsClass=daf_temp()})
+  observeEvent({
+    input$exprs1
+    input$exprs2
+    input$exprs3
+  },
+  {
+    if (input$exprs1 == def$choiceExprsParam && input$exprs2 == def$Exprs_patient && input$exprs3 == def$Exprs_ant){
+      def$Exprs_update_text <- ""
+    } else {
+      def$Exprs_update_text <- "Press the update button."
+    }
+  })
+
+  output$Exprs_update_text <- renderText(def$Exprs_update_text)
 
   # Plot
   exprsPlot <- reactive({

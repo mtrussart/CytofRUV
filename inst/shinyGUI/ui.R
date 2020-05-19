@@ -26,7 +26,8 @@ medIntensities <- fluidPage(
       h5(strong("Select the parameter to color by and press update")),
       fluidRow(
         column(3, selectInput("choiceMDS", NULL, choices = list("condition", "batch"))),
-        column(3, actionButton("mds", "update"))
+        column(3, actionButton("mds", "update")),
+        column(5, uiOutput("MDS_updateReminder"))
       ),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
@@ -66,6 +67,7 @@ markerDistribution <-fluidPage(
     column(
       3,
       h5(strong("Select the parameter to color by and press update")),
+      uiOutput("Exprs_update_text"),
       fluidRow(
          column(
            6,
@@ -323,7 +325,11 @@ header <- dashboardHeader(
                     column-count: 4;
                     -moz-column-fill: auto;
                     -column-fill: auto;
-                   }")
+                   }")),
+          tags$style(
+            "#MDS_updateReminder{color: red;font-size: 12px;}
+             #Exprs_update_text{color: red;font-size: 12px;}
+            "
           )
   )
 )
