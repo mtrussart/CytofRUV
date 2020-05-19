@@ -33,6 +33,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$mds, {
     def$choiceMDS=input$choiceMDS
   })
+
   # Page 1 plot 1:
   mds <- reactive({
     plotMDS(sub_daf, color_by = def$choiceMDS) +
