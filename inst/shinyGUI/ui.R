@@ -172,21 +172,9 @@ clusteringResults <-fluidPage(
       hr(),
       h2(textOutput("TSNE_TEXT1")),
       plotOutput("plot_TSNE1", width = "750px", height = "550px"),
-      # fluidRow(
-      #   column(3, selectInput("TSNE_Colour_By1", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch"))),
-      #   column(3, uiOutput("TSNE_Ant_Choice1")),
-      #   column(4,
-      #          h5(strong("Press after updating parameter:")),
-      #          div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE1", "update"))
-      #   )
-      # ),
-      # fluidRow(h5(strong("Select the file type and Download Plot:"))),
-      # fluidRow(
-      #   column(3, radioButtons("TSNE_1_tag", NULL, choices = list("pdf", "png"))),
-      #   column(3, downloadButton(outputId = "download_TSNE_1", label = "Download Plot"))
-      # )
       fluidRow(
         column(6,
+               uiOutput("TSNE_update_text"),
                selectInput("TSNE_Colour_By1", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
@@ -207,6 +195,7 @@ clusteringResults <-fluidPage(
       plotOutput("plot_UMAP1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
+               uiOutput("UMAP_update_text"),
                selectInput("Umap_Colour_By1", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
@@ -228,6 +217,7 @@ clusteringResults <-fluidPage(
       plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
+               uiOutput("TSNE_facet_update_text"),
                selectInput("TSNE_facet_colourBy", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Facet_Ant_Choice"),
                h5(strong("Press after updating parameter:")),
@@ -247,6 +237,7 @@ clusteringResults <-fluidPage(
       plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
+               uiOutput("UMAP_facet_update_text"),
                selectInput("UMAP_facet_colour_by", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Facet_Ant_Choice"),
                h5(strong("Press after updating parameter:")),
@@ -327,8 +318,12 @@ header <- dashboardHeader(
                     -column-fill: auto;
                    }")),
           tags$style(
-            "#MDS_updateReminder{color: red;font-size: 12px;}
-             #Exprs_update_text{color: red;font-size: 12px;}
+            "#MDS_updateReminder{color: blue; font-size: 13px;}
+             #Exprs_update_text{color: blue; font-size: 13px;}
+             #TSNE_update_text{color: blue; font-size: 13px;}
+             #UMAP_update_text{color: blue; font-size: 13px;}
+             #TSNE_facet_update_text{color: blue; font-size: 13px;}
+             #UMAP_facet_update_text{color: blue; font-size: 13px;}
             "
           )
   )
@@ -338,9 +333,10 @@ sidebar <- dashboardSidebar(disable = TRUE)
 
 body <- dashboardBody(
   fluidRow(
-    tabsetPanel(id = "tabset", tabPanel(h4("Diagnostic Plots"), ui_diagnostic_plots))
+      tabsetPanel(id = "tabset", tabPanel(h4("Diagnostic Plots"), ui_diagnostic_plots))
   )
 )
+
 
 ui <- dashboardPage(header, sidebar, body, skin="black")
 
