@@ -478,7 +478,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$deselectAll_TSNE, {
     updateCheckboxGroupInput(session,
                              "checkBox_TSNE",
-                             selected = c())
+                             selected = list())
   })
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
@@ -584,7 +584,7 @@ shinyServer(function(input, output, session) {
   observeEvent(input$deselectAll_UMAP, {
     updateCheckboxGroupInput(session,
                              "checkBox_UMAP",
-                             selected = c())
+                             selected = list())
   })
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
