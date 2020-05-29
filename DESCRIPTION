@@ -31,4 +31,6 @@ Suggests:
     knitr,
     rmarkdown,
     testthat
+URL: https://github.com/mtrussart/CytofRUV/
+BugReports: https://github.com/mtrussart/CytofRUV/issues
 VignetteBuilder: knitr
