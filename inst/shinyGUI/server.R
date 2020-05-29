@@ -1,4 +1,6 @@
 shinyServer(function(input, output, session) {
+  session$onSessionEnded(function() {stopApp()})
+
   #source("server-diagnostic_plots.R", local = TRUE)
   # =================================================================================================
   # Display Normalisation Pages:
@@ -6,31 +8,69 @@ shinyServer(function(input, output, session) {
   output$tab_plots <- renderUI({tab_plots})
 
   # =================================================================================================
+  # Define Helper Functions:
+  # -------------------------------------------------------------------------------------------------
+  same_elements <- function(a, b) return(identical(sort(a), sort(b)))
+
+  # =================================================================================================
   # Save Default Plot Values:
   # -------------------------------------------------------------------------------------------------
   def <- reactiveValues(
     choiceMDS        = "condition",
+    MDS_update_text = "",
 
     choiceExprsParam = "condition",
     choiceExprsClass = sub_daf_type,
+    Exprs_update_text = "",
+    Exprs_patient = levels(md$patient_id)[[1]],
+    Exprs_ant = levels(panel$marker_class)[[1]],
 
-    choice_TSNE_Colour_By1   = "meta20",
+    choice_TSNE_Colour_By1 = "meta20",
+    TSNE_update_colour_by  = "meta20",
+    TSNE_update_text = "",
+    TSNE_ant = panel$antigen[[1]],
 
-    choice_UMAP_Colour_By1   = "meta20",
+    choice_UMAP_Colour_By1 = "meta20",
+    UMAP_update_colour_by  = "meta20",
+    UMAP_update_text = "",
+    UMAP_ant = panel$antigen[[1]],
 
-    choice_TSNE_facet_colourBy  = sampleID_sorted[1:10],
-    choice_TSNE_Facet_Ant_Choice  ="meta20",
+    # For faceted plots: to check if sampleIDs have changed, we need to compare the contents of the input and saved lists of
+    # Sample_ids
+    choice_TSNE_facet_colourBy   = sampleID_sorted[1:10],
+    choice_TSNE_Facet_Ant_Choice ="meta20",
+    TSNE_facet_update_colour_by = "meta20",
+    TSNE_facet_update_ant = panel$antigen[[1]],
+    TSNE_facet_update_text = "",
 
     choice_UMAP_facet_colour_by   = sampleID_sorted[1:10],
-    choice_UMAP_Facet_Ant_Choice   ="meta20"
+    choice_UMAP_Facet_Ant_Choice  = "meta20",
+    UMAP_facet_update_colourby = "meta20",
+    UMAP_facet_update_ant = panel$antigen[[1]],
+    UMAP_facet_update_text = ""
   )
 
   # =================================================================================================
   # Page 1: Median Intensities
   # -------------------------------------------------------------------------------------------------
+  # Update Button Logic:
   observeEvent(input$mds, {
-    def$choiceMDS=input$choiceMDS
+    def$choiceMDS = input$choiceMDS
+    def$MDS_update_text = ""
   })
+
+  # Logic: Reminder Text to Press Update Button.
+  observeEvent(input$choiceMDS, {
+    if (input$choiceMDS != def$choiceMDS){
+      def$MDS_update_text <- "Press the Update Button."
+    } else {
+      def$MDS_update_text <- ""
+    }
+  })
+
+  # Renders Reminder Text
+  output$MDS_updateReminder <- renderText(def$MDS_update_text)
+
   # Page 1 plot 1:
   mds <- reactive({
     plotMDS(sub_daf, color_by = def$choiceMDS) +
@@ -59,6 +99,7 @@ shinyServer(function(input, output, session) {
   # Page 1 plot 2:
   dendogram <- reactive({
     plotExprHeatmap(sub_daf, bin_anno = FALSE, row_anno = TRUE)
+
   })
 
   output$plotDendogram <- renderPlot({
@@ -73,9 +114,9 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(dendogram())
       if (input$dendogram_tag == "pdf") {
-        pdf(file)
+        pdf(file, width = 8)
       } else {
-        png(file)
+        png(file, width=720, units = "px")
       }
       ComplexHeatmap::draw(dendogram())
       dev.off()
@@ -86,24 +127,22 @@ shinyServer(function(input, output, session) {
   # Page: Markers Distribution
   # -------------------------------------------------------------------------------------------------
 
-  # ========================================================================
   # Returns sample_IDs related to a given patient, found through patient_ID.
-  # ------------------------------------------------------------------------
   patient_ids <- function(patient_id, dframe){
     return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
   }
 
   # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
-    if (!input$exprs1 == "sample_id") return(NULL)
+    if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs2", "Select the patient:",
-                # Unroll patient ID from a list of patient_IDs
-                choices = md$patient_id)
+                choices = levels(md$patient_id),
+                selected = levels(md$patient_id)[[1]])
   })
 
   # Second selectInput box appear when sample_id is selected in the first box, choices: antigens.
   output$exprs3 <- renderUI({
-    if (!input$exprs1 == "sample_id") return(NULL)
+    if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs3", "Class of Antigen:",
                 choices = levels(panel$marker_class))
   })
@@ -121,20 +160,44 @@ shinyServer(function(input, output, session) {
     return(patient_state)
   })
 
-
-  # Determines Colour-By
+  # Upon Update Button Press:
   observeEvent(input$exprsPlot, {
+    # Determines Colour-By parameter
     if (input$exprs1=="condition" | is.null(input$exprs2) | is.null(input$exprs3)) {
       def$choiceExprsParam="condition"
     } else {
       def$choiceExprsParam="sample_id"
     }
+    def$choiceExprsClass = daf_temp()
+    def$Exprs_update_text = ''
+    def$Exprs_patient = input$exprs2
+    def$Exprs_ant = input$exprs3
   })
 
-  # Update Plot Button
-  observeEvent(input$exprsPlot, {def$choiceExprsClass=daf_temp()})
+  # Logic for Update Reminder Text:
+  observeEvent({
+    input$exprs1
+    input$exprs2
+    input$exprs3
+  },
+  {
+    if (input$exprs1 != def$choiceExprsParam) {
+      def$Exprs_update_text <- "Press the update button."
+    }
+    else if (!is.null(input$exprs2) && (input$exprs2 != def$Exprs_patient)) {
+      def$Exprs_update_text <- "Press the update button."
+    }
+    else if (!is.null(input$exprs3) && (input$exprs3 != def$Exprs_ant)) {
+      def$Exprs_update_text <- "Press the update button."
+    }
+    else {
+      def$Exprs_update_text <- ""
+    }
+  })
 
-  # Plot
+  output$Exprs_update_text <- renderText(def$Exprs_update_text)
+
+  # Define the Plot
   exprsPlot <- reactive({
     plotExprs(def$choiceExprsClass, color_by = def$choiceExprsParam) +
       theme(axis.text=element_text(size=12),
@@ -155,7 +218,13 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag)
+      multiplier = 0
+      if (nlevels(md$sample_id)%%5 == 0) {
+        multiplier = 5
+      } else {
+        multiplier = nlevels(md$sample_id)%%5
+      }
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = (6.5 * multiplier) + 6, height = 18, units = "cm")
     }
   )
 
@@ -180,9 +249,9 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(cluster_heatmap())
       if (input$cluster_Heatmap_tag == "pdf") {
-        pdf(file)
+        pdf(file, width = 10)
       } else {
-        png(file)
+        png(file, width=720, units = "px")
       }
       ComplexHeatmap::draw(cluster_heatmap()[[1]])
       dev.off()
@@ -193,13 +262,15 @@ shinyServer(function(input, output, session) {
   TSNE_TEXT1 <- reactive({
     if (def$choice_TSNE_Colour_By1 == "meta20") {
       return("Clusters")
+    } else if (def$choice_TSNE_Colour_By1 == "batch") {
+      return("batch")
     }
-    return(def$choice_TSNE_Colour_By1)
+    return(paste0("Antigen - ", def$choice_TSNE_Colour_By1))
   })
 
   # Antigen Selection
   output$TSNE_Ant_Choice1 <- renderUI({
-    if (!input$TSNE_Colour_By1 == "Antigen") return(NULL)
+    if (!(input$TSNE_Colour_By1 == "Antigen")) return(NULL)
     selectInput("TSNE_Ant_Choice1", "Select Antigen:", panel$antigen)
   })
 
@@ -212,10 +283,36 @@ shinyServer(function(input, output, session) {
   })
 
   # Update Button:
-  observeEvent(input$update_TSNE1, {def$choice_TSNE_Colour_By1 = TSNE_grouping1()})
+  observeEvent(input$update_TSNE1, {
+    def$choice_TSNE_Colour_By1 = TSNE_grouping1()
+    def$TSNE_update_colour_by = input$TSNE_Colour_By1
+    def$TSNE_update_text = ""
+    def$TSNE_ant = input$TSNE_Ant_Choice1
+  })
+
+  # Logic for Update Reminder Text:
+  observeEvent({
+    input$TSNE_Ant_Choice1
+    input$TSNE_Colour_By1
+  },
+  {
+    if (input$TSNE_Colour_By1 != def$TSNE_update_colour_by) {
+      def$TSNE_update_text <- "Press the update button."
+    }
+    else if (!is.null(input$TSNE_Ant_Choice1) && (input$TSNE_Ant_Choice1 != def$TSNE_ant)) {
+      def$TSNE_update_text <- "Press the update button."
+    }
+    else {
+      def$TSNE_update_text <- ""
+    }
+  })
+
+  # Renders Reminder Text
+  output$TSNE_update_text <- renderText({ def$TSNE_update_text })
+
+  output$TSNE_TEXT1 <- renderText(paste0("TSNE: Coloured By ", TSNE_TEXT1()))
 
   # Define Plot 2 Page 3 -
-  output$TSNE_TEXT1 <- renderText(paste0("TSNE: Coloured By ", TSNE_TEXT1()))
   plot_TSNE1 <- reactive({
     plotDR(daf, "TSNE", color_by = def$choice_TSNE_Colour_By1) +
       theme(axis.text=element_text(size=12),
@@ -223,6 +320,7 @@ shinyServer(function(input, output, session) {
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12))
   })
+
   output$plot_TSNE1 <- renderPlot({
     req(plot_TSNE1())
     plot_TSNE1()
@@ -243,28 +341,55 @@ shinyServer(function(input, output, session) {
   text_UMAP_1 <- reactive({
     if (def$choice_UMAP_Colour_By1 == "meta20") {
       return("Clusters")
+    } else if (def$choice_UMAP_Colour_By1 == "batch") {
+      return("Batch")
     }
-    return(def$choice_UMAP_Colour_By1)
+    return(paste0("Antigen - ", def$choice_UMAP_Colour_By1))
   })
 
   # Antigen Selection
   output$UMAP_Ant_Choice1 <- renderUI({
-    if (!input$Umap_Colour_By1 == "Antigen") return(NULL)
+    if (!(input$Umap_Colour_By1 == "Antigen")) return(NULL)
     selectInput("UMAP_Ant_Choice1", "Select Antigen:", panel$antigen)
   })
 
   # String to determine Colour-By
   UMAP_grouping1 <- reactive({
-    if (input$Umap_Colour_By1 == "Antigen" & !is.null(input$UMAP_Ant_Choice1)) {
+    if (input$Umap_Colour_By1 == "Antigen" && (!is.null(input$UMAP_Ant_Choice1))) {
       return(input$UMAP_Ant_Choice1)
     }
     return(input$Umap_Colour_By1)
   })
 
   # Update Button:
-  observeEvent(input$update_UMAP_1, {def$choice_UMAP_Colour_By1 = UMAP_grouping1()})
+  observeEvent(input$update_UMAP_1, {
+    def$choice_UMAP_Colour_By1 = UMAP_grouping1()
+    def$UMAP_update_colour_by = input$Umap_Colour_By1
+    def$UMAP_update_text = ""
+    def$UMAP_ant = input$UMAP_Ant_Choice1
+  })
 
-  # Define Plot 3 Page 3 -
+  # Logic for Update Reminder Text:
+  observeEvent({
+    input$UMAP_Ant_Choice1
+    input$Umap_Colour_By1
+  },
+  {
+    if (input$Umap_Colour_By1 != def$UMAP_update_colour_by) {
+      def$UMAP_update_text <- "Press the update button."
+    }
+    else if (!is.null(input$UMAP_Ant_Choice1) && (input$UMAP_Ant_Choice1 != def$UMAP_ant)) {
+      def$UMAP_update_text <- "Press the update button."
+    }
+    else {
+      def$UMAP_update_text <- ""
+    }
+  })
+
+  # Renders Reminder Text
+  output$UMAP_update_text <- renderText({ def$UMAP_update_text })
+
+  # Reactive Title:
   output$Umap_text_1 <- renderText(paste0("UMAP: Coloured By ", text_UMAP_1()))
   plot_UMAP1 <- reactive({
     plotDR(daf, "UMAP", color_by = def$choice_UMAP_Colour_By1) +
@@ -295,6 +420,8 @@ shinyServer(function(input, output, session) {
   TSNE_facet_Text <- reactive({
     if (def$choice_TSNE_Facet_Ant_Choice == "meta20") {
       return("Clusters")
+    } else if (def$choice_TSNE_Facet_Ant_Choice == "batch") {
+      return("Batch")
     }
     return(paste0("Antigen - ", def$choice_TSNE_Facet_Ant_Choice))
   })
@@ -307,15 +434,45 @@ shinyServer(function(input, output, session) {
 
   # String to determine Colour-by
   DR_grouping2 <- reactive({
-    if (input$TSNE_facet_colourBy == "Antigen" & !is.null(input$TSNE_Facet_Ant_Choice)) {
+    if (input$TSNE_facet_colourBy == "Antigen" && (!is.null(input$TSNE_Facet_Ant_Choice))) {
       return(input$TSNE_Facet_Ant_Choice)
     }
     return(input$TSNE_facet_colourBy)
   })
 
   # Update Button
-  observeEvent(input$update_TSNE_facet, {def$choice_TSNE_facet_colourBy=input$checkBox_TSNE})
-  observeEvent(input$update_TSNE_facet, {def$choice_TSNE_Facet_Ant_Choice=DR_grouping2()})
+  observeEvent(input$update_TSNE_facet, {
+    def$choice_TSNE_facet_colourBy = input$checkBox_TSNE
+    def$choice_TSNE_Facet_Ant_Choice = DR_grouping2()
+
+    def$TSNE_facet_update_text = ""
+    def$TSNE_facet_update_ant = input$TSNE_Facet_Ant_Choice
+    def$TSNE_facet_update_colour_by = input$TSNE_facet_colourBy
+  })
+
+  # Logic for Update Reminder Text:
+  observeEvent({
+    input$TSNE_facet_colourBy
+    input$TSNE_Facet_Ant_Choice
+    input$checkBox_TSNE
+  },
+  {
+    if (input$TSNE_facet_colourBy != def$TSNE_facet_update_colour_by) {
+      def$TSNE_facet_update_text <- "Press the update button."
+    }
+    else if ((!is.null(input$TSNE_Facet_Ant_Choice)) && (input$TSNE_Facet_Ant_Choice != def$TSNE_facet_update_ant)) {
+      def$TSNE_facet_update_text <- "Press the update button."
+    }
+    else if (!same_elements(input$checkBox_TSNE, as.character(def$choice_TSNE_facet_colourBy))) {
+      def$TSNE_facet_update_text <- "Press the update button."
+    }
+    else {
+      def$TSNE_facet_update_text <- ""
+    }
+  })
+
+  # Renders Reminder Text
+  output$TSNE_facet_update_text <- renderText({ def$TSNE_facet_update_text })
 
   # Checbox Deselect All Button:
   observeEvent(input$deselectAll_TSNE, {
@@ -336,7 +493,8 @@ shinyServer(function(input, output, session) {
   })
 
   # Plot Title
-  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", faceted by sample_id"))
+  output$TSNE_facet_Text <- renderText(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample_id"))
+
 
   # Define Plot
   plotTSNE_facet <- reactive({
@@ -357,7 +515,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_TSNE_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("TSNE: Coloured By ", textDR_2(), ", faceted by sample_id"), input$TSNE_facet_tag, sep=".")
+      paste(paste0("TSNE: Coloured By ", textDR_2(), ", Separated by Sample_id"), input$TSNE_facet_tag, sep=".")
     },
     content = function(file) {
       req(plotTSNE_facet())
@@ -369,12 +527,14 @@ shinyServer(function(input, output, session) {
   UMAP_facet_Text <- reactive({
     if (def$choice_UMAP_Facet_Ant_Choice == "meta20") {
       return("Clusters")
+    } else if (def$choice_UMAP_Facet_Ant_Choice == "batch") {
+      return("Batch")
     }
     return(paste0("Antigen - ", def$choice_UMAP_Facet_Ant_Choice))
   })
 
   # Antigen Selection
-  output$umap_antigen_choice2 <- renderUI({
+  output$UMAP_Facet_Ant_Choice <- renderUI({
     if (!input$UMAP_facet_colour_by == "Antigen") return(NULL)
     selectInput("UMAP_Facet_Ant_Choice", "Select Antigen:", panel$antigen)
   })
@@ -388,8 +548,37 @@ shinyServer(function(input, output, session) {
   })
 
   # Update Button
-  observeEvent(input$update_UMAP_facet, {def$choice_UMAP_facet_colour_by=input$checkBox_UMAP})
-  observeEvent(input$update_UMAP_facet, {def$choice_UMAP_Facet_Ant_Choice=UMAP_grouping2()})
+  observeEvent(input$update_UMAP_facet, {
+    def$choice_UMAP_facet_colour_by = input$checkBox_UMAP
+    def$choice_UMAP_Facet_Ant_Choice = UMAP_grouping2()
+    def$UMAP_facet_update_colourby = input$UMAP_facet_colour_by
+    def$UMAP_facet_update_ant = input$UMAP_Facet_Ant_Choice
+    def$UMAP_facet_update_text <- ""
+  })
+
+  # Logic for Update Reminder Text:
+  observeEvent({
+    input$UMAP_facet_colour_by
+    input$UMAP_Facet_Ant_Choice
+    input$checkBox_UMAP
+  },
+  {
+    if (input$UMAP_facet_colour_by != def$UMAP_facet_update_colourby) {
+      def$UMAP_facet_update_text <- "Press the update button."
+    }
+    else if ((!is.null(input$UMAP_Facet_Ant_Choice)) && (input$UMAP_Facet_Ant_Choice != def$UMAP_facet_update_ant)) {
+      def$UMAP_facet_update_text <- "Press the update button."
+    }
+    else if (!same_elements(input$checkBox_UMAP, as.character(def$choice_UMAP_facet_colour_by))) {
+      def$UMAP_facet_update_text <- "Press the update button."
+    }
+    else {
+      def$UMAP_facet_update_text <- ""
+    }
+  })
+
+  # Renders Reminder Text
+  output$UMAP_facet_update_text <- renderText({ def$UMAP_facet_update_text })
 
   # Checbox Deselect All Button:
   observeEvent(input$deselectAll_UMAP, {
@@ -409,7 +598,7 @@ shinyServer(function(input, output, session) {
     }
   })
   # Plot Title
-  output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", faceted by sample_id"))
+  output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"))
 
   # Define Plot
   plot_UMAP_facet <- reactive({
@@ -429,7 +618,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_UMAP_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", faceted by sample_id"), input$UMAP_2_tag, sep=".")
+      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"), input$UMAP_2_tag, sep=".")
     },
     content = function(file) {
       req(plot_UMAP_facet())
@@ -461,7 +650,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(Abundance_cluster())
-      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag)
+      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = 21, units = "cm")
     }
   )
 })
