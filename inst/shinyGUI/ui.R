@@ -23,17 +23,20 @@ medIntensities <- fluidPage(
       ## Plot 1
       h2("Multi-dimensional scaling plot computed using median protein expression"),
       plotOutput(outputId="plotMDS", width="100%", height = "600px"),
-      h5(strong("Select the parameter to color by and press update")),
       fluidRow(
-        column(3, selectInput("choiceMDS", NULL, choices = list("condition", "batch"))),
-        column(3, actionButton("mds", "update")),
-        column(5, uiOutput("MDS_updateReminder"))
+        column(6,
+               h5(strong("Select the parameter to color by:")),
+               selectInput("choiceMDS", NULL, choices = list("condition", "batch")),
+               h5(strong("Press after updating parameter:")),
+               column(6, uiOutput("MDS_updateReminder")),
+               column(6, actionButton("mds", "update"))
+        ),
+        column(6,
+               h5(strong("Select the file type and Download Plot:")),
+               radioButtons("mds_tag", NULL, choices = list("pdf", "png")),
+               downloadButton(outputId = "download_mds", label = "Download Plot")
+        )
       ),
-      h5(strong("Select the file type and Download Plot:")),
-      fluidRow(
-        column(3, radioButtons("mds_tag", NULL, choices = list("pdf", "png"))),
-        column(3, downloadButton(outputId = "download_mds", label = "Download Plot"))
-      )
     ),
     column(
       7,
@@ -44,12 +47,10 @@ medIntensities <- fluidPage(
       fluidRow(
         column(2, radioButtons("dendogram_tag", NULL, choices = list("pdf", "png"))),
         column(2, downloadButton(outputId = "download_dendogram", label = "Download Plot"))
-
       )
     )
   )
 )
-
 # =================================================================================================
 # Page 2: Markers Distribution
 # -------------------------------------------------------------------------------------------------
@@ -64,33 +65,22 @@ markerDistribution <-fluidPage(
   ),
 
   fluidRow(
-    column(
-      3,
-      h5(strong("Select the parameter to color by and press update")),
-      uiOutput("Exprs_update_text"),
-      fluidRow(
-         column(
-           6,
-           selectInput("exprs1", NULL, list("Condition" = "condition", "Sample ID" = "sample_id")),
-           uiOutput("exprs2"),
-           uiOutput("exprs3")
-         ),
-         column(
-           6,
-           actionButton("exprsPlot", "update")
-         )
+        column(6,
+               selectInput("exprs1", "Select the parameter to color by:", list("Condition" = "condition", "Sample ID" = "sample_id")),
+               uiOutput("exprs2"),
+               uiOutput("exprs3"),
+               h5(strong("Press after updating parameter:")),
+               column(6,uiOutput("Exprs_update_text")),
+               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("exprsPlot", "update")))
+        ),
+        column(6,
+               h5(strong("Select the file type and Download Plot:")),
+               radioButtons("exprsPlot_tag", NULL, choices = list("pdf", "png")),
+               downloadButton(outputId = "download_exprsPlot", label = "Download Plot")
+        )
       )
-    ),
-    column(
-      3,
-      h5(strong("Select the file type and Download Plot:")),
-      fluidRow(
-        column(6, radioButtons("exprsPlot_tag", NULL, choices = list("pdf", "png"))),
-        column(6, downloadButton(outputId = "download_exprsPlot", label = "Download Plot"))
-      )
-    )
-  )
 )
+
 
 # =================================================================================================
 # Page 3: Clustering Results
@@ -174,11 +164,11 @@ clusteringResults <-fluidPage(
       plotOutput("plot_TSNE1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
-               uiOutput("TSNE_update_text"),
-               selectInput("TSNE_Colour_By1", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
-               div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE1", "update"))
+               column(6,uiOutput("TSNE_update_text")),
+               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE1", "update")))
               ),
         column(6,
                h5(strong("Select the file type and Download Plot:")),
@@ -195,11 +185,11 @@ clusteringResults <-fluidPage(
       plotOutput("plot_UMAP1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
-               uiOutput("UMAP_update_text"),
-               selectInput("Umap_Colour_By1", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
-               actionButton("update_UMAP_1", "update")
+               column(6,uiOutput("UMAP_update_text")),
+               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_UMAP_1", "update")))
                ),
         column(6,
                h5(strong("Select the file type and Download Plot:")),
@@ -216,12 +206,15 @@ clusteringResults <-fluidPage(
       h2(textOutput("TSNE_facet_Text")),
       plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
+        column(6, checkBox_TSNE)
+      ),
+      fluidRow(
         column(6,
-               uiOutput("TSNE_facet_update_text"),
-               selectInput("TSNE_facet_colourBy", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Facet_Ant_Choice"),
                h5(strong("Press after updating parameter:")),
-               actionButton("update_TSNE_facet", "update")
+               column(6,uiOutput("TSNE_facet_update_text")),
+               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE_facet", "update")))
                ),
         column(6,
                h5(strong("Select the file type and Download Plot:")),
@@ -236,12 +229,15 @@ clusteringResults <-fluidPage(
       h2(textOutput("UMAP_facet_Text")),
       plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
+        column(6, checkBox_UMAP)
+        ),
+      fluidRow(
         column(6,
-               uiOutput("UMAP_facet_update_text"),
-               selectInput("UMAP_facet_colour_by", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Facet_Ant_Choice"),
                h5(strong("Press after updating parameter:")),
-               actionButton("update_UMAP_facet", "update")
+               column(6,uiOutput("UMAP_facet_update_text")),
+               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_UMAP_facet", "update")))
                ),
         column(6,
                h5(strong("Select the file type and Download Plot:")),
@@ -251,10 +247,9 @@ clusteringResults <-fluidPage(
       )
     )
   ),
-  fluidRow(
-    column(6, checkBox_TSNE),
-    column(6, checkBox_UMAP)
-  )
+  # fluidRow(
+  #   column(6, checkBox_UMAP)
+  # )
 )
 # =================================================================================================
 # Page 4: Cluster Proportions
