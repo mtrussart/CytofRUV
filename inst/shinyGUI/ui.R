@@ -206,9 +206,6 @@ clusteringResults <-fluidPage(
       h2(textOutput("TSNE_facet_Text")),
       plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
-        column(6, checkBox_TSNE)
-      ),
-      fluidRow(
         column(6,
                selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Facet_Ant_Choice"),
@@ -229,9 +226,6 @@ clusteringResults <-fluidPage(
       h2(textOutput("UMAP_facet_Text")),
       plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
-        column(6, checkBox_UMAP)
-        ),
-      fluidRow(
         column(6,
                selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Facet_Ant_Choice"),
@@ -247,9 +241,10 @@ clusteringResults <-fluidPage(
       )
     )
   ),
-  # fluidRow(
-  #   column(6, checkBox_UMAP)
-  # )
+  fluidRow(
+    column(6, checkBox_TSNE),
+    column(6, checkBox_UMAP)
+  )
 )
 # =================================================================================================
 # Page 4: Cluster Proportions
