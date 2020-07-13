@@ -81,8 +81,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12)
-      ) + scale_color_manual(values = c("#0072B2","#D55E00"))
+            legend.text = element_text(size = 12)) +
+      scale_color_manual(values = brewer.pal(n = 8, name = "Dark2"))
   })
 
   output$plotMDS <- renderPlot({
