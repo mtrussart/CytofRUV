@@ -157,7 +157,7 @@ clusteringResults <-fluidPage(
       8,
       ## Plot 1
       h2("Heatmap of the median protein expression per cluster"),
-      plotOutput("cluster_heatmap", height="650px"),
+      #plotOutput("cluster_heatmap", height="650px"),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
         column(3, radioButtons("cluster_Heatmap_tag", NULL, choices = list("pdf", "png"))),
@@ -171,14 +171,14 @@ clusteringResults <-fluidPage(
       ## Plot 2
       hr(),
       h2(textOutput("TSNE_TEXT1")),
-      plotOutput("plot_TSNE1", width = "750px", height = "550px"),
+      #plotOutput("plot_TSNE1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
-               uiOutput("TSNE_update_text"),
                selectInput("TSNE_Colour_By1", "Colour By:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
-               div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE1", "update"))
+               column(6, div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE1", "update"))),
+               column(6, uiOutput("TSNE_update_text"))
               ),
         column(6,
                h5(strong("Select the file type and Download Plot:")),
@@ -192,7 +192,7 @@ clusteringResults <-fluidPage(
       ## Plot 3
       hr(),
       h2(textOutput("Umap_text_1")),
-      plotOutput("plot_UMAP1", width = "750px", height = "550px"),
+      #plotOutput("plot_UMAP1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
                uiOutput("UMAP_update_text"),
@@ -214,7 +214,7 @@ clusteringResults <-fluidPage(
       6,
       ## Plot 4
       h2(textOutput("TSNE_facet_Text")),
-      plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
+      #plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
                uiOutput("TSNE_facet_update_text"),
@@ -234,7 +234,7 @@ clusteringResults <-fluidPage(
       6,
       ## Plot 5
       h2(textOutput("UMAP_facet_Text")),
-      plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
+      #plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
                uiOutput("UMAP_facet_update_text"),
