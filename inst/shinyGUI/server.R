@@ -143,7 +143,7 @@ shinyServer(function(input, output, session) {
   # Second selectInput box appear when sample_id is selected in the first box, choices: antigens.
   output$exprs3 <- renderUI({
     if (!(input$exprs1 == "sample_id")) return(NULL)
-    selectInput("exprs3", "Class of Antigen:",
+    selectInput("exprs3", "Select the class of markers:",
                 choices = levels(panel$marker_class))
   })
 
