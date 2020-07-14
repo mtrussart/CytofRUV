@@ -146,7 +146,7 @@ clusteringResults <-fluidPage(
       8,
       ## Plot 1
       h2("Heatmap of the median protein expression per cluster"),
-      #plotOutput("cluster_heatmap", height="650px"),
+      plotOutput("cluster_heatmap", height="650px"),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
         column(3, radioButtons("cluster_Heatmap_tag", NULL, choices = list("pdf", "png"))),
@@ -286,6 +286,7 @@ header <- dashboardHeader(
   tags$li(class = "dropdown",
           tags$style(".main-header {max-height: 65px}"),
           tags$style(".main-header .logo {height: 75px}"),
+          # CheckBox inputs
           tags$style(
             HTML(".box {
                     margin-top: 10px;
@@ -294,18 +295,16 @@ header <- dashboardHeader(
                     margin-left: 10px;
                     margin-right: 10px;
                   }
-                  .checkbox-inline+.checkbox-inline {
-                    margin-left: 10px;
-                    margin-right: 10px;
-                  }
                   .multicol {
-                    height: 150px;
-                    -webkit-column-count: 4; /* Chrome, Safari, Opera */
-                    -moz-column-count: 4;    /* Firefox */
-                    column-count: 4;
+                    height: 250px;
+                    -webkit-column-count: 5; /* Chrome, Safari, Opera */
+                    -moz-column-count: 5;    /* Firefox */
+                    column-count: 5;
                     -moz-column-fill: auto;
                     -column-fill: auto;
+                    min-height: 15em;
                    }")),
+          # Blue Update Text for Plots.
           tags$style(
             "#MDS_updateReminder{color: blue; font-size: 13px;}
              #Exprs_update_text{color: blue; font-size: 13px;}
@@ -314,8 +313,7 @@ header <- dashboardHeader(
              #TSNE_facet_update_text{color: blue; font-size: 13px;}
              #UMAP_facet_update_text{color: blue; font-size: 13px;}
             "
-          )
-  )
+          ))
 )
 
 sidebar <- dashboardSidebar(disable = TRUE)
