@@ -12,6 +12,9 @@
 #'
 
 launch_Shiny<- function(){
+  if (!exists("data") || (length(data) != 6)) {
+    stop("Prior to launching the shiny application, the data needs to be loaded. Please follow the instructions in the vignette Introduction_to_CytofRUV.Rmd that explains step by step how to load the data.")
+  }
 
   # Launch GUI
   shiny::runApp(

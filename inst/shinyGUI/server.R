@@ -82,7 +82,8 @@ shinyServer(function(input, output, session) {
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12)) +
-      scale_color_manual(values = brewer.pal(n = 8, name = "Dark2"))
+      (if (length(levels(sub_daf[[temp]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
+    # If more than 8 options, default to default ggplot colour scheme. If < 8, colour blind friendly palette is used.
   })
 
   output$plotMDS <- renderPlot({
@@ -601,6 +602,7 @@ shinyServer(function(input, output, session) {
                                selected = tail(input$checkBox_UMAP,my_max))
     }
   })
+
   # Plot Title
   output$UMAP_facet_Text <- renderText(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"))
 
