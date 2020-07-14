@@ -19,7 +19,7 @@ ui_diagnostic_plots <- fluidPage(
 medIntensities <- fluidPage(
   fluidRow(
     column(
-      5,
+      6,
       ## Plot 1
       h2("Multi-dimensional scaling plot computed using median protein expression"),
       plotOutput(outputId="plotMDS", width="100%", height = "600px"),
@@ -39,7 +39,7 @@ medIntensities <- fluidPage(
       ),
     ),
     column(
-      7,
+      6,
       ## Plot 2
       h2("Heatmap of the median protein expression"),
       plotOutput(outputId="plotDendogram", width="80%", height = "600px"),
@@ -146,7 +146,7 @@ clusteringResults <-fluidPage(
       8,
       ## Plot 1
       h2("Heatmap of the median protein expression per cluster"),
-      # plotOutput("cluster_heatmap", height="650px"),
+      plotOutput("cluster_heatmap", height="650px"),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
         column(3, radioButtons("cluster_Heatmap_tag", NULL, choices = list("pdf", "png"))),
@@ -160,7 +160,7 @@ clusteringResults <-fluidPage(
       ## Plot 2
       hr(),
       h2(textOutput("TSNE_TEXT1")),
-      # plotOutput("plot_TSNE1", width = "750px", height = "550px"),
+      plotOutput("plot_TSNE1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
                selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -181,7 +181,7 @@ clusteringResults <-fluidPage(
       ## Plot 3
       hr(),
       h2(textOutput("Umap_text_1")),
-      # plotOutput("plot_UMAP1", width = "750px", height = "550px"),
+      plotOutput("plot_UMAP1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
                selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -223,7 +223,7 @@ clusteringResults <-fluidPage(
       6,
       ## Plot 5
       h2(textOutput("UMAP_facet_Text")),
-      # plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
+      plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
                selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -241,8 +241,8 @@ clusteringResults <-fluidPage(
     )
   ),
   fluidRow(
-    column(3, checkBox_TSNE),
-    column(3, checkBox_UMAP)
+    column(4, checkBox_TSNE),
+    column(4, offset = 2, checkBox_UMAP)
   )
 )
 # =================================================================================================
@@ -253,7 +253,7 @@ clusterProportions <- fluidPage(
     column(
       12,
       h2("Cluster proportions across samples"),
-      # plotOutput("Abundance_cluster", height="800px"),
+      plotOutput("Abundance_cluster", height="800px"),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
         column(2, radioButtons("Abundance_cluster_tag", NULL, choices = list("pdf", "png"))),
