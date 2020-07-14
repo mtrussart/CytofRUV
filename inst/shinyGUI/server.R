@@ -1,9 +1,12 @@
+# This gets the largest "meta#" term from the list of cluster_codes
+cluster_var = names(metadata(data$daf)$cluster_codes)[length(names(metadata(data$daf)$cluster_codes))]
+
 shinyServer(function(input, output, session) {
   session$onSessionEnded(function() {stopApp()})
 
   #source("server-diagnostic_plots.R", local = TRUE)
   # =================================================================================================
-  # Display Normalisation Pages:
+  # Display Normalization Pages:
   # -------------------------------------------------------------------------------------------------
   output$tab_plots <- renderUI({tab_plots})
 
@@ -15,6 +18,7 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Save Default Plot Values:
   # -------------------------------------------------------------------------------------------------
+
   def <- reactiveValues(
     choiceMDS        = "condition",
     MDS_update_text = "",
@@ -25,27 +29,27 @@ shinyServer(function(input, output, session) {
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
 
-    choice_TSNE_Colour_By1 = "meta20",
-    TSNE_update_colour_by  = "meta20",
+    choice_TSNE_Colour_By1 = cluster_var,
+    TSNE_update_colour_by  = cluster_var,
     TSNE_update_text = "",
     TSNE_ant = panel$antigen[[1]],
 
-    choice_UMAP_Colour_By1 = "meta20",
-    UMAP_update_colour_by  = "meta20",
+    choice_UMAP_Colour_By1 = cluster_var,
+    UMAP_update_colour_by  = cluster_var,
     UMAP_update_text = "",
     UMAP_ant = panel$antigen[[1]],
 
     # For faceted plots: to check if sampleIDs have changed, we need to compare the contents of the input and saved lists of
     # Sample_ids
     choice_TSNE_facet_colourBy   = sampleID_sorted[1:10],
-    choice_TSNE_Facet_Ant_Choice ="meta20",
-    TSNE_facet_update_colour_by = "meta20",
+    choice_TSNE_Facet_Ant_Choice = cluster_var,
+    TSNE_facet_update_colour_by = cluster_var,
     TSNE_facet_update_ant = panel$antigen[[1]],
     TSNE_facet_update_text = "",
 
     choice_UMAP_facet_colour_by   = sampleID_sorted[1:10],
-    choice_UMAP_Facet_Ant_Choice  = "meta20",
-    UMAP_facet_update_colourby = "meta20",
+    choice_UMAP_Facet_Ant_Choice  = cluster_var,
+    UMAP_facet_update_colourby = cluster_var,
     UMAP_facet_update_ant = panel$antigen[[1]],
     UMAP_facet_update_text = ""
   )
@@ -77,8 +81,9 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12)
-      ) + scale_color_manual(values = c("#0072B2","#D55E00"))
+            legend.text = element_text(size = 12)) +
+      (if (length(levels(sub_daf[[temp]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
+    # If more than 8 options, default to default ggplot colour scheme. If < 8, colour blind friendly palette is used.
   })
 
   output$plotMDS <- renderPlot({
@@ -234,7 +239,7 @@ shinyServer(function(input, output, session) {
 
   # Plot 1 Page 3 -
   cluster_heatmap <- reactive({
-    plotClusterHeatmap(sub_daf, hm2 = NULL, k = "meta20", m = NULL, cluster_anno = TRUE, draw_freqs = TRUE)
+    plotClusterHeatmap(sub_daf, hm2 = NULL, k = cluster_var, m = NULL, cluster_anno = TRUE, draw_freqs = TRUE)
   })
 
   output$cluster_heatmap <- renderPlot({
@@ -260,7 +265,7 @@ shinyServer(function(input, output, session) {
 
   # Plot 2 page 3 -----------------------
   TSNE_TEXT1 <- reactive({
-    if (def$choice_TSNE_Colour_By1 == "meta20") {
+    if (def$choice_TSNE_Colour_By1 == cluster_var) {
       return("Clusters")
     } else if (def$choice_TSNE_Colour_By1 == "batch") {
       return("batch")
@@ -339,7 +344,7 @@ shinyServer(function(input, output, session) {
 
   # Plot 3 page 3 -----------------------
   text_UMAP_1 <- reactive({
-    if (def$choice_UMAP_Colour_By1 == "meta20") {
+    if (def$choice_UMAP_Colour_By1 == cluster_var) {
       return("Clusters")
     } else if (def$choice_UMAP_Colour_By1 == "batch") {
       return("Batch")
@@ -418,7 +423,7 @@ shinyServer(function(input, output, session) {
   # Plot 4 Page 3 -----------------------------
   # Reactive title
   TSNE_facet_Text <- reactive({
-    if (def$choice_TSNE_Facet_Ant_Choice == "meta20") {
+    if (def$choice_TSNE_Facet_Ant_Choice == cluster_var) {
       return("Clusters")
     } else if (def$choice_TSNE_Facet_Ant_Choice == "batch") {
       return("Batch")
@@ -525,7 +530,7 @@ shinyServer(function(input, output, session) {
 
   # Plot 5 page 3 -----------------------------
   UMAP_facet_Text <- reactive({
-    if (def$choice_UMAP_Facet_Ant_Choice == "meta20") {
+    if (def$choice_UMAP_Facet_Ant_Choice == cluster_var) {
       return("Clusters")
     } else if (def$choice_UMAP_Facet_Ant_Choice == "batch") {
       return("Batch")
@@ -630,7 +635,7 @@ shinyServer(function(input, output, session) {
   # -------------------------------------------------------------------------------------------------
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
-    plotAbundances(daf, k = "meta20", by = "sample_id") +
+    plotAbundances(daf, k = cluster_var, by = "sample_id") +
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),

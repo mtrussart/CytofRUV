@@ -63,17 +63,16 @@ markerDistribution <-fluidPage(
       plotOutput("exprsPlot", height="700px")
     )
   ),
-
   fluidRow(
-        column(6,
+        column(5,
                selectInput("exprs1", "Select the parameter to color by:", list("Condition" = "condition", "Sample ID" = "sample_id")),
                uiOutput("exprs2"),
                uiOutput("exprs3"),
                h5(strong("Press after updating parameter:")),
-               column(6,uiOutput("Exprs_update_text")),
-               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("exprsPlot", "update")))
+               column(3,uiOutput("Exprs_update_text")),
+               column(3,actionButton("exprsPlot", "update"))
         ),
-        column(6,
+        column(4,
                h5(strong("Select the file type and Download Plot:")),
                radioButtons("exprsPlot_tag", NULL, choices = list("pdf", "png")),
                downloadButton(outputId = "download_exprsPlot", label = "Download Plot")
@@ -164,11 +163,11 @@ clusteringResults <-fluidPage(
       plotOutput("plot_TSNE1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
-               selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
                column(6,uiOutput("TSNE_update_text")),
-               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_TSNE1", "update")))
+               column(6, actionButton("update_TSNE1", "update"))
               ),
         column(6,
                h5(strong("Select the file type and Download Plot:")),
@@ -185,7 +184,7 @@ clusteringResults <-fluidPage(
       plotOutput("plot_UMAP1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
-               selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Ant_Choice1"),
                h5(strong("Press after updating parameter:")),
                column(6,uiOutput("UMAP_update_text")),
@@ -207,7 +206,7 @@ clusteringResults <-fluidPage(
       plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
-               selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("TSNE_Facet_Ant_Choice"),
                h5(strong("Press after updating parameter:")),
                column(6,uiOutput("TSNE_facet_update_text")),
@@ -227,7 +226,7 @@ clusteringResults <-fluidPage(
       plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
-               selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"="meta20", "Antigen"="Antigen", "Batch"="batch")),
+               selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
                uiOutput("UMAP_Facet_Ant_Choice"),
                h5(strong("Press after updating parameter:")),
                column(6,uiOutput("UMAP_facet_update_text")),
@@ -287,6 +286,7 @@ header <- dashboardHeader(
   tags$li(class = "dropdown",
           tags$style(".main-header {max-height: 65px}"),
           tags$style(".main-header .logo {height: 75px}"),
+          # CheckBox inputs
           tags$style(
             HTML(".box {
                     margin-top: 10px;
@@ -295,18 +295,16 @@ header <- dashboardHeader(
                     margin-left: 10px;
                     margin-right: 10px;
                   }
-                  .checkbox-inline+.checkbox-inline {
-                    margin-left: 10px;
-                    margin-right: 10px;
-                  }
                   .multicol {
-                    height: 150px;
-                    -webkit-column-count: 4; /* Chrome, Safari, Opera */
-                    -moz-column-count: 4;    /* Firefox */
-                    column-count: 4;
+                    height: 250px;
+                    -webkit-column-count: 5; /* Chrome, Safari, Opera */
+                    -moz-column-count: 5;    /* Firefox */
+                    column-count: 5;
                     -moz-column-fill: auto;
                     -column-fill: auto;
+                    min-height: 15em;
                    }")),
+          # Blue Update Text for Plots.
           tags$style(
             "#MDS_updateReminder{color: blue; font-size: 13px;}
              #Exprs_update_text{color: blue; font-size: 13px;}
@@ -315,8 +313,7 @@ header <- dashboardHeader(
              #TSNE_facet_update_text{color: blue; font-size: 13px;}
              #UMAP_facet_update_text{color: blue; font-size: 13px;}
             "
-          )
-  )
+          ))
 )
 
 sidebar <- dashboardSidebar(disable = TRUE)
