@@ -460,7 +460,6 @@ shinyServer(function(input, output, session) {
     input$TSNE_facet_colourBy
     input$TSNE_Facet_Ant_Choice
     input$checkBox_TSNE
-    input$deselectAll_TSNE
   },
   {
     if (input$TSNE_facet_colourBy != def$TSNE_facet_update_colour_by) {
@@ -567,7 +566,6 @@ shinyServer(function(input, output, session) {
     input$UMAP_facet_colour_by
     input$UMAP_Facet_Ant_Choice
     input$checkBox_UMAP
-    input$deselectAll_UMAP
   },
   {
     if (input$UMAP_facet_colour_by != def$UMAP_facet_update_colourby) {
