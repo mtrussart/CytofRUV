@@ -24,14 +24,14 @@ medIntensities <- fluidPage(
       h2("Multi-dimensional scaling plot computed using median protein expression"),
       plotOutput(outputId="plotMDS", width="100%", height = "600px"),
       fluidRow(
-        column(6,
+        column(5,
                h5(strong("Select the parameter to color by:")),
                selectInput("choiceMDS", NULL, choices = list("condition", "batch")),
                h5(strong("Press after updating parameter:")),
                column(6, uiOutput("MDS_updateReminder")),
                column(6, actionButton("mds", "update"))
         ),
-        column(6,
+        column(7,
                h5(strong("Select the file type and Download Plot:")),
                radioButtons("mds_tag", NULL, choices = list("pdf", "png")),
                downloadButton(outputId = "download_mds", label = "Download Plot")
@@ -202,8 +202,9 @@ clusteringResults <-fluidPage(
     column(
       6,
       ## Plot 4
+      hr(),
       h2(textOutput("TSNE_facet_Text")),
-      plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
+      # plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
                selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -222,6 +223,7 @@ clusteringResults <-fluidPage(
     column(
       6,
       ## Plot 5
+      hr(),
       h2(textOutput("UMAP_facet_Text")),
       plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
       fluidRow(
