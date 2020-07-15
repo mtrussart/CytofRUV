@@ -13,7 +13,7 @@
 
 launch_Shiny<- function(){
   if (!exists("data") || (length(data) != 6)) {
-    stop("Prior to launching the shiny application, the data needs to be loaded. Please follow the instructions in the vignette Introduction_to_CytofRUV.Rmd that explains step by step how to load the data.")
+    stop("Prior to launching the shiny application, the data needs to be loaded. Please follow the instructions in the vignette Introduction_to_CytofRUV.Rmd that explains step by step how to load the data.\n\nNote: This error assumes the output of the function load_data() was saved into a variable called 'data' which is accessible in the global environment.")  
   }
 
   # Launch GUI
