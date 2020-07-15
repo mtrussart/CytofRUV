@@ -146,7 +146,7 @@ clusteringResults <-fluidPage(
       8,
       ## Plot 1
       h2("Heatmap of the median protein expression per cluster"),
-      # plotOutput("cluster_heatmap", height="650px"),
+      plotOutput("cluster_heatmap", height="650px"),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
         column(3, radioButtons("cluster_Heatmap_tag", NULL, choices = list("pdf", "png"))),
@@ -160,7 +160,7 @@ clusteringResults <-fluidPage(
       ## Plot 2
       hr(),
       h2(textOutput("TSNE_TEXT1")),
-      # plotOutput("plot_TSNE1", width = "750px", height = "550px"),
+      plotOutput("plot_TSNE1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
                selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -181,7 +181,7 @@ clusteringResults <-fluidPage(
       ## Plot 3
       hr(),
       h2(textOutput("Umap_text_1")),
-      # plotOutput("plot_UMAP1", width = "750px", height = "550px"),
+      plotOutput("plot_UMAP1", width = "750px", height = "550px"),
       fluidRow(
         column(6,
                selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -203,7 +203,7 @@ clusteringResults <-fluidPage(
       6,
       ## Plot 4
       h2(textOutput("TSNE_facet_Text")),
-      # plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
+      plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
                selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
