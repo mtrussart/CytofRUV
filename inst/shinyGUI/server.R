@@ -81,8 +81,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12)) +
-      (if (length(levels(sub_daf[[def$choiceMDS]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
+            legend.text = element_text(size = 12)) 
+    #+  (if (length(levels(sub_daf[[def$choiceMDS]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
     # If more than 8 options, default to default ggplot colour scheme. If < 8, colour blind friendly palette is used.
   })
 
