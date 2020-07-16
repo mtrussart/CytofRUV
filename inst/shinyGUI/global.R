@@ -9,9 +9,6 @@ library(CytofRUV)
 
 ## All Code Below Gets The Scope of the Global Environment.
 
-source("server.R")
-source("ui.R")
-
 # This gets the largest "meta#" term from the list of cluster_codes
 cluster_var = names(metadata(data$daf)$cluster_codes)[length(names(metadata(data$daf)$cluster_codes))]
 
