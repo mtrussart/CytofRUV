@@ -18,6 +18,8 @@ shinyServer(function(input, output, session) {
   # Save Default Plot Values:
   # -------------------------------------------------------------------------------------------------
   no_sampleIds = length(sampleID_sorted)
+  nb_facets = 10
+  initial_sampleIDs = if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
 
   def <- reactiveValues(
     choiceMDS        = "condition",
@@ -28,6 +30,7 @@ shinyServer(function(input, output, session) {
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
+    choiceTransformation = "AC5",
 
     choice_TSNE_Colour_By1 = cluster_var,
     TSNE_update_colour_by  = cluster_var,
@@ -41,13 +44,13 @@ shinyServer(function(input, output, session) {
 
     # For faceted plots: to check if sampleIDs have changed, we need to compare the contents of the input and saved lists of
     # Sample_ids
-    choice_TSNE_facet_colourBy   = if(no_sampleIds < 10) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:10]),
+    choice_TSNE_facet_colourBy   = initial_sampleIDs,
     choice_TSNE_Facet_Ant_Choice = cluster_var,
     TSNE_facet_update_colour_by = cluster_var,
     TSNE_facet_update_ant = panel$antigen[[1]],
     TSNE_facet_update_text = "",
 
-    choice_UMAP_facet_colour_by   = if(no_sampleIds < 10) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:10]),
+    choice_UMAP_facet_colour_by   = initial_sampleIDs,
     choice_UMAP_Facet_Ant_Choice  = cluster_var,
     UMAP_facet_update_colourby = cluster_var,
     UMAP_facet_update_ant = panel$antigen[[1]],
