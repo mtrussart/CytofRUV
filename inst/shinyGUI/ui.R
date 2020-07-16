@@ -90,10 +90,10 @@ TNSE_check_box <-fluidPage(
       12,
       list(tags$div(align = 'left',
                     class = 'multicol',
-                    checkboxGroupInput("checkBox_TSNE", "Select Up To 10 SampleIDs",
+                    checkboxGroupInput("checkBox_TSNE", NULL,
                                        choices = sampleID_sorted,
                                        selected = sampleID_sorted[1:10],
-                                       inline = TRUE,
+                                       inline = FALSE,
                                        width = "100%"))),
       actionButton("deselectAll_TSNE", "Deselect All Options")
     )
@@ -101,7 +101,7 @@ TNSE_check_box <-fluidPage(
 )
 
 checkBox_TSNE <- shinydashboard::box(
-  title="Select Sample IDs",
+  title="Select Up To 10 Sample IDs",
   solidHeader=TRUE,
   status="warning",
   id="box_2",
@@ -118,10 +118,10 @@ UMAP_check_box <- fluidPage(
       12,
       list(tags$div(align = 'left',
                     class = 'multicol',
-                    checkboxGroupInput("checkBox_UMAP", "Select Up To 10 SampleIDs",
+                    checkboxGroupInput("checkBox_UMAP", NULL,
                                        choices = sampleID_sorted,
                                        selected = sampleID_sorted[1:10],
-                                       inline = TRUE,
+                                       inline = FALSE,
                                        width = "100%"))),
       actionButton("deselectAll_UMAP", "Deselect All Options")
     )
@@ -129,7 +129,7 @@ UMAP_check_box <- fluidPage(
 )
 
 checkBox_UMAP <- shinydashboard::box(
-  title="Select Sample IDs",
+  title="Select Up To 10 Sample IDs",
   solidHeader=TRUE,
   status="warning",
   id="box_3",
@@ -201,6 +201,7 @@ clusteringResults <-fluidPage(
   fluidRow(
     column(
       6,
+      hr(),
       ## Plot 4
       h2(textOutput("TSNE_facet_Text")),
       plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
@@ -221,6 +222,7 @@ clusteringResults <-fluidPage(
     ),
     column(
       6,
+      hr(),
       ## Plot 5
       h2(textOutput("UMAP_facet_Text")),
       plotOutput("plot_UMAP_facet", width = "700px", height = "600px"),
@@ -241,8 +243,8 @@ clusteringResults <-fluidPage(
     )
   ),
   fluidRow(
-    column(6, checkBox_TSNE),
-    column(6, checkBox_UMAP)
+    column(4, checkBox_TSNE),
+    column(4, offset = 2, checkBox_UMAP)
   )
 )
 # =================================================================================================
@@ -296,13 +298,8 @@ header <- dashboardHeader(
                     margin-right: 10px;
                   }
                   .multicol {
-                    height: 250px;
-                    -webkit-column-count: 5; /* Chrome, Safari, Opera */
-                    -moz-column-count: 5;    /* Firefox */
-                    column-count: 5;
-                    -moz-column-fill: auto;
-                    -column-fill: auto;
-                    min-height: 15em;
+                    height: 150px;
+                    overflow-y: auto;
                    }")),
           # Blue Update Text for Plots.
           tags$style(

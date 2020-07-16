@@ -2,6 +2,8 @@
 cluster_var = names(metadata(data$daf)$cluster_codes)[length(names(metadata(data$daf)$cluster_codes))]
 
 shinyServer(function(input, output, session) {
+  # If you want to break up the file, call source functions here, local = TRUE
+
   session$onSessionEnded(function() {stopApp()})
 
   #source("server-diagnostic_plots.R", local = TRUE)
@@ -18,6 +20,7 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Save Default Plot Values:
   # -------------------------------------------------------------------------------------------------
+  no_sampleIds = length(sampleID_sorted)
 
   def <- reactiveValues(
     choiceMDS        = "condition",
@@ -41,13 +44,13 @@ shinyServer(function(input, output, session) {
 
     # For faceted plots: to check if sampleIDs have changed, we need to compare the contents of the input and saved lists of
     # Sample_ids
-    choice_TSNE_facet_colourBy   = sampleID_sorted[1:10],
+    choice_TSNE_facet_colourBy   = if(no_sampleIds < 10) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:10]),
     choice_TSNE_Facet_Ant_Choice = cluster_var,
     TSNE_facet_update_colour_by = cluster_var,
     TSNE_facet_update_ant = panel$antigen[[1]],
     TSNE_facet_update_text = "",
 
-    choice_UMAP_facet_colour_by   = sampleID_sorted[1:10],
+    choice_UMAP_facet_colour_by   = if(no_sampleIds < 10) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:10]),
     choice_UMAP_Facet_Ant_Choice  = cluster_var,
     UMAP_facet_update_colourby = cluster_var,
     UMAP_facet_update_ant = panel$antigen[[1]],
@@ -57,6 +60,7 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 1: Median Intensities
   # -------------------------------------------------------------------------------------------------
+
   # Update Button Logic:
   observeEvent(input$mds, {
     def$choiceMDS = input$choiceMDS
@@ -81,8 +85,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12)) 
-    # +  (if (length(levels(sub_daf[[def$choiceMDS]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
+            legend.text = element_text(size = 12))
+    #+  (if (length(levels(sub_daf[[def$choiceMDS]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
     # If more than 8 options, default to default ggplot colour scheme. If < 8, colour blind friendly palette is used.
   })
 
@@ -104,7 +108,6 @@ shinyServer(function(input, output, session) {
   # Page 1 plot 2:
   dendogram <- reactive({
     plotExprHeatmap(sub_daf, bin_anno = FALSE, row_anno = TRUE)
-
   })
 
   output$plotDendogram <- renderPlot({
@@ -129,7 +132,7 @@ shinyServer(function(input, output, session) {
   )
 
   # =================================================================================================
-  # Page: Markers Distribution
+  # Page 2: Markers Distribution
   # -------------------------------------------------------------------------------------------------
 
   # Returns sample_IDs related to a given patient, found through patient_ID.
@@ -234,10 +237,11 @@ shinyServer(function(input, output, session) {
   )
 
   # =================================================================================================
-  # Page: Clustering Results
+  # Page 3: Clustering Results
   # -------------------------------------------------------------------------------------------------
-
-  # Plot 1 Page 3 -
+  # =================================================================================================
+  #   Plot 1: Cluster Heatmap
+  # -------------------------------------------------------------------------------------------------
   cluster_heatmap <- reactive({
     plotClusterHeatmap(sub_daf, hm2 = NULL, k = cluster_var, m = NULL, cluster_anno = TRUE, draw_freqs = TRUE)
   })
@@ -263,7 +267,9 @@ shinyServer(function(input, output, session) {
     }
   )
 
-  # Plot 2 page 3 -----------------------
+  # =================================================================================================
+  #   Plot 2: TSNE Non Facetted
+  # -------------------------------------------------------------------------------------------------
   TSNE_TEXT1 <- reactive({
     if (def$choice_TSNE_Colour_By1 == cluster_var) {
       return("Clusters")
@@ -342,7 +348,9 @@ shinyServer(function(input, output, session) {
     }
   )
 
-  # Plot 3 page 3 -----------------------
+  # =================================================================================================
+  #   Plot 3: UMAP Non-Facetted
+  # -------------------------------------------------------------------------------------------------
   text_UMAP_1 <- reactive({
     if (def$choice_UMAP_Colour_By1 == cluster_var) {
       return("Clusters")
@@ -420,7 +428,9 @@ shinyServer(function(input, output, session) {
     }
   )
 
-  # Plot 4 Page 3 -----------------------------
+  # =================================================================================================
+  #   Plot 4: TSNE Facetted
+  # -------------------------------------------------------------------------------------------------
   # Reactive title
   TSNE_facet_Text <- reactive({
     if (def$choice_TSNE_Facet_Ant_Choice == cluster_var) {
@@ -468,7 +478,7 @@ shinyServer(function(input, output, session) {
     else if ((!is.null(input$TSNE_Facet_Ant_Choice)) && (input$TSNE_Facet_Ant_Choice != def$TSNE_facet_update_ant)) {
       def$TSNE_facet_update_text <- "Press the update button."
     }
-    else if (!same_elements(input$checkBox_TSNE, as.character(def$choice_TSNE_facet_colourBy))) {
+    else if (!same_elements(input$checkBox_TSNE, def$choice_TSNE_facet_colourBy)) {
       def$TSNE_facet_update_text <- "Press the update button."
     }
     else {
@@ -481,9 +491,8 @@ shinyServer(function(input, output, session) {
 
   # Checbox Deselect All Button:
   observeEvent(input$deselectAll_TSNE, {
-    updateCheckboxGroupInput(session,
-                             "checkBox_TSNE",
-                             selected = list())
+    updateCheckboxGroupInput(session, "checkBox_TSNE", selected = list())
+    if (length(def$choice_TSNE_facet_colourBy) > 0) {def$TSNE_facet_update_text <- "Select at least one sample id."}
   })
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
@@ -491,9 +500,7 @@ shinyServer(function(input, output, session) {
     my_min <- 0
     my_max <- 10
     if(length(input$checkBox_TSNE) > my_max){
-      updateCheckboxGroupInput(session,
-                               "checkBox_TSNE",
-                               selected = tail(input$checkBox_TSNE,my_max))
+      updateCheckboxGroupInput(session, "checkBox_TSNE", selected = tail(input$checkBox_TSNE,my_max))
     }
   })
 
@@ -528,7 +535,9 @@ shinyServer(function(input, output, session) {
     }
   )
 
-  # Plot 5 page 3 -----------------------------
+  # =================================================================================================
+  #   Plot 5: UMAP Facetted
+  # -------------------------------------------------------------------------------------------------
   UMAP_facet_Text <- reactive({
     if (def$choice_UMAP_Facet_Ant_Choice == cluster_var) {
       return("Clusters")
@@ -574,7 +583,7 @@ shinyServer(function(input, output, session) {
     else if ((!is.null(input$UMAP_Facet_Ant_Choice)) && (input$UMAP_Facet_Ant_Choice != def$UMAP_facet_update_ant)) {
       def$UMAP_facet_update_text <- "Press the update button."
     }
-    else if (!same_elements(input$checkBox_UMAP, as.character(def$choice_UMAP_facet_colour_by))) {
+    else if (!same_elements(input$checkBox_UMAP, def$choice_UMAP_facet_colour_by)) {
       def$UMAP_facet_update_text <- "Press the update button."
     }
     else {
@@ -587,9 +596,8 @@ shinyServer(function(input, output, session) {
 
   # Checbox Deselect All Button:
   observeEvent(input$deselectAll_UMAP, {
-    updateCheckboxGroupInput(session,
-                             "checkBox_UMAP",
-                             selected = list())
+    updateCheckboxGroupInput(session, "checkBox_UMAP", selected = list())
+    if (length(def$choice_UMAP_facet_colour_by) > 0) {def$UMAP_facet_update_text <- "Select at least one sample id."}
   })
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
@@ -597,9 +605,7 @@ shinyServer(function(input, output, session) {
     my_min <- 0
     my_max <- 10
     if(length(input$checkBox_UMAP) > my_max){
-      updateCheckboxGroupInput(session,
-                               "checkBox_UMAP",
-                               selected = tail(input$checkBox_UMAP,my_max))
+      updateCheckboxGroupInput(session, "checkBox_UMAP", selected = tail(input$checkBox_UMAP,my_max))
     }
   })
   # Plot Title
@@ -630,8 +636,9 @@ shinyServer(function(input, output, session) {
       ggsave(file, plot = plot_UMAP_facet(), device = input$UMAP_2_tag)
     }
   )
+
   # =================================================================================================
-  # Page: Cluster Proportions
+  # Page 4: Cluster Proportions
   # -------------------------------------------------------------------------------------------------
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
