@@ -26,6 +26,7 @@ mds <- reactive({
           axis.title = element_text(size = 14),
           legend.title = element_text(size = 14),
           legend.text = element_text(size = 12))
+  # This requires RColorBrewer to be added to the build package.
   #+  (if (length(levels(sub_daf[[def$choiceMDS]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
   # If more than 8 options, default to default ggplot colour scheme. If < 8, colour blind friendly palette is used.
 })

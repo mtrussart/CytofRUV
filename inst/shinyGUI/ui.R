@@ -1,5 +1,3 @@
-#source("ui-diagnostic_plots.R", local = TRUE)
-
 # =================================================================================================
 # Renders Tab Panel
 # -------------------------------------------------------------------------------------------------
@@ -60,19 +58,26 @@ markerDistribution <-fluidPage(
       12,
       ## Page 2 plot 1
       h2("Distribution of protein expression"),
-      plotOutput("exprsPlot", height="700px")
+      plotOutput("exprsPlot", height="700px"),
     )
   ),
   fluidRow(
-        column(5,
+        column(3,
                selectInput("exprs1", "Select the parameter to color by:", list("Condition" = "condition", "Sample ID" = "sample_id")),
                uiOutput("exprs2"),
                uiOutput("exprs3"),
                h5(strong("Press after updating parameter:")),
-               column(3,uiOutput("Exprs_update_text")),
-               column(3,actionButton("exprsPlot", "update"))
+               column(5,uiOutput("Exprs_update_text")),
+               column(6,actionButton("exprsPlot", "update"))
         ),
-        column(4,
+        column(3,
+               selectInput("choiceTransformation", "Select the Transformation Applied:",
+                           list("ArcSinh (Cofactor = 5)" = "AC5",
+                                "ArcSinh (Cofactor = 0.01)" = "AC001",
+                                "Log" = "log",
+                                "Linear" = "lin")),
+        ),
+        column(3,
                h5(strong("Select the file type and Download Plot:")),
                radioButtons("exprsPlot_tag", NULL, choices = list("pdf", "png")),
                downloadButton(outputId = "download_exprsPlot", label = "Download Plot")
@@ -204,7 +209,7 @@ clusteringResults <-fluidPage(
       ## Plot 4
       hr(),
       h2(textOutput("TSNE_facet_Text")),
-      # plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
+      plotOutput("plotTSNE_facet", width = "700px", height = "600px"),
       fluidRow(
         column(6,
                selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
