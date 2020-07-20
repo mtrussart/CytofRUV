@@ -12,8 +12,9 @@
 #'
 
 launch_Shiny<- function(){
-  if (!exists("data") || (!exists("daf") || !exists("sampleID_sorted"))) {
-    stop("Prior to launching the shiny application, the data needs to be loaded. Please follow the instructions in the vignette Introduction_to_CytofRUV.Rmd that explains step by step how to load the data.\n\nNote: This error assumes the output of the function load_data() was saved into a variable called 'data' which is accessible in the global environment. It also makes sure that appropriate variables like 'daf' and 'sampleID_sorted' has been defined.")
+  if (!exists("md") || (!exists("daf") || !exists("sampleID_sorted"))) {
+    stop("Prior to launching the shiny application, users need to load variables as shown in the vignette Introduction_to_CytofRUV.Rmd.
+         This error is thrown when variables such as 'md', 'daf' and 'sampleID_sorted' have not been defined.")
   }
 
   # Launch GUI
