@@ -526,7 +526,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_TSNE_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("TSNE: Coloured By ", textDR_2(), ", Separated by Sample_id"), input$TSNE_facet_tag, sep=".")
+      paste(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample_id"), input$TSNE_facet_tag, sep=".")
     },
     content = function(file) {
       req(plotTSNE_facet())
