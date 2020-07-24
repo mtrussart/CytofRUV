@@ -225,13 +225,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      multiplier = 0
-      if (nlevels(md$sample_id)%%5 == 0) {
-        multiplier = 5
-      } else {
-        multiplier = nlevels(md$sample_id)%%5
-      }
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = (6.5 * multiplier) + 6, height = 18, units = "cm")
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = 34, height = 18, units = "cm")
     }
   )
 
