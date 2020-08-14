@@ -1,3 +1,12 @@
+# Define type of markers
+daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
+daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
+sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
+sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
+# Define batch
+batch_ids <- is.factor(rep(md$batch, nrow(daf)))
+sampleID_sorted <- md$sample_id[order(md$patient_id)]
+
 shinyServer(function(input, output, session) {
   # If you want to break up the file, call source functions here, local = TRUE
 
@@ -133,7 +142,6 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 2: Markers Distribution
   # -------------------------------------------------------------------------------------------------
-
   # Returns sample_IDs related to a given patient, found through patient_ID.
   patient_ids <- function(patient_id, dframe){
     return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
@@ -225,13 +233,7 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      multiplier = 0
-      if (nlevels(md$sample_id)%%5 == 0) {
-        multiplier = 5
-      } else {
-        multiplier = nlevels(md$sample_id)%%5
-      }
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = (6.5 * multiplier) + 6, height = 18, units = "cm")
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = 34, height = 18, units = "cm")
     }
   )
 
@@ -526,7 +528,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_TSNE_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample_id"), input$TSNE_facet_tag, sep=".")
+      paste(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample Ids"), input$TSNE_facet_tag, sep=".")
     },
     content = function(file) {
       req(plotTSNE_facet())
@@ -628,7 +630,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_UMAP_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"), input$UMAP_2_tag, sep=".")
+      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample Ids"), input$UMAP_2_tag, sep=".")
     },
     content = function(file) {
       req(plot_UMAP_facet())
@@ -663,5 +665,4 @@ shinyServer(function(input, output, session) {
       req(Abundance_cluster())
       ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = 21, units = "cm")
     }
-  )
-})
+)})

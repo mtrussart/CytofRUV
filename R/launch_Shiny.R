@@ -12,9 +12,25 @@
 #'
 
 launch_Shiny<- function(){
-  if (!exists("md") || (!exists("daf") || !exists("sampleID_sorted"))) {
-    stop("Prior to launching the shiny application, users need to load variables as shown in the vignette Introduction_to_CytofRUV.Rmd.
-         This error is thrown when variables such as 'md', 'daf' and 'sampleID_sorted' have not been defined.")
+  if (!exists("md") || (!exists("daf"))) {
+    stop("Prior to launching the shiny application, users need to load variables as shown",
+         " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when variables",
+         " such as 'md' and 'daf' have not been defined.")
+  }
+
+  if (exists("daf")) {
+    if (!("cluster_codes" %in% names(metadata(daf)))) {
+      stop("The app was launched without running clustering. Clustering data has to be loaded into the variable 'daf'. Please refer to the vignette",
+           " Introduction_to_CytofRUV.Rmd for instructions about how to run clustering.")
+    }
+    else if (!("TSNE" %in% reducedDimNames(daf))) {
+      stop("The app was launched without running TSNE dimension reduction. TSNE data has to be loaded into the variable 'daf'. Please refer to the vignette",
+           " Introduction_to_CytofRUV.Rmd for instructions about how to run them")
+    }
+    else if (!("UMAP" %in% reducedDimNames(daf))) {
+      stop("The app was launched without running UMAP dimension reduction. UMAP data has to be loaded into the variable 'daf'. Please refer to the vignette",
+           " Introduction_to_CytofRUV.Rmd for instructions about how to run them")
+    }
   }
 
   # Launch GUI
