@@ -133,7 +133,6 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 2: Markers Distribution
   # -------------------------------------------------------------------------------------------------
-
   # Returns sample_IDs related to a given patient, found through patient_ID.
   patient_ids <- function(patient_id, dframe){
     return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
@@ -520,7 +519,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_TSNE_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample_id"), input$TSNE_facet_tag, sep=".")
+      paste(paste0("TSNE: Coloured By ", TSNE_facet_Text(), ", Separated by Sample Ids"), input$TSNE_facet_tag, sep=".")
     },
     content = function(file) {
       req(plotTSNE_facet())
@@ -622,7 +621,7 @@ shinyServer(function(input, output, session) {
   # Download Button
   output$download_UMAP_facet <- downloadHandler(
     filename = function() {
-      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample_id"), input$UMAP_2_tag, sep=".")
+      paste(paste0("UMAP: Coloured By ", UMAP_facet_Text(), ", Separated by Sample Ids"), input$UMAP_2_tag, sep=".")
     },
     content = function(file) {
       req(plot_UMAP_facet())
@@ -657,5 +656,4 @@ shinyServer(function(input, output, session) {
       req(Abundance_cluster())
       ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = 21, units = "cm")
     }
-  )
-})
+)})
