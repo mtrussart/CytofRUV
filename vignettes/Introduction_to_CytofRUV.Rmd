@@ -98,20 +98,12 @@ The user needs to select the data to use (before or after normalisation) to visu
   daf=data$daf
   md=data$md
   seed=1234
-  # Number of cells for diagnostic plots marker specific
+  # Number of cells displayed for the Distribution of protein expression plot
   n_subset_marker_specific <- 10000
-
-  # Define type of markers
-  daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
-  daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
-  sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
-  sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
-  # Define batch
-  batch_ids <- is.factor(rep(md$batch, nrow(daf)))
-  sampleID_sorted <- md$sample_id[order(md$patient_id)]
   
   # Running Dimension Reduction -> TSNE & UMAP
   set.seed(seed)
+  
   # Number of cells for tSNE plots marker specific
   TSNE_subset <- 2000
   print("Running TSNE")
@@ -127,8 +119,9 @@ The user needs to select the data to use (before or after normalisation) to visu
   n_subset <- 5000
   sub_daf <- daf[, sample(ncol(daf), n_subset)]
   
-  # # For the full dataset: 
+  ## For the full dataset: 
   # sub_daf <- daf
+  
   panel=data$panel
   
   CytofRUV::launch_Shiny()

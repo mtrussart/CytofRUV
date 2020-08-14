@@ -31,5 +31,5 @@ freezeButtonsScript = "$(document).on('shiny:recalculating', function() {
     }
 });"
 
-source("server.R")
+source("server.R", local = TRUE)
 source("ui.R")
