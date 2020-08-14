@@ -54,7 +54,6 @@ observeEvent({
   input$exprs1
   input$exprs2
   input$exprs3
-  input$choiceTransformation
 },
 {
   if (input$exprs1 != def$choiceExprsParam) {
@@ -64,9 +63,6 @@ observeEvent({
     def$Exprs_update_text <- "Press the update button."
   }
   else if (!is.null(input$exprs3) && (input$exprs3 != def$Exprs_ant)) {
-    def$Exprs_update_text <- "Press the update button."
-  }
-  else if (input$choiceTransformation != def$choiceTransformation) {
     def$Exprs_update_text <- "Press the update button."
   }
   else {

@@ -30,7 +30,6 @@ shinyServer(function(input, output, session) {
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
-    choiceTransformation = "AC5",
 
     choice_TSNE_Colour_By1 = cluster_var,
     TSNE_update_colour_by  = cluster_var,
