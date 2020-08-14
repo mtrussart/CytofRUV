@@ -16,7 +16,6 @@ launch_Shiny<- function(){
     stop("Prior to launching the shiny application, users need to load variables as shown in the vignette Introduction_to_CytofRUV.Rmd.
          This error is thrown when variables such as 'md', 'daf' and 'sampleID_sorted' have not been defined.")
   }
-
   # Launch GUI
   shiny::runApp(
     appDir=system.file("shinyGUI", package="CytofRUV"),

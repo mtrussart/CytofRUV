@@ -32,11 +32,11 @@ read_data<- function(wd_data,metadata_filename,panel_filename,cofact=5){
   md <- readxl::read_excel(file.path(wd_data, metadata_filename))
 
   ## Check the metadata file
-  #print("Checking md ColNames")
+  # print("Checking md ColNames")
   checkColnames_md(md)
-  #print("Checking md FileNames")
+  # print("Checking md FileNames")
   checkFileNames_md(md)
-  #print("Check md Values")
+  # print("Check md Values")
   checkAllValues_md(md)
 
   ## Load the fcs files
@@ -44,20 +44,20 @@ read_data<- function(wd_data,metadata_filename,panel_filename,cofact=5){
   print("Reading fcs files")
   fcs_raw <- flowCore::read.flowSet(file.path(md$file_name), transformation = FALSE,
                           truncate_max_range = FALSE)
-  #print(flowCore::colnames(fcs_raw[[1]]))
+  # print(flowCore::colnames(fcs_raw[[1]]))
   #setwd(wd_data)
-  #print("Read Fcs Files.")
+  # print("Read Fcs Files.")
 
   ## Load the panel file
   panel <- readxl::read_excel(file.path(wd_data, panel_filename))
   panel_fcs <- pData(parameters(fcs_raw[[1]]))
-  #print(panel_fcs)
-  print("Read Panel File")
+  # print(panel_fcs)
+  # print("Read Panel File")
 
   ## Check the panel file:
-  #print("Checking panel colNames")
+  # print("Checking panel colNames")
   checkColnames_panel(panel)
-  #print("Checking panel values")
+  # print("Checking panel values")
   checkAllValues_panel(panel, fcs_raw)
 
   # ===========
