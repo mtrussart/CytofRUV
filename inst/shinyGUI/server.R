@@ -69,6 +69,40 @@ shinyServer(function(input, output, session) {
   # Page 1: Median Intensities
   # -------------------------------------------------------------------------------------------------
 
+
+  ### PlotMDS function
+
+  plot_MDS <- function (x, color_by="condition") {
+
+    # compute medians across samples
+    cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
+    es <- as.matrix(assay(x, "exprs"))
+    ms <- vapply(cs_by_s, function(cs)
+      rowMedians(es[, cs, drop = FALSE]),
+      numeric(nrow(x)))
+    rownames(ms) <- rownames(x)
+
+    # get MDS coordinates
+    mds <- limma::plotMDS(ms, plot=FALSE)
+    df <- data.frame(MDS1=mds$x, MDS2=mds$y)
+
+    # add metadata information
+    md <- metadata(x)$experiment_info
+    m <- match(rownames(df), md$sample_id)
+    df <- data.frame(df, md[m, ])
+
+    ggplot(df, aes_string(x="MDS1", y="MDS2", col=color_by)) +
+      geom_label_repel(aes_string(label="sample_id"),
+                       show.legend=FALSE) + geom_point(alpha=.8, size=1.2) +
+      guides(col=guide_legend(overide.aes=list(alpha=1, size=3))) +
+      theme_void() + theme(aspect.ratio=1,
+                           panel.grid.minor=element_blank(),
+                           panel.grid.major=element_line(color='lightgrey', size=.25),
+                           axis.title=element_text(face='bold'),
+                           axis.title.y=element_text(angle=90),
+                           axis.text=element_text())
+  }
+
   # Update Button Logic:
   observeEvent(input$mds, {
     def$choiceMDS = input$choiceMDS
@@ -89,7 +123,7 @@ shinyServer(function(input, output, session) {
 
   # Page 1 plot 1:
   mds <- reactive({
-    plotMDS(sub_daf, color_by = def$choiceMDS) +
+    plot_MDS(sub_daf, color_by = def$choiceMDS) +
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
