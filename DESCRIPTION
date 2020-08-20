@@ -13,7 +13,7 @@ LazyData: true
 RoxygenNote: 7.0.2
 Imports: 
     ggplot2,
-    CATALYST,
+    CATALYST (>= 1.10.3),
     readxl,
     ruv,
     purrr,
@@ -26,7 +26,8 @@ Imports:
     shinyjs,
     shinydashboard,
     writexl,
-    uwot
+    uwot,
+    shinycssloaders
 Suggests: 
     knitr,
     rmarkdown,
