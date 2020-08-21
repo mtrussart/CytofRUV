@@ -11,6 +11,7 @@
 #' @param metadata_filename Metadata filename containing the details of each sample
 #' @param panel_filename Panel filename containing the details of each marker
 #' @param cofactor Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data
+#' @param subset_percentage Percentage of data that exploratory plots shall display, default is 50%.
 #'
 #' @return Datasets before normalisation
 #' @importFrom CATALYST sample_ids prepData
@@ -21,14 +22,9 @@
 
 
 #load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")
-load_data<- function(wd_data,metadata_filename,panel_filename,cofactor=5){
-  if (!is.null(cofactor)){
-    transform=TRUE
-  }else{
-    transform=FALSE
-    cofactor=5
-  }
-  data=read_data(wd_data,metadata_filename,panel_filename,transform,cofact=cofactor)
+load_data<- function(wd_data,metadata_filename,panel_filename,cofactor=5, subset_percentage = 50){
+  assign("subset_percentage", subset_percentage/100, globalenv())
+  data=read_data(wd_data,metadata_filename,panel_filename,cofact=cofactor)
   return(data)
 }
 

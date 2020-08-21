@@ -99,8 +99,6 @@ The user needs to select the data to use (before or after normalisation) to visu
   daf=data$daf
   md=data$md
   seed=1234
-  # Number of cells displayed for the Distribution of protein expression plot
-  n_subset_marker_specific <- 10000
   
   # Running Dimension Reduction -> TSNE & UMAP
   set.seed(seed)
@@ -116,12 +114,7 @@ The user needs to select the data to use (before or after normalisation) to visu
   daf <- runDR(daf, "UMAP", cells = UMAP_subset)
   
   ## Launch Shiny
-  # For a subset of the data, define the number of cells for diagnostic plots
-  n_subset <- 5000
-  sub_daf <- daf[, sample(ncol(daf), n_subset)]
-  
-  ## For the full dataset: 
-  # sub_daf <- daf
+  sub_daf <- daf[, sample(ncol(daf), subset_percentage*sample(ncol(daf)))]
   
   panel=data$panel
   
