@@ -69,7 +69,6 @@ shinyServer(function(input, output, session) {
   # Page 1: Median Intensities
   # -------------------------------------------------------------------------------------------------
 
-
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
@@ -176,10 +175,13 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 2: Markers Distribution
   # -------------------------------------------------------------------------------------------------
-  # Returns sample_IDs related to a given patient, found through patient_ID.
-  patient_ids <- function(patient_id, dframe){
-    return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
-  }
+
+
+  ## Plot Dimension Variables
+  nb_cols_plotDistr = 5
+  pixelsExprPlot = 130
+  cmSaveHeight = 4.5
+  cmSaveWidth = 6
 
   # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
@@ -246,6 +248,18 @@ shinyServer(function(input, output, session) {
 
   output$Exprs_update_text <- renderText(def$Exprs_update_text)
 
+  plotHeight <- reactive({
+    num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
+    temp = if(num_antigens %/% nb_cols_plotDistr > 1) 1 else 0
+    out = (num_antigens %% nb_cols_plotDistr + temp)
+    out
+  })
+
+  plotWidth<- reactive({
+    num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
+    temp = if(num_antigens %% nb_cols_plotDistr < 1) num_antigens else 5
+  })
+
   # Define the Plot
   exprsPlot <- reactive({
     plotExprs(def$choiceExprsClass, color_by = def$choiceExprsParam) +
@@ -253,13 +267,19 @@ shinyServer(function(input, output, session) {
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12)
-      )
+      ) +
+      facet_wrap(~ antigen, scales = "free", ncol = nb_cols_plotDistr)
   })
 
-  output$exprsPlot  <- renderPlot({
+  output$exprsPlot.ui <- renderPlot({
     req(exprsPlot())
     exprsPlot()
   })
+
+  observe(output$exprsPlot  <- renderUI({
+    withSpinner(plotOutput("exprsPlot.ui", height = plotHeight()*pixelsExprPlot), type = 2)
+  }))
+
 
   output$download_exprsPlot <- downloadHandler(
     filename = function() {
@@ -267,7 +287,9 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = 34, height = 18, units = "cm")
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag,
+            width = (plotWidth()*cmSaveWidth)+5,
+            height = plotHeight()*cmSaveHeight, units = "cm")
     }
   )
 
