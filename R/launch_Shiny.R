@@ -31,6 +31,11 @@ launch_Shiny<- function(){
       stop("The app was launched without running UMAP dimension reduction. UMAP data has to be loaded into the variable 'daf'. Please refer to the vignette",
            " Introduction_to_CytofRUV.Rmd for instructions about how to run them")
     }
+    else if (!exists("sub_daf")) {
+      stop("Prior to launching the shiny application, users need to load variables as shown",
+           " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when 'sub_daf'",
+           " has not been defined.")
+    }
   }
 
   # Launch GUI
