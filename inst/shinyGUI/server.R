@@ -198,13 +198,13 @@ shinyServer(function(input, output, session) {
 
   # Provides appropriate data following change of parameters.
   daf_temp <- reactive({
-    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(sub_daf_type)
-    # Marker Class: State
-    if (input$exprs3 == "state") {
+    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(sub_daf_state)
+    # Marker Class: Type
+    if (input$exprs3 == "type") {
       patient_type = sub_daf_type[, sample_ids(sub_daf_type)%in%patient_ids(input$exprs2, sub_daf_type)]
       return(patient_type)
     }
-    # Marker Class: Type
+    # Marker Class: State
     patient_state = sub_daf_state[, sample_ids(sub_daf_state)%in%patient_ids(input$exprs2, sub_daf_state)]
     return(patient_state)
   })
