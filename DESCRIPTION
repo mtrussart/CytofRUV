@@ -27,7 +27,8 @@ Imports:
     shinydashboard,
     writexl,
     uwot,
-    shinycssloaders
+    shinycssloaders,
+    limma
 Suggests: 
     knitr,
     rmarkdown,
