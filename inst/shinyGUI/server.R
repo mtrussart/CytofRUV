@@ -257,7 +257,7 @@ shinyServer(function(input, output, session) {
 
   plotWidth<- reactive({
     num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
-    temp = if(num_antigens %% nb_cols_plotDistr < 1) num_antigens else 5
+    temp = if(num_antigens %% nb_cols_plotDistr < 1) num_antigens else nb_cols_plotDistr
   })
 
   # Define the Plot
@@ -288,7 +288,7 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(exprsPlot())
       ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag,
-            width = (plotWidth()*cmSaveWidth)+5,
+            width = (plotWidth()*cmSaveWidth)+nb_cols_plotDistr,
             height = plotHeight()*cmSaveHeight, units = "cm")
     }
   )
