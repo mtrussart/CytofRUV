@@ -176,12 +176,18 @@ shinyServer(function(input, output, session) {
   # -------------------------------------------------------------------------------------------------
 
   ## Plot Dimension Variables
-  nb_cols_plotDistr = 5
-  heightExprPlot = 150
-  cmSaveHeight = 4.5
-  cmSaveWidth = 6
+  nb_cols_plotDistr <- 5
+  heightExprPlot <- 150
+  cmSaveHeight <- 4.5
+  cmSaveWidth <- 6
 
-  # First selectInput box choices: PatientIDS
+  init_num_antigens <- table(panel$marker_class)[["state"]]
+  initial_rows <- ifelse(init_num_antigens %% nb_cols_plotDistr > 1, 1, 0)
+  def$Exprs_height <- (init_num_antigens %/% nb_cols_plotDistr + initial_rows)
+
+  def$Exprs_width <- ifelse(init_num_antigens %/% nb_cols_plotDistr < 1, num_antigens, nb_cols_plotDistr)
+
+    # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
     if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs2", "Select the patient:",
@@ -221,6 +227,8 @@ shinyServer(function(input, output, session) {
     def$Exprs_update_text = ''
     def$Exprs_patient = input$exprs2
     def$Exprs_ant = input$exprs3
+    def$Exprs_height = plotHeight()
+    def$Exprs_width = plotWidth()
   })
 
   # Logic for Update Reminder Text:
@@ -291,7 +299,7 @@ shinyServer(function(input, output, session) {
   })
 
   observe(output$exprsPlot  <- renderUI({
-    withSpinner(plotOutput("exprsPlot.ui", height = plotHeight()*heightExprPlot), type = 2)
+    withSpinner(plotOutput("exprsPlot.ui", height = def$Exprs_height*heightExprPlot), type = 2)
   }))
 
 
@@ -302,8 +310,8 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(exprsPlot())
       ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag,
-            width = (plotWidth()*cmSaveWidth)+nb_cols_plotDistr,
-            height = plotHeight()*cmSaveHeight, units = "cm")
+            width = (def$Exprs_width()*cmSaveWidth)+nb_cols_plotDistr,
+            height = def$Exprs_height()*cmSaveHeight, units = "cm")
     }
   )
 
