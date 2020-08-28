@@ -48,8 +48,10 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
   ## Load the fcs files
   setwd(wd_data)
   print("Reading fcs files")
-  fcs_raw <- flowCore::read.flowSet(file.path(wd_data, md$file_name), transformation = FALSE,
-                          truncate_max_range = FALSE)
+  fcs_raw <- flowCore::read.flowSet(file.path(md$file_name), transformation = FALSE,
+                                    truncate_max_range = FALSE)
+  #fcs_raw <- flowCore::read.flowSet(file.path(wd_data, md$file_name), transformation = FALSE,
+  #                        truncate_max_range = FALSE)
   #print(flowCore::colnames(fcs_raw[[1]]))
   #setwd(wd_data)
   #print("Read Fcs Files.")

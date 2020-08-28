@@ -79,18 +79,19 @@ save_norm_files<- function(data,norm_cells, fcs_raw, md,panel,output_dir,k){
   ### Save Norm data
   fcs_norm=fcs_raw_asinh
   new_md=md
+  dir_new_md=md
   for (i in 1:num_files) {
     # The inds of the cells in the right file
     inds <- which(file_ids == md$file_name[i])
     # Line the inds up with the flowframe
     if (length(inds)>1){
       corrected_inds <- inds - correction_vec[i]
-      #new_md$file_name[i] <- file.path(output_dir,paste("Norm_RUVIII_k",k,"_",md$file_name[i],sep=""))
+      dir_new_md$file_name[i] <- file.path(output_dir,paste("Norm_RUVIII_k",k,"_",md$file_name[i],sep=""))
       new_md$file_name[i] <- file.path(paste("Norm_RUVIII_k",k,"_",md$file_name[i],sep=""))
       tmp_exp=exprs(fcs_norm[[i]])
       tmp_exp[,all_fullname_markers[2:length(all_fullname_markers)]]= norm_cells[inds,c(data$lineage_markers,data$functional_markers)]
       exprs(fcs_norm[[i]])=tmp_exp
-      write.FCS(subset_flowframe(fcs_norm[[i]], corrected_inds), new_md$file_name[i])
+      write.FCS(subset_flowframe(fcs_norm[[i]], corrected_inds), dir_new_md$file_name[i])
     }
   }
   return(new_md)
