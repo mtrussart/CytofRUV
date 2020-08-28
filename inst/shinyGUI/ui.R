@@ -26,7 +26,7 @@ medIntensities <- fluidPage(
       ## Plot 1
       h2("Multi-dimensional scaling plot computed using median protein expression"),
       ## Need to incl library("shinycssloaders") into the package
-      withSpinner(plotOutput(outputId="plotMDS", width="100%", height = "600px"), type = 2),
+      withSpinner(plotOutput(outputId="plotMDS", height = "600px"), type = 2),
       fluidRow(
         column(6,
                h5(strong("Select the parameter to color by:")),
@@ -164,7 +164,7 @@ clusteringResults <-fluidPage(
       ## Plot 2
       hr(),
       h2(textOutput("TSNE_TEXT1")),
-      withSpinner(plotOutput("plot_TSNE1", width = "750px", height = "550px"), type = 2),
+      withSpinner(plotOutput("plot_TSNE1", height = "550px"), type = 2),
       fluidRow(
         column(6,
                selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -185,7 +185,7 @@ clusteringResults <-fluidPage(
       ## Plot 3
       hr(),
       h2(textOutput("Umap_text_1")),
-      withSpinner(plotOutput("plot_UMAP1", width = "750px", height = "550px"), type = 2),
+      withSpinner(plotOutput("plot_UMAP1", height = "550px"), type = 2),
       fluidRow(
         column(6,
                selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -209,7 +209,7 @@ clusteringResults <-fluidPage(
       ## Plot 4
       hr(),
       h2(textOutput("TSNE_facet_Text")),
-      withSpinner(plotOutput("plotTSNE_facet", width = "700px", height = "600px"), type = 2),
+      withSpinner(plotOutput("plotTSNE_facet", height = "600px"), type = 2),
       fluidRow(
         column(6,
                selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -231,7 +231,7 @@ clusteringResults <-fluidPage(
       ## Plot 5
       hr(),
       h2(textOutput("UMAP_facet_Text")),
-      withSpinner(plotOutput("plot_UMAP_facet", width = "700px", height = "600px"), type = 2),
+      withSpinner(plotOutput("plot_UMAP_facet", height = "600px"), type = 2),
       fluidRow(
         column(6,
                selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -290,7 +290,6 @@ header <- dashboardHeader(
                 style="padding-top:5px;padding-right:5px;",
                 height="70px")
   ),
-  titleWidth = 250,
   tags$li(class = "dropdown",
           tags$style(".main-header {max-height: 65px}"),
           tags$style(".main-header .logo {height: 75px}"),
