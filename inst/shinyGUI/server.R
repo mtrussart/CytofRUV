@@ -30,6 +30,8 @@ shinyServer(function(input, output, session) {
   nb_facets = 10
   initial_sampleIDs = if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
 
+  cluster_plot_guides <- guides(col = guide_legend(override.aes = list(alpha = 1, size = 3)))
+
   def <- reactiveValues(
     choiceMDS        = "condition",
     MDS_update_text = "",
@@ -386,7 +388,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+            legend.text = element_text(size = 12)) +
+      cluster_plot_guides
   })
 
   output$plot_TSNE1 <- renderPlot({
@@ -466,7 +469,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+            legend.text = element_text(size = 12)) +
+      cluster_plot_guides
   })
 
   output$plot_UMAP1 <- renderPlot({
@@ -573,7 +577,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+            legend.text = element_text(size = 12)) +
+      cluster_plot_guides
   })
 
   output$plotTSNE_facet <- renderPlot({
@@ -675,7 +680,8 @@ shinyServer(function(input, output, session) {
       theme(axis.text=element_text(size=12),
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+            legend.text = element_text(size = 12)) +
+      cluster_plot_guides
   })
 
   output$plot_UMAP_facet <- renderPlot({
