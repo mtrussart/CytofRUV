@@ -68,7 +68,7 @@ markerDistribution <-fluidPage(
     )
   ),
   fluidRow(
-    column(5,
+    column(3,
            selectInput("exprs1", "Select the parameter to color by:", list("Condition" = "condition", "Sample ID" = "sample_id")),
            uiOutput("exprs2"),
            uiOutput("exprs3"),
@@ -76,7 +76,14 @@ markerDistribution <-fluidPage(
            column(3,uiOutput("Exprs_update_text")),
            column(3,actionButton("exprsPlot", "update"))
     ),
-    column(4,
+    column(3,
+           selectInput("choiceTransformation", "Select the Transformation Applied:",
+                       list("ArcSinh (Cofactor = 5)" = "AC5",
+                            "ArcSinh (Cofactor = 0.01)" = "AC001",
+                            "Log" = "log",
+                            "Linear" = "lin")),
+    ),
+    column(3,
            h5(strong("Select the file type and Download Plot:")),
            radioButtons("exprsPlot_tag", NULL, choices = list("pdf", "png")),
            downloadButton(outputId = "download_exprsPlot", label = "Download Plot")

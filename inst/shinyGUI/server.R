@@ -39,6 +39,7 @@ shinyServer(function(input, output, session) {
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
+    choiceTransformation = "AC5",
 
     choice_TSNE_Colour_By1 = cluster_var,
     TSNE_update_colour_by  = cluster_var,
@@ -227,6 +228,7 @@ shinyServer(function(input, output, session) {
     input$exprs1
     input$exprs2
     input$exprs3
+    input$choiceTransformation
   },
   {
     if (input$exprs1 != def$choiceExprsParam) {
@@ -238,6 +240,9 @@ shinyServer(function(input, output, session) {
     else if (!is.null(input$exprs3) && (input$exprs3 != def$Exprs_ant)) {
       def$Exprs_update_text <- "Press the update button."
     }
+    else if (input$choiceTransformation != def$choiceTransformation) {
+      def$Exprs_update_text <- "Press the update button."
+    }
     else {
       def$Exprs_update_text <- ""
     }
@@ -246,22 +251,26 @@ shinyServer(function(input, output, session) {
   output$Exprs_update_text <- renderText(def$Exprs_update_text)
 
   plotHeight <- reactive({
+    num_antigens = -1
     if (input$exprs1 == "condition") {
       num_antigens = table(panel$marker_class)[["state"]]
-      temp = if(num_antigens %% nb_cols_plotDistr > 1) 1 else 0
-      out = (num_antigens %/% nb_cols_plotDistr + temp)
-      return(out)
     } else {
       # Temp adds 1 Row to height if there is a carry over of facets to the next row.
+      print("Hi")
       num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
-      temp = if(num_antigens %% nb_cols_plotDistr > 1) 1 else 0
-      out = (num_antigens %/% nb_cols_plotDistr + temp)
-      return(out)
     }
+    temp = if(num_antigens %% nb_cols_plotDistr > 1) 1 else 0
+    out = (num_antigens %/% nb_cols_plotDistr + temp)
   })
 
   plotWidth<- reactive({
-    num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
+    num_antigens = -1
+    if (input$exprs1 == "condition") {
+      num_antigens = table(panel$marker_class)[["state"]]
+    } else {
+      # Temp adds 1 Row to height if there is a carry over of facets to the next row.
+      num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
+    }
     temp = if(num_antigens %/% nb_cols_plotDistr < 1) num_antigens else nb_cols_plotDistr
   })
 
