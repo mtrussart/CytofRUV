@@ -271,12 +271,6 @@ shinyServer(function(input, output, session) {
       num_antigens = table(panel$marker_class)[["state"]]
     } else {
       # Temp adds 1 Row to height if there is a carry over of facets to the next row.
-  plotHeight <- reactive({
-    num_antigens = -1
-    if (input$exprs1 == "condition") {
-      num_antigens = table(panel$marker_class)[["state"]]
-    } else {
-      # Temp adds 1 Row to height if there is a carry over of facets to the next row.
       num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
     }
     temp = if(num_antigens %% nb_cols_plotDistr > 1) 1 else 0
