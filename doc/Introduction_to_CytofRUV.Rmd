@@ -1,0 +1,214 @@
+---
+title: "Introduction to CytofRUV"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to CytofRUV}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction to CytofRUV
+
+CytofRUV is a computational algorithm which permits the integration of data across CyTOF batches. We provided an introduction here that explains step by step how to load and normalise datasets and also how to visualise the diagnostic plots using the R-Shiny application before and after CytofRUV normalisation.
+
+## Setup
+
+We provided an example of a set of data that included all .fcs, a metadata file a and panel file in the inst/extdata. First of all we need to load all the packages.
+
+```{r setup}
+library(CytofRUV)
+library(CATALYST)
+library(flowCore)
+library(ggplot2)
+library(readxl)
+library(ruv)
+library(purrr)
+library(FlowSOM)
+library(SummarizedExperiment)
+library(ConsensusClusterPlus)
+library(SingleCellExperiment)
+library(shiny)
+library(shinyjs)
+library(shinydashboard)
+library(writexl)
+library(ComplexHeatmap)
+library(shinycssloaders)
+```
+
+## Dataset
+
+Users are required to provide: the path to the fcs files from all the samples in the study, a metadata file containing the details of each sample and their respective .fcs files, and a panel file containing the details of all proteins used in the study.
+The metadata file is an excel file with the following column names: "file_name", "sample_id", "condition", "patient_id", "batch".
+The panel file is an excel file with the following column names: "fcs_colname", "antigen", "marker_class".
+
+We provided an example dataset to help you prepare your data. The command below will load all the dataset including the metadata file, the panel file and the fcs files in the working directory.
+
+```{r loading example dataset}
+  output_dir="CytofRUV_output"
+  if (!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+  wd_data=file.path(getwd(),output_dir)
+  write.FCS(x=CytofRUV::A1,filename =file.path(wd_data,"A1.fcs"))
+  write.FCS(x=CytofRUV::A2,filename = file.path(wd_data,"A2.fcs"))
+  write.FCS(x=CytofRUV::Run3_A1,filename = file.path(wd_data,"Run3_A1.fcs"))
+  write.FCS(x=CytofRUV::Run3_A2,filename = file.path(wd_data,"Run3_A2.fcs"))
+  write_xlsx(x=CytofRUV::md,path = file.path(wd_data,"Metadata.xlsx"))
+  write_xlsx(x=CytofRUV::panel,path = file.path(wd_data,"Panel.xlsx"))
+```
+
+## Loading datasets and clustering
+
+The first step is to load the metadata file, all the .fcs files, the panel file from the dataset. The user needs to define the working directory as well as the filename of the metadata file and the panel file. Once the dataset is loaded, after applying an arcsinh transformation (cofactor 5), all the data will be clustered. The user needs to provide the number of clusters to be used for this dataset.
+
+```{r load and cluster data before CytofRUV normalisation}
+  ## Define parameters to load and cluster the data
+  output_dir="CytofRUV_output"
+  if (!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+  wd_data=file.path(getwd(),output_dir)
+  metadata_filename="Metadata.xlsx"
+  panel_filename="Panel.xlsx"
+  seed=1234
+  clusters_nb=20
+
+  ## Loading the data
+  data=load_data(wd_data,metadata_filename,panel_filename)
+
+  ## Cluster the data
+  data$daf=cluster_data(data$daf,seed,markers_to_use=data$lineage_markers,clusters_nb)
+
+```
+
+## R-Shiny interface before CytofRUV normalisation
+
+To examine the batch effects found when comparing CyTOF data from samples replicated across batches, we built an R-Shiny application that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots: Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. 
+
+The user needs to select the data to use (before or after normalisation) to visualise the diagnostic plots using the R-Shiny interface. The user can choose to visualise all the data or only a subset of the data which might be advisable for exploratory analysis.
+
+```{r ShinyApp on the raw data,eval=FALSE}
+  ## Define parameters to use for R-Shiny
+  daf=data$daf
+  md=data$md
+  seed=1234
+  # Number of cells displayed for the Distribution of protein expression plot
+  n_subset_marker_specific <- 10000
+  
+  # Running Dimension Reduction -> TSNE & UMAP
+  set.seed(seed)
+  
+  # Number of cells for tSNE plots marker specific
+  TSNE_subset <- 2000
+  print("Running TSNE")
+  daf <- CATALYST::runDR(daf, dr = "TSNE", cells = TSNE_subset)
+  
+  # Number of cells for UMAP plots marker specific
+  UMAP_subset <- 2000
+  print("Running UMAP")
+  daf <- runDR(daf, "UMAP", cells = UMAP_subset)
+  
+  ## Launch Shiny
+  # For a subset of the data, define the number of cells for diagnostic plots
+  n_subset <- 5000
+  sub_daf <- daf[, sample(ncol(daf), n_subset)]
+  
+  ## For the full dataset: 
+  # sub_daf <- daf
+  
+  panel=data$panel
+  
+  CytofRUV::launch_Shiny()
+```
+
+## CytofRUV normalisation procedure
+
+TThe normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm, such as which replicated samples to use and the value of k. The user can specify below the name of the directory to save the normalised data (dir_name_norm_data) or use the get_directory function which will ask the user to specify the directory. The normalised files and the metadata and panel files will be save into the specified directory.
+
+```{r CytofRUV normalisation}
+#dir_name_norm_data = get_directory()
+dir_name_norm_data="CytofRUV_Norm_data_HC2_all_cl_20"
+raw_data <- data.frame(sample = data$daf$sample_id, cluster=cluster_ids(data$daf,"meta20"), t(SummarizedExperiment::assay(data$daf)))
+colnames(raw_data) <- gsub("^X", "",  colnames(raw_data))
+rep_samples=list(c("HC2_B1","HC2_B2"))
+cluster_list_rep_samples <- list(seq(1,20))
+k_value <- 5
+seed=1234
+
+normalise_data(data=data,raw_data=raw_data,rep_samples=rep_samples, norm_clusters=cluster_list_rep_samples, k=k_value, num_clusters=clusters_nb,wd_data=wd_data,dir_norm_data=dir_name_norm_data)
+
+```
+
+## Loading and clustering the data after CytofRUV normalisation
+
+The first step is to load the metadata file, all the .fcs files, the panel file from the dataset. The user needs to define the working directory as well as the filename of the metadata file and the panel file. Once the dataset is loaded, after applying an arcsinh transformation (cofactor 5), all the data will be clustered. The user needs to provide the number of clusters to be used for this dataset.
+
+```{r load and cluster data after CytofRUV normalisation}
+  ## Define parameters to load and cluster the data
+  wd_norm=file.path(wd_data,dir_name_norm_data)
+  metadata_norm_filename="Norm_Metadata.xlsx"
+  panel_norm_filename="Norm_Panel.xlsx"
+  seed=1234
+  clusters_nb=20
+
+  ## Loading the data
+  norm_data=load_data(wd_norm,metadata_norm_filename,panel_norm_filename,cofactor = NULL)
+
+  ## Cluster the data
+  norm_data$daf=cluster_data(norm_data$daf,seed,markers_to_use=norm_data$lineage_markers,clusters_nb)
+
+```
+
+
+## R-Shiny interface after CytofRUV normalisation
+
+The R-shiny interface can also be used to visualise the normalised data.
+
+``` {r Shiny App on the normalised data,eval=FALSE}
+  ## Define parameters to use for R-Shiny
+  daf=norm_data$daf
+  md=norm_data$md
+  seed=1234
+  # Number of cells for diagnostic plots marker specific
+  n_subset_marker_specific <- 10000
+
+  # Define type of markers
+  daf_type <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
+  daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
+  sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
+  sub_daf_type <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
+  # Define batch
+  batch_ids <- is.factor(rep(md$batch, nrow(daf)))
+  sampleID_sorted <- md$sample_id[order(md$patient_id)]
+  
+  ## Running Dimension Reduction -> TSNE & UMAP
+  set.seed(seed)
+  # Number of cells for tSNE plots marker specific
+  TSNE_subset <- 2000
+  print("Running TSNE")
+  daf <- runDR(daf, "TSNE", cells = TSNE_subset)
+  
+  # Number of cells for UMAP plots marker specific
+  UMAP_subset <- 2500
+  print("Running UMAP")
+  daf <- runDR(daf, "UMAP", cells = UMAP_subset)
+  
+  # Launch Shiny
+  # For a subset of the data, define the number of cells for diagnostic plots
+  n_subset <- 5000
+  sub_daf <- daf[, sample(ncol(daf), n_subset)]
+  
+  # # For the full dataset: 
+  # sub_daf <- daf
+  
+  panel=data$panel
+  
+  CytofRUV::launch_Shiny()
+```
