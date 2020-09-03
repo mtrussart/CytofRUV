@@ -6,14 +6,14 @@ Authors@R:
            family = "Trussart",
            role = c("aut", "cre"),
            email = "trussart.m@wehi.edu.au")
-Description: CytofRUV for analysing multiple CyTOF batches. t is a computational algorithm which permits the integration of data across CyTOF batches.It includes an R-Shiny applicationwith diagnostics plots that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots i.e. Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. CytofRUV can correct for batch effects and integrates data from a large number of patient and conditions across batches, to confidently compare cellular changes and correlate these with clinically relevant outcomes.
+Description: CytofRUV for analysing multiple CyTOF batches. It is a computational algorithm which permits the integration of data across CyTOF batches.It includes an R-Shiny applicationwith diagnostics plots that exhibits any batch effects present in samples replicated across batches using four different diagnostics plots i.e. Median Protein Expression, Protein Expression Distributions, Clustering Results and Cluster Proportions. CytofRUV can correct for batch effects and integrates data from a large number of patient and conditions across batches, to confidently compare cellular changes and correlate these with clinically relevant outcomes.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.2
 Imports: 
     ggplot2,
-    CATALYST (>= 1.10.3),
+    CATALYST (>= 1.12.2),
     readxl,
     ruv,
     purrr,
@@ -27,7 +27,8 @@ Imports:
     shinydashboard,
     writexl,
     uwot,
-    shinycssloaders
+    shinycssloaders,
+    limma
 Suggests: 
     knitr,
     rmarkdown,
