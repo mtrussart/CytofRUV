@@ -9,7 +9,7 @@ CytofRUV CytofRUV is a computational algorithm which permits the integration
 of data across CyTOF batches.
 }
 \details{
-CytofRUV is ableto load and normalise CyTOF datasets accross batches and also
-to visualise the diagnostic plots using the R-Shiny application before and
+CytofRUV is able to load and normalise CyTOF datasets accross batches and also offers 
+visualisation through diagnostic plots using the R-Shiny application before and
 after CytofRUV normalisation.
 }

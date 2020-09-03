@@ -1,10 +1,15 @@
 # Define type of markers
-daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
-daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
-sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
-sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
+logDaf = daf
+assay(logDaf, "exprs") = log(assay(daf, "counts"))
+
+# Rightfully, during code conversion to subsampling via launchShiny function, *_Daf[...] should read from sub_daf rather than daf the subsampling column should be removed!
+default_DafType  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", sample(ncol(daf), n_subset_marker_specific)]
+default_DafState <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", sample(ncol(daf), n_subset_marker_specific)]
+
+log_DafType  <- logDaf[SingleCellExperiment::rowData(logDaf)$marker_class=="type", sample(ncol(logDaf), n_subset_marker_specific)]
+log_DafState <- logDaf[SingleCellExperiment::rowData(logDaf)$marker_class=="state", sample(ncol(logDaf), n_subset_marker_specific)]
+
 # Define batch
-batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
 
 shinyServer(function(input, output, session) {
@@ -35,11 +40,11 @@ shinyServer(function(input, output, session) {
     MDS_update_text = "",
 
     choiceExprsParam = "condition",
-    choiceExprsClass = sub_daf_state,
+    choiceExprsClass = default_DafState,
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
-    choiceTransformation = "AC5",
+    choiceTransformation = "default",
 
     choice_TSNE_Colour_By1 = cluster_var,
     TSNE_update_colour_by  = cluster_var,
@@ -202,16 +207,19 @@ shinyServer(function(input, output, session) {
                 choices = levels(panel$marker_class))
   })
 
+
   # Provides appropriate data following change of parameters.
-  daf_temp <- reactive({
-    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(sub_daf_state)
+  read_daf <- reactive({
+    temp_dafState = get(paste0(def$choiceTransformation, "_DafState"))
+    temp_dafType  = get(paste0(def$choiceTransformation, "_DafType"))
+    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(temp_dafState)
     # Marker Class: Type
     if (input$exprs3 == "type") {
-      patient_type = sub_daf_type[, sample_ids(sub_daf_type)%in%patient_ids(input$exprs2, sub_daf_type)]
+      patient_type = temp_dafType[, sample_ids(temp_dafType)%in%patient_ids(input$exprs2, temp_dafType)]
       return(patient_type)
     }
     # Marker Class: State
-    patient_state = sub_daf_state[, sample_ids(sub_daf_state)%in%patient_ids(input$exprs2, sub_daf_state)]
+    patient_state = temp_dafState[, sample_ids(temp_dafState)%in%patient_ids(input$exprs2, temp_dafState)]
     return(patient_state)
   })
 
@@ -223,7 +231,8 @@ shinyServer(function(input, output, session) {
     } else {
       def$choiceExprsParam="sample_id"
     }
-    def$choiceExprsClass = daf_temp()
+    def$choiceTransformation = input$choiceTransformation
+    def$choiceExprsClass = read_daf()
     def$Exprs_update_text = ''
     def$Exprs_patient = input$exprs2
     def$Exprs_ant = input$exprs3
