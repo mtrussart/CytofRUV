@@ -304,8 +304,8 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(exprsPlot())
       ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag,
-            width = (def$Exprs_width()*cmSaveWidth)+nb_cols_plotDistr,
-            height = def$Exprs_height()*cmSaveHeight, units = "cm")
+            width = (def$Exprs_width*cmSaveWidth)+nb_cols_plotDistr,
+            height = def$Exprs_height*cmSaveHeight, units = "cm")
     }
   )
 
