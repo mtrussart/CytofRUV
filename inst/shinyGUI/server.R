@@ -1,10 +1,11 @@
+# Sub-sample data according to the percentage input from the launch_Shiny Function
+sub_daf <- daf[, sample(ncol(daf), subset_percentage*sample(ncol(daf)))]
+
 # Define type of markers
-daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
-daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
-sub_daf_state <- daf_state[, sample(ncol(daf_state), subset_percentage*sample(ncol(daf_state)))]
-sub_daf_type  <- daf_type[, sample(ncol(daf_type), subset_percentage*sample(ncol(daf_type)))]
+sub_daf_state <- sub_daf[SingleCellExperiment::rowData(sub_daf)$marker_class=="state", ]
+sub_daf_type  <- sub_daf[SingleCellExperiment::rowData(sub_daf)$marker_class=="type", ]
+
 # Define batch
-batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
 
 # ========================================================================
@@ -727,6 +728,7 @@ shinyServer(function(input, output, session) {
                                  strip.text = element_blank())
 
   Abundance_cluster <- reactive({
+<<<<<<< HEAD
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
     plotAbundances(daf, k = cluster_var, by = "sample_id", col_clust = FALSE) +
       abundanceCluster_theme +
