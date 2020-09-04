@@ -169,8 +169,8 @@ The R-shiny interface can also be used to visualise the normalised data.
 
 ``` {r Shiny App on the normalised data,eval=FALSE}
   ## Define parameters to use for R-Shiny
-  daf=norm_data$daf
-  md=norm_data$md
+  daf=data$daf
+  md=data$md
   seed=1234
   
   # Running Dimension Reduction -> TSNE & UMAP
@@ -179,10 +179,10 @@ The R-shiny interface can also be used to visualise the normalised data.
   # Number of cells for tSNE plots marker specific
   TSNE_subset <- 2000
   print("Running TSNE")
-  daf <- runDR(daf, "TSNE", cells = TSNE_subset)
+  daf <- CATALYST::runDR(daf, dr = "TSNE", cells = TSNE_subset)
   
   # Number of cells for UMAP plots marker specific
-  UMAP_subset <- 2500
+  UMAP_subset <- 2000
   print("Running UMAP")
   daf <- runDR(daf, "UMAP", cells = UMAP_subset)
   
