@@ -293,7 +293,7 @@ shinyServer(function(input, output, session) {
   })
 
   observe(output$exprsPlot  <- renderUI({
-    withSpinner(plotOutput("exprsPlot.ui", height = def$Exprs_height*heightExprPlot), type = 2)
+    plotOutput("exprsPlot.ui", height = def$Exprs_height*heightExprPlot)
   }))
 
 
