@@ -627,7 +627,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>TThe normalize_data function allow the user to adjust for batch effects with parameter settings for the CytofRUV algorithm, such as which replicated samples to use and the value of k. The user can specify below the name of the directory to save the normalised data (dir_name_norm_data) or use the get_directory function which will ask the user to specify the directory. The normalised files and the metadata and panel files will be save into the specified directory.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co">#dir_name_norm_data = get_directory()</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">dir_name_norm_data=<span class="st">&quot;CytofRUV_Norm_data_HC2_all_cl_20&quot;</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3">raw_data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">sample =</span> data<span class="op">$</span>daf<span class="op">$</span>sample_id, <span class="dt">cluster=</span><span class="kw">cluster_ids</span>(data<span class="op">$</span>daf,<span class="st">&quot;meta20&quot;</span>), <span class="kw">t</span>(SummarizedExperiment<span class="op">::</span><span class="kw">assay</span>(data<span class="op">$</span>daf)))</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">raw_data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">sample =</span> data<span class="op">$</span>daf<span class="op">$</span>sample_id, <span class="dt">cluster=</span><span class="kw">cluster_ids</span>(data<span class="op">$</span>daf,<span class="st">&quot;meta20&quot;</span>), <span class="kw">t</span>(SummarizedExperiment<span class="op">::</span><span class="kw">assay</span>(data<span class="op">$</span>daf,<span class="st">&quot;exprs&quot;</span>)))</a>
 <a class="sourceLine" id="cb5-4" data-line-number="4"><span class="kw">colnames</span>(raw_data) &lt;-<span class="st"> </span><span class="kw">gsub</span>(<span class="st">&quot;^X&quot;</span>, <span class="st">&quot;&quot;</span>,  <span class="kw">colnames</span>(raw_data))</a>
 <a class="sourceLine" id="cb5-5" data-line-number="5">rep_samples=<span class="kw">list</span>(<span class="kw">c</span>(<span class="st">&quot;HC2_B1&quot;</span>,<span class="st">&quot;HC2_B2&quot;</span>))</a>
 <a class="sourceLine" id="cb5-6" data-line-number="6">cluster_list_rep_samples &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">20</span>))</a>
@@ -650,39 +650,39 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <a class="sourceLine" id="cb6-9" data-line-number="9">  norm_data=<span class="kw">load_data</span>(wd_norm,metadata_norm_filename,panel_norm_filename,<span class="dt">cofactor =</span> <span class="ot">NULL</span>)</a>
 <a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; [1] &quot;Reading MetaData&quot;</span></a>
 <a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; [1] &quot;Reading fcs files&quot;</span></a>
-<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt;         name            desc    range    minRange maxRange</span></a>
-<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; $P1     Time            &lt;NA&gt; 15248628    0.000000 15248627</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt; $P2    Y89Di        89Y_CD45     2410 -111.000000     2409</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; $P3  In115Di    115In_HLA-DR     4659 -111.000000     4658</span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; $P4  Pr141Di   141Pr_CD235ab    20716  -37.495953    20693</span></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; $P5  Nd142Di      142Nd_CD19    12575  -44.284832    24735</span></a>
-<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt; $P6  Nd143Di       143Nd_CD5    13286 -111.000000    24618</span></a>
-<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="co">#&gt; $P7  Nd144Di      144Nd_CD38     4375 -111.000000    20194</span></a>
-<a class="sourceLine" id="cb6-20" data-line-number="20"><span class="co">#&gt; $P8  Nd145Di       145Nd_CD4     1661 -111.000000    23302</span></a>
-<a class="sourceLine" id="cb6-21" data-line-number="21"><span class="co">#&gt; $P9  Nd146Di       146Nd_CD8     3366 -111.000000    20907</span></a>
-<a class="sourceLine" id="cb6-22" data-line-number="22"><span class="co">#&gt; $P10 Sm147Di      147Sm_CD20    14397  -10.018948    14396</span></a>
-<a class="sourceLine" id="cb6-23" data-line-number="23"><span class="co">#&gt; $P11 Nd148Di      148Nd_CD16     2340  -57.073624     2339</span></a>
-<a class="sourceLine" id="cb6-24" data-line-number="24"><span class="co">#&gt; $P12 Eu151Di     151Eu_CD123    14973  -32.510345    14972</span></a>
-<a class="sourceLine" id="cb6-25" data-line-number="25"><span class="co">#&gt; $P13 Gd155Di      155Gd_CD56     2154  -65.271797     2153</span></a>
-<a class="sourceLine" id="cb6-26" data-line-number="26"><span class="co">#&gt; $P14 Gd156Di      156Gd_CD14    15853 -111.000000    15852</span></a>
-<a class="sourceLine" id="cb6-27" data-line-number="27"><span class="co">#&gt; $P15 Tb159Di     159Tb_CD11c     2290 -111.000000     2289</span></a>
-<a class="sourceLine" id="cb6-28" data-line-number="28"><span class="co">#&gt; $P16 Er167Di      167Er_CD27      715  -32.499676      714</span></a>
-<a class="sourceLine" id="cb6-29" data-line-number="29"><span class="co">#&gt; $P17 Tm169Di    169Tm_CD45RA     5446 -111.000000     5445</span></a>
-<a class="sourceLine" id="cb6-30" data-line-number="30"><span class="co">#&gt; $P18 Er170Di       170Er_CD3    13066 -111.000000    13065</span></a>
-<a class="sourceLine" id="cb6-31" data-line-number="31"><span class="co">#&gt; $P19 Yb171Di      171Yb_CD66     6918  -61.431759     6917</span></a>
-<a class="sourceLine" id="cb6-32" data-line-number="32"><span class="co">#&gt; $P20 Bi209Di      209Bi_CD61    58960 -111.000000    58959</span></a>
-<a class="sourceLine" id="cb6-33" data-line-number="33"><span class="co">#&gt; $P21 Eu153Di    153Eu_Bcl-xL    37056  -28.817259    37055</span></a>
-<a class="sourceLine" id="cb6-34" data-line-number="34"><span class="co">#&gt; $P22 Sm154Di   154Sm_Bax_1B4     8837  -91.867622     8836</span></a>
-<a class="sourceLine" id="cb6-35" data-line-number="35"><span class="co">#&gt; $P23 Gd157Di     157Gd_Bcl-2    29777 -111.000000    29776</span></a>
-<a class="sourceLine" id="cb6-36" data-line-number="36"><span class="co">#&gt; $P24 Gd160Di     160Gd_Mcl-1     1252  -93.262131     1251</span></a>
-<a class="sourceLine" id="cb6-37" data-line-number="37"><span class="co">#&gt; $P25 Dy161Di      161Dy_cMyc     3241 -111.000000     3240</span></a>
-<a class="sourceLine" id="cb6-38" data-line-number="38"><span class="co">#&gt; $P26 Dy163Di     163Dy_BFL-1    35013  -40.920792    35012</span></a>
-<a class="sourceLine" id="cb6-39" data-line-number="39"><span class="co">#&gt; $P27 Ho165Di       165Ho_Bim    28808 -111.000000    28807</span></a>
-<a class="sourceLine" id="cb6-40" data-line-number="40"><span class="co">#&gt; $P28 Er166Di       166Er_pRb     1595 -111.000000     1594</span></a>
-<a class="sourceLine" id="cb6-41" data-line-number="41"><span class="co">#&gt; $P29 Er168Di      168Er_PUMA    17910 -111.000000    17909</span></a>
-<a class="sourceLine" id="cb6-42" data-line-number="42"><span class="co">#&gt; $P30 Yb172Di     172Yb_BCL-W    32300  -33.413170    32299</span></a>
-<a class="sourceLine" id="cb6-43" data-line-number="43"><span class="co">#&gt; $P31 Yb173Di 173Yb_cCaspase3    10011  -11.643580    10010</span></a>
-<a class="sourceLine" id="cb6-44" data-line-number="44"><span class="co">#&gt; $P32 Yb174Di       174Yb_p53     3874   -3.675655     3873</span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt;         name            desc    range   minRange maxRange</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; $P1     Time            &lt;NA&gt; 15248628  0.0000000 15248627</span></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt; $P2    Y89Di        89Y_CD45     2410 -0.4510004     2409</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; $P3  In115Di    115In_HLA-DR     4659 -1.1074120     4658</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; $P4  Pr141Di   141Pr_CD235ab    20716 -3.3255489    20693</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; $P5  Nd142Di      142Nd_CD19    12575 -1.1849808    24735</span></a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt; $P6  Nd143Di       143Nd_CD5    13286 -1.1990349    24618</span></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="co">#&gt; $P7  Nd144Di      144Nd_CD38     4375 -2.5586534    20194</span></a>
+<a class="sourceLine" id="cb6-20" data-line-number="20"><span class="co">#&gt; $P8  Nd145Di       145Nd_CD4     1661 -3.2051425    23302</span></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21"><span class="co">#&gt; $P9  Nd146Di       146Nd_CD8     3366 -2.4574041    20907</span></a>
+<a class="sourceLine" id="cb6-22" data-line-number="22"><span class="co">#&gt; $P10 Sm147Di      147Sm_CD20    14397 -0.6710566    14396</span></a>
+<a class="sourceLine" id="cb6-23" data-line-number="23"><span class="co">#&gt; $P11 Nd148Di      148Nd_CD16     2340 -1.4539309     2339</span></a>
+<a class="sourceLine" id="cb6-24" data-line-number="24"><span class="co">#&gt; $P12 Eu151Di     151Eu_CD123    14973 -1.2618363    14972</span></a>
+<a class="sourceLine" id="cb6-25" data-line-number="25"><span class="co">#&gt; $P13 Gd155Di      155Gd_CD56     2154 -2.2674949     2153</span></a>
+<a class="sourceLine" id="cb6-26" data-line-number="26"><span class="co">#&gt; $P14 Gd156Di      156Gd_CD14    15853 -1.9339695    15852</span></a>
+<a class="sourceLine" id="cb6-27" data-line-number="27"><span class="co">#&gt; $P15 Tb159Di     159Tb_CD11c     2290 -1.7672182     2289</span></a>
+<a class="sourceLine" id="cb6-28" data-line-number="28"><span class="co">#&gt; $P16 Er167Di      167Er_CD27      715 -1.2433747      714</span></a>
+<a class="sourceLine" id="cb6-29" data-line-number="29"><span class="co">#&gt; $P17 Tm169Di    169Tm_CD45RA     5446 -3.0584748     5445</span></a>
+<a class="sourceLine" id="cb6-30" data-line-number="30"><span class="co">#&gt; $P18 Er170Di       170Er_CD3    13066 -2.4981380    13065</span></a>
+<a class="sourceLine" id="cb6-31" data-line-number="31"><span class="co">#&gt; $P19 Yb171Di      171Yb_CD66     6918 -1.4444346     6917</span></a>
+<a class="sourceLine" id="cb6-32" data-line-number="32"><span class="co">#&gt; $P20 Bi209Di      209Bi_CD61    58960 -3.0733371    58959</span></a>
+<a class="sourceLine" id="cb6-33" data-line-number="33"><span class="co">#&gt; $P21 Eu153Di    153Eu_Bcl-xL    37056 -3.4634755    37055</span></a>
+<a class="sourceLine" id="cb6-34" data-line-number="34"><span class="co">#&gt; $P22 Sm154Di   154Sm_Bax_1B4     8837 -2.8547149     8836</span></a>
+<a class="sourceLine" id="cb6-35" data-line-number="35"><span class="co">#&gt; $P23 Gd157Di     157Gd_Bcl-2    29777 -2.8946040    29776</span></a>
+<a class="sourceLine" id="cb6-36" data-line-number="36"><span class="co">#&gt; $P24 Gd160Di     160Gd_Mcl-1     1252 -1.4401959     1251</span></a>
+<a class="sourceLine" id="cb6-37" data-line-number="37"><span class="co">#&gt; $P25 Dy161Di      161Dy_cMyc     3241 -4.6729655     3240</span></a>
+<a class="sourceLine" id="cb6-38" data-line-number="38"><span class="co">#&gt; $P26 Dy163Di     163Dy_BFL-1    35013 -0.2315303    35012</span></a>
+<a class="sourceLine" id="cb6-39" data-line-number="39"><span class="co">#&gt; $P27 Ho165Di       165Ho_Bim    28808 -0.9914662    28807</span></a>
+<a class="sourceLine" id="cb6-40" data-line-number="40"><span class="co">#&gt; $P28 Er166Di       166Er_pRb     1595 -2.5360601     1594</span></a>
+<a class="sourceLine" id="cb6-41" data-line-number="41"><span class="co">#&gt; $P29 Er168Di      168Er_PUMA    17910 -5.2390504    17909</span></a>
+<a class="sourceLine" id="cb6-42" data-line-number="42"><span class="co">#&gt; $P30 Yb172Di     172Yb_BCL-W    32300 -0.7381380    32299</span></a>
+<a class="sourceLine" id="cb6-43" data-line-number="43"><span class="co">#&gt; $P31 Yb173Di 173Yb_cCaspase3    10011 -2.3261936    10010</span></a>
+<a class="sourceLine" id="cb6-44" data-line-number="44"><span class="co">#&gt; $P32 Yb174Di       174Yb_p53     3874 -0.8569174     3873</span></a>
 <a class="sourceLine" id="cb6-45" data-line-number="45"><span class="co">#&gt; [1] &quot;Read Panel File&quot;</span></a>
 <a class="sourceLine" id="cb6-46" data-line-number="46"><span class="co">#&gt; [1] &quot;Checking panel colNames&quot;</span></a>
 <a class="sourceLine" id="cb6-47" data-line-number="47"><span class="co">#&gt; [1] &quot;Checking panel values&quot;</span></a>
