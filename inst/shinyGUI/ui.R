@@ -80,6 +80,7 @@ markerDistribution <-fluidPage(
            selectInput("choiceTransformation", "Select the Transformation Applied:",
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> Added some small bug fixes
                        list("ArcSinh (Cofactor = 5)" = "AC5",
@@ -88,13 +89,18 @@ markerDistribution <-fluidPage(
                             "Linear" = "lin")),
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> removed (cofactor=5) from arcsinh option in transformation selection
                        list("ArcSinh" = "default",
                             #"ArcSinh (Cofactor = 0.01)" = "AC001",
                             #"Linear" = "lin",
                             "Log" = "log")),
+<<<<<<< HEAD
 >>>>>>> removed (cofactor=5) from arcsinh option in transformation selection
 =======
 >>>>>>> Added some small bug fixes
+=======
+>>>>>>> removed (cofactor=5) from arcsinh option in transformation selection
     ),
     column(3,
            h5(strong("Select the file type and Download Plot:")),
