@@ -64,7 +64,7 @@ markerDistribution <-fluidPage(
       12,
       ## Page 2 plot 1
       h2("Distribution of protein expression"),
-      uiOutput("exprsPlot"),
+      withSpinner(uiOutput("exprsPlot"), type=2)
     )
   ),
   fluidRow(
@@ -78,7 +78,7 @@ markerDistribution <-fluidPage(
     ),
     column(3,
            selectInput("choiceTransformation", "Select the Transformation Applied:",
-                       list("ArcSinh (Cofactor = 5)" = "default",
+                       list("ArcSinh" = "default",
                             #"ArcSinh (Cofactor = 0.01)" = "AC001",
                             #"Linear" = "lin",
                             "Log" = "log")),
