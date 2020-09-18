@@ -196,7 +196,7 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 #   - x:   a SCE with rows = cells, columns = features
 #   - by:  colData columns specifying factor(s) to aggregate by
 # ------------------------------------------------------------------------------
-#' @importFrom data.table data.table
+#' @implortFrom data.table data.table
 #' @importFrom SummarizedExperiment colData
 #' @importFrom purrr map_depth
 .split_cells <- function(x, by) {
@@ -235,6 +235,7 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 #' @importFrom grid gpar
 #' @importFrom methods is
 #' @importFrom scales hue_pal
+#' Function From CATALYST
 .anno_factors <- function(df, type = c("row", "column")) {
   # check that all data.frame columns are factors
   stopifnot(is(df, "data.frame"))
