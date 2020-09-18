@@ -235,7 +235,6 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 #' @importFrom grid gpar
 #' @importFrom methods is
 #' @importFrom scales hue_pal
-#' Function From CATALYST
 .anno_factors <- function(df, type = c("row", "column")) {
   # check that all data.frame columns are factors
   stopifnot(is(df, "data.frame"))
