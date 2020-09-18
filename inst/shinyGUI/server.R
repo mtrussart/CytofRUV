@@ -348,7 +348,7 @@ shinyServer(function(input, output, session) {
       } else {
         png(file, width = heatmap_png_width, units = "px")
       }
-      ComplexHeatmap::draw(cluster_heatmap()[[1]])
+      ComplexHeatmap::draw(cluster_heatmap())
       dev.off()
     }
   )
