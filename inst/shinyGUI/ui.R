@@ -212,7 +212,6 @@ clusteringResults <-fluidPage(
   fluidRow(
     column(
       6,
-      hr(),
       ## Plot 4
       hr(),
       h2(textOutput("TSNE_facet_Text")),
@@ -234,7 +233,6 @@ clusteringResults <-fluidPage(
     ),
     column(
       6,
-      hr(),
       ## Plot 5
       hr(),
       h2(textOutput("UMAP_facet_Text")),
