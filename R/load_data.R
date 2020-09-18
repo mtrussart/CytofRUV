@@ -196,7 +196,7 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 #   - x:   a SCE with rows = cells, columns = features
 #   - by:  colData columns specifying factor(s) to aggregate by
 # ------------------------------------------------------------------------------
-#' @implortFrom data.table data.table
+#' @importFrom data.table data.table
 #' @importFrom SummarizedExperiment colData
 #' @importFrom purrr map_depth
 .split_cells <- function(x, by) {
