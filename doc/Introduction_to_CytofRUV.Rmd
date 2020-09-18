@@ -135,7 +135,7 @@ TThe normalize_data function allow the user to adjust for batch effects with par
 ```{r CytofRUV normalisation}
 #dir_name_norm_data = get_directory()
 dir_name_norm_data="CytofRUV_Norm_data_HC2_all_cl_20"
-raw_data <- data.frame(sample = data$daf$sample_id, cluster=cluster_ids(data$daf,"meta20"), t(SummarizedExperiment::assay(data$daf)))
+raw_data <- data.frame(sample = data$daf$sample_id, cluster=cluster_ids(data$daf,"meta20"), t(SummarizedExperiment::assay(data$daf,"exprs")))
 colnames(raw_data) <- gsub("^X", "",  colnames(raw_data))
 rep_samples=list(c("HC2_B1","HC2_B2"))
 cluster_list_rep_samples <- list(seq(1,20))
