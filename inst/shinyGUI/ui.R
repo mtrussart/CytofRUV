@@ -291,13 +291,18 @@ tab_plots <- shinydashboard::tabBox(
 
 header <- dashboardHeader(
   title = a(href="https://www.wehi.edu.au/",
-            img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
-                style="padding-top:5px;padding-right:5px;",
-                height="70px")
+            div(class=".box",
+                style="display:flex;justify-content:left",
+                img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
+                    style="padding-top:5px;",
+                    height="70px")
+                )
   ),
   tags$li(class = "dropdown",
-          tags$style(".main-header {max-height: 65px}"),
-          tags$style(".main-header .logo {height: 75px}"),
+          # Set height of dashboardHeader
+          tags$style(".main-header {max-height: 65px;}"),
+          tags$style(".main-header .logo {height: 75px;width: 350;}"),
+          tags$style(".main-header .navbar {margin-left: 350;}"),
           # CheckBox inputs
           tags$style(
             HTML(".box {
