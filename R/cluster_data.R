@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' cluster_data(daf,w234,data$lineage_markers,20)
+#' cluster_data(daf,1234,data$lineage_markers,20)
 #'
 
 
