@@ -8,7 +8,7 @@
 #'
 #' @param wd_data Path to the directory containing all raw fcs files, the metadata file
 #' and the panel file
-#' @param metadata_name Metadata filename containing the details of each sample
+#' @param metadata_filename Metadata filename containing the details of each sample
 #' @param panel_filename Panel filename containing the details of each marker
 #' @param cofactor Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data
 #'

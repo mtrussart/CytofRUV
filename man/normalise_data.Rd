@@ -19,6 +19,8 @@ normalise_data(
 )
 }
 \arguments{
+\item{data}{Datasets before normalisation}
+
 \item{raw_data}{Raw data}
 
 \item{rep_samples}{Replicated samples}
@@ -34,8 +36,6 @@ and the panel file}
 
 \item{dir_norm_data}{Directory name containing all norm fcs files, the metadata file
 and the panel file}
-
-\item{daf}{Datasets before normalisation}
 }
 \value{
 Normalised metadata file
