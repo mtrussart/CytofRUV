@@ -292,8 +292,9 @@ shinyServer(function(input, output, session) {
     exprsPlot()
   })
 
+  # For Adjusting the size!
   observe(output$exprsPlot  <- renderUI({
-    plotOutput("exprsPlot.ui", height = def$Exprs_height*heightExprPlot)
+    withSpinner(plotOutput("exprsPlot.ui", height = def$Exprs_height*heightExprPlot), type=2)
   }))
 
 
