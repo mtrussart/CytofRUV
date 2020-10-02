@@ -7,7 +7,6 @@ sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
 batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
 
-# importFrom CATALYST metadata
 shinyServer(function(input, output, session) {
   # If you want to break up the file, call source functions here, local = TRUE
 

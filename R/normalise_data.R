@@ -19,6 +19,7 @@
 #'
 #' @importFrom rsvd rsvd
 #' @importFrom stats sd
+#' @importFrom flowCore exprs fsApply write.FCS
 #' @export
 #'
 
