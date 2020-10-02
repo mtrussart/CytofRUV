@@ -2,9 +2,16 @@
 sub_daf <- daf[, sample(ncol(daf), subset_percentage*sample(ncol(daf)))]
 
 # Define type of markers
+<<<<<<< HEAD
 sub_daf_state <- sub_daf[SingleCellExperiment::rowData(sub_daf)$marker_class=="state", ]
 sub_daf_type  <- sub_daf[SingleCellExperiment::rowData(sub_daf)$marker_class=="type", ]
 
+=======
+daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
+daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
+sub_daf_state <- daf_state[, sample(ncol(daf_state), subset_percentage*sample(ncol(daf_state)))]
+sub_daf_type  <- daf_type[, sample(ncol(daf_type), subset_percentage*sample(ncol(daf_type)))]
+>>>>>>> Rebased Onto Develop, Merge Conflict Resolved
 # Define batch
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
 

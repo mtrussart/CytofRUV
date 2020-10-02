@@ -114,6 +114,11 @@ The user needs to select the data to use (before or after normalisation) to visu
   daf <- runDR(daf, "UMAP", cells = UMAP_subset)
   
   ## Launch Shiny
+<<<<<<< HEAD
+=======
+  sub_daf <- daf[, sample(ncol(daf), subset_percentage*sample(ncol(daf)))]
+  
+>>>>>>> Rebased Onto Develop, Merge Conflict Resolved
   panel=data$panel
   
   CytofRUV::launch_Shiny(daf)
