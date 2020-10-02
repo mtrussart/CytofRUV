@@ -12,10 +12,12 @@
 #' @param panel_filename Panel filename containing the details of each marker
 #' @param cofactor Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data
 #'
-#'
 #' @return Datasets before normalisation
+#' @importFrom CATALYST sample_ids prepData
+#' @importFrom Biobase pData
+#' @importFrom flowCore parameters fsApply exprs
+#' @importFrom SummarizedExperiment assayNames
 #' @export
-#'
 
 
 #load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")

@@ -6,12 +6,16 @@
 #' Median Protein Expression, Protein Expression Distributions, Clustering Results
 #' and Cluster Proportions.
 #'
+#' @param daf Dataset that the app's plots are based upon.
+#'
 #' @return Opens a browser window with an interactive Shiny application.
 #'
+#' @importFrom SingleCellExperiment reducedDimNames
+#' @importFrom S4Vectors metadata
 #' @export
 #'
 
-launch_Shiny<- function(){
+launch_Shiny<- function(daf){
   if (!exists("md") || (!exists("daf"))) {
     stop("Prior to launching the shiny application, users need to load variables as shown",
          " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when variables",
