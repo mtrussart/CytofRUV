@@ -6,7 +6,7 @@
 #' Median Protein Expression, Protein Expression Distributions, Clustering Results
 #' and Cluster Proportions.
 #'
-#' @param subset_percentage Percentage of data that exploratory plots shall display, default is 50%.
+#' @param subset_percentage Percentage of data that exploratory plots shall display, default is 50\%.
 #'
 #' @param daf Dataset that the app's plots are based upon.
 #'
