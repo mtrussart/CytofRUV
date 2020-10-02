@@ -79,8 +79,6 @@ markerDistribution <-fluidPage(
     column(3,
            selectInput("choiceTransformation", "Select the Transformation Applied:",
                        list("ArcSinh" = "default",
-                            #"ArcSinh (Cofactor = 0.01)" = "AC001",
-                            #"Linear" = "lin",
                             "Log" = "log")),
     ),
     column(3,
