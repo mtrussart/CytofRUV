@@ -8,13 +8,7 @@ is used to load the fcs files from all the samples in the study,
 the metadata file containing the details of each sample
 and a panel file containing the details of all proteins used in the study.}
 \usage{
-load_data(
-  wd_data,
-  metadata_filename,
-  panel_filename,
-  cofactor = 5,
-  subset_percentage = 50
-)
+load_data(wd_data, metadata_filename, panel_filename, cofactor = 5)
 }
 \arguments{
 \item{wd_data}{Path to the directory containing all raw fcs files, the metadata file

@@ -13,7 +13,7 @@ launch_Shiny(subset_percentage = 50)
 launch_Shiny(daf)
 }
 \arguments{
-\item{subset_percentage}{Percentage of data that exploratory plots shall display, default is 50%.}
+\item{subset_percentage}{Percentage of data that exploratory plots shall display, default is 50\%.}
 }
 \arguments{
 \item{daf}{Dataset that the app's plots are based upon.}
