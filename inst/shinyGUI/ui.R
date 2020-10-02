@@ -294,8 +294,8 @@ header <- dashboardHeader(
   tags$li(class = "dropdown",
           # Set height of dashboardHeader
           tags$style(".main-header {max-height: 65px;}"),
-          tags$style(".main-header .logo {height: 75px;width: 350;}"),
-          tags$style(".main-header .navbar {margin-left: 350;}"),
+          tags$style(".main-header .logo {height: 75px;width:auto;}"),
+          tags$style(".main-header .navbar {margin-left: 252px;}"),
           # CheckBox inputs
           tags$style(
             HTML(".box {
