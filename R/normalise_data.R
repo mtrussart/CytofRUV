@@ -60,10 +60,11 @@ save_norm_files<- function(data,norm_cells, fcs_raw, md,panel,output_dir,k){
                                   panel$fcs_colname[panel$antigen%in%data$functional_markers]))
 
   fcs_raw_asinh=fsApply(fcs_raw,function(x,cofactor = 5){
-    expr <- exprs(x)
+    expr <- flowCore::exprs(x)
     expr <- expr[,all_fullname_markers]
     expr[,all_fullname_markers[2:length(all_fullname_markers)]] <- asinh(expr[,all_fullname_markers[2:length(all_fullname_markers)]] / cofactor)
-    exprs(x) <- expr
+    flowCore::exprs(x) <- expr
+    ## Added Here ^
     x
   })
 
