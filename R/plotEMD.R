@@ -3,17 +3,18 @@
 #'
 #' Insert description of plotEMD here
 #'
-#' @param raw_dir String - Directory to file containing raw data.
-#' @param cytonorm_dir String - Directory to file containing cytonorm data
-#' @param batchadj_dir String - Directory to file containing cytonorm data
-#' @param cytofRUV_dir String - Directory to FOLDER that appropriate files containing cytofRUV processed data.
-#' @param k Vector of cluster numbers to be inspected, default val = c(5,10,15)
-#' @param filter_patients Vector of relevant patient IDs  e.g. val = c("LL1_B1","LL2_B1","LL3_B1") that is, display patient IDs that contain: "LL1_B1","LL2_B1","LL3_B1"
-#' @param x_axis_name String which all x labels will share in common. E.g. "CLL", resulting x-axis items = "CLL1, CLL2, CLL3"
-#' @param cols Vector of colours for plot annotations. Default val= c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
+#' @param raw_dir String: Directory to file containing raw data.
+#' @param cytonorm_dir String: Directory to file containing cytonorm data
+#' @param batchadj_dir String: Directory to file containing batchadj_dir data
+#' @param cytofRUV_dir String: Directory to FOLDER that appropriate files containing cytofRUV processed data.
+#' @param k Vector: cluster numbers to be inspected, default val: c(5,10,15)
+#' @param filter_patients Vector: relevant patient IDs  e.g. val = c("LL1_B1","LL2_B1","LL3_B1") that is, display patient IDs that contain: "LL1_B1","LL2_B1","LL3_B1"
+#' @param x_axis_name String: Will be shared by all x-axis labels will share in common. E.g. "CLL", resulting x-axis items = "CLL1, CLL2, CLL3"
+#' @param cols Vector: Strings of colours for plot annotations. Default val: c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
 #'
 #' @export
 #'
+
 ############################### Plotting the metrics ###########################
 library(ggplot2)
 library(reshape2)
@@ -23,7 +24,6 @@ library(reshape2)
 ##################### EMD plot ##################
 
 ### Dataset from CLL+HC samples with 20 clusters
-
 
 # Example Inputs
 # TODO: Change outdir -> How Necessary is outdir? What does it do?
@@ -39,12 +39,13 @@ filter_patients = c("LL1_B1","LL2_B1","LL3_B1")
 x_axis_name="CLL"
 cols <- c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
 
-# plotEMD(raw_dir,cytonorm_dir,batchadj_dir,cytofRUV_dir,filter_patients,x_axis_name)
-
-method_names=c("cytonorm", "batchadjust", "cytofruv")
+# method_names=c("cytonorm", "batchadj", "cytofruv")
+method_names=c("batchadj", "cytofruv")
 
 ## Note that cytofRUV_dir is a directory to a folder and not a singular file!
-data_dir=c(cytonorm_dir, batchadj_dir, cytofRUV_dir)
+data_dir=c(batchadj_dir, cytofRUV_dir)
+
+# plotEMD(raw_dir,method_names,data_dir, k=c(5,10,15),filter_patients,x_axis_name)
 
 plotEMD <- function(raw_dir, method_names=c("cytofRUV"), data_dir, k=c(5,10,15), filter_patients, x_axis_name,
                     cols=c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
@@ -53,6 +54,8 @@ plotEMD <- function(raw_dir, method_names=c("cytofRUV"), data_dir, k=c(5,10,15),
 
   # TODO: ASSERT FOR INPUTS!
     # i.e. CYTOFRUV is required as a method
+    # method names in method_names and cols have to match!!!
+    # cytofruv_k# is the format!
 
   ### Loading EMD for each method
   # TODO: method is hardcoded
@@ -69,12 +72,12 @@ plotEMD <- function(raw_dir, method_names=c("cytofRUV"), data_dir, k=c(5,10,15),
     if (method_names[i]=="cytofruv") {
       ## Reading the CytofRUV files EMD
       for (j in (1:length(k)) ){
-        wd=paste(data_dir[i],k[i],"/",sep="")
+        wd=paste(data_dir[i],k[j],"/",sep="")
         EMD_metric=readRDS(paste(wd,"EMD_metric_comp_norm_all_samples_all_cells.rds",sep=""))
         EMD_tmp=data.frame(patient=row.names(EMD_metric),EMD_metric)
         colnames(EMD_tmp) <- gsub("^X", "",  colnames(EMD_tmp))
-        append(cytof_methods, paste0("cytofruv_", i+1))
-        EMD[[paste0("cytofruv_", j+1)]]=EMD_tmp
+        cytof_methods <- append(cytof_methods, paste0("cytofruv_", "k", k[j]))
+        EMD[[paste0("cytofruv_", "k", k[j])]]=EMD_tmp
       }
 
     } else {
@@ -86,17 +89,7 @@ plotEMD <- function(raw_dir, method_names=c("cytofRUV"), data_dir, k=c(5,10,15),
     }
   }
 
-  # ## Reading the cytonorm file EMD
-  # EMD_cytofnorm_file=readRDS(cytonorm_dir)
-  # EMD_cytofnorm=data.frame(patient=row.names(EMD_cytofnorm_file),EMD_cytofnorm_file)
-  # colnames(EMD_cytofnorm) <- gsub("^X", "",  colnames(EMD_cytofnorm))
-  # EMD[['cytonorm']]=EMD_cytofnorm
-  #
-  # ## Reading the batchadjust file EMD
-  # EMD_batchadj_file=readRDS(batchadj_dir)
-  # EMD_batchadj=data.frame(patient=row.names(EMD_batchadj_file),EMD_batchadj_file)
-  # colnames(EMD_batchadj) <- gsub("^X", "",  colnames(EMD_batchadj))
-  # EMD[["batchadj"]]=EMD_batchadj
+  print(cytof_methods)
 
   ## Merging all the data
   EMD_all=melt(EMD,id.var = c("patient"))
@@ -106,6 +99,8 @@ plotEMD <- function(raw_dir, method_names=c("cytofRUV"), data_dir, k=c(5,10,15),
 
   method_no_cytofruv=method_names[method_names%!in%c("cytofruv")]
 
+  print(method_no_cytofruv)
+  print(cytof_methods)
   # TODO: Do we need k1-k20 if user selects specific Ks only?
   #c(c("raw","batchadj","cytonorm"), cytof_methods, "cytofruv_k1","cytofruv_k3","cytofruv_k5","cytofruv_k7","cytofruv_k10","cytofruv_k12","cytofruv_k15","cytofruv_k20","cytofruv_k25")
   ggdf$method=factor(ggdf$L1,levels=c("raw", method_no_cytofruv, cytof_methods))
