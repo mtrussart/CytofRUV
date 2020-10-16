@@ -40,6 +40,8 @@ library(shinydashboard)
 library(writexl)
 library(ComplexHeatmap)
 library(shinycssloaders)
+
+library(reshape2)
 ```
 
 ## Dataset
@@ -212,3 +214,68 @@ The R-shiny interface can also be used to visualise the normalised data.
   
   CytofRUV::launch_Shiny(daf)
 ```
+
+## Run metrics to compare batch effects before and after applying cytofruv
+
+Insert description body here.
+
+### Earth Mover's Distance Plot 
+```{r}
+# TODO: Change outdir -> How Necessary is outdir? What does it do?
+outdir="/stornext/Home/data/allstaff/t/trussart.m/R_scripts/RUV_design_experiment/RUV1b_RUV3b/Metrics_of_performances_all_methods/All_samples_DG23_VDBR996_anchor_CytofPackage_new_trial/"
+
+my_dir="/stornext/Bioinf/data/lab_speed/Marie/RUV_experiment_design/Norm_Raw_RUV1b_RUV3b_simult/CytofRUV/"
+
+raw_dir=paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k5/EMD_metric_comp_raw_all_samples_all_cells.rds")
+
+cytonorm_dir="/stornext/Home/data/allstaff/t/trussart.m/R_scripts/RUV_design_experiment/RUV1b_RUV3b/Cytofnorm_Cytof_Package/EMD_metric_comp_norm_all_samples_all_cells.rds"
+
+batchadj_dir="/stornext/Bioinf/data/lab_speed/Marie/RUV_experiment_design/Norm_Raw_RUV1b_RUV3b_simult/BatchAdjust/BatchAdjust_95p_and_DG23_new_trial/EMD_metric_comp_norm_all_samples_all_cells.rds"
+
+cytofRUV_dir=list(paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k5/EMD_metric_comp_norm_all_samples_all_cells.rds"),paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k10/EMD_metric_comp_norm_all_samples_all_cells.rds"), paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k15/EMD_metric_comp_norm_all_samples_all_cells.rds")) 
+
+# method_names=c("cytonorm", "batchadj", "cytofruv")
+method_names=c("batchadj", "cytofruv")
+
+## Note that cytofRUV_dir is a directory to a folder and not a singular file!
+data_dir=list(batchadj_dir, cytofRUV_dir)
+
+k=c(5,10,15)
+
+filter_patients = c("LL1_B1","LL2_B1","LL3_B1")
+x_axis_name="CLL" # replace with merely filter_patients, assume correct input.
+
+cols <- c("raw"="black","batchadj"="indianred4","cytofruv_k5"="#2B8CBE","cytofruv_k10"="#7BCCC4","cytofruv_k15"="darkgreen")
+
+plotEMD(daf, raw_dir,method_names,data_dir, k,filter_patients, x_axis_name, cols)
+```
+
+### Hellinger Distance Plot 
+
+```{r}
+### Dataset from CLL+HC samples with 20 clusters
+
+outdir="/stornext/Home/data/allstaff/t/trussart.m/R_scripts/RUV_design_experiment/RUV1b_RUV3b/Metrics_of_performances_all_methods/All_samples_DG23_VDBR996_anchor_CytofPackage_new_trial/"
+my_dir="/stornext/Bioinf/data/lab_speed/Marie/RUV_experiment_design/Norm_Raw_RUV1b_RUV3b_simult/CytofRUV/"
+
+raw_dist_dir=paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k5/Dist_props_table_raw_all_samples.rds")
+
+batchadj_dir="/stornext/Bioinf/data/lab_speed/Marie/RUV_experiment_design/Norm_Raw_RUV1b_RUV3b_simult/BatchAdjust/BatchAdjust_95p_and_DG23_new_trial/Dist_props_table_norm_all_samples.rds"
+
+cytofRUV_dir=list(paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k5/Dist_props_table_norm_all_samples.rds"), paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k10/Dist_props_table_norm_all_samples.rds"), paste0(my_dir,"CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k15/Dist_props_table_norm_all_samples.rds"))
+
+method_names<-c("batchadj", "cytofruv")
+
+data_dir=list(batchadj_dir, cytofRUV_dir)
+
+k=c(5,10,15)
+
+filter_patients = c("LL1_B1","LL2_B1","LL3_B1")
+
+x_axis_name="CLL" # replace with merely filter_patients, assume correct input.
+                                  cols=c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
+
+
+plotHellingerDistance(daf, raw_dist_dir, method_names, data_dir, k, filter_patients, x_axis_name, cols)
+```
+
