@@ -8,7 +8,7 @@
 #' @param raw_dir String: Directory to file containing raw data.
 #' @param method_names Vector: Strings that describe method names.
 #'   e.g. c(cytonorm, batchadj, cytofruv)
-#' @param data_dir Vector: Strings of directories that contain appropriate data.
+#' @param data_dir List: Strings of directories that contain appropriate data.
 #'   IMPORTANT: Order of directory strings should correlate with order of method names in method_names.
 #'   Note the directory for cytofRUV processed data is a vector of strings.
 #'   e.g. c("../Cytofnorm_Cytof_Package/EMD_metric_comp_norm_all_samples_all_cells.rds",
@@ -21,15 +21,13 @@
 #' @param k Vector: cluster numbers to be inspected, default val: c(5,10,15)
 #' @param filter_patients Vector: relevant patient IDs  e.g. val = c("LL1_B1","LL2_B1","LL3_B1") that is,
 #'   display patient IDs that contain: "LL1_B1","LL2_B1","LL3_B1".
-#' @param x_axis_name String: Will be shared by all x-axis labels will share in common. E.g. "CLL", resulting
+#' @param x_axis_name String: Will be shared by all x-axis labels will share in common. E.g. "CLL", results in
 #'   x-axis items = "CLL1, CLL2, CLL3"
 #' @param cols Vector: Strings of colours for plot annotations. Default val:
 #'   c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
 #'
 #' @export
 
-# cytofruv_k5, _k10 ...
-# K is an optional parameter
 plotEMD <- function(daf, raw_dir, method_names, data_dir, k=NULL, filter_patients, x_axis_name,
                     cols=c("raw"="black","batchadj"="indianred4","cytonorm"="darkmagenta","cytofruv_k1"="#084081","cytofruv_k3"="#0868AC","cytofruv_k5"="#2B8CBE","cytofruv_k7"="#4EB3D3","cytofruv_k10"="#7BCCC4","cytofruv_k12"= "#A8DDB5","cytofruv_k15"="darkgreen","cytofruv_k20"="seagreen","cytofruv_k25"="yellowgreen")
 ) {
