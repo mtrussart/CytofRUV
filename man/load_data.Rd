@@ -14,11 +14,11 @@ load_data(wd_data, metadata_filename, panel_filename, cofactor = 5)
 \item{wd_data}{Path to the directory containing all raw fcs files, the metadata file
 and the panel file}
 
-\item{metadata_filename}{Metadata filename containing the details of each sample}
-
 \item{panel_filename}{Panel filename containing the details of each marker}
 
 \item{cofactor}{Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data}
+
+\item{metadata_name}{Metadata filename containing the details of each sample}
 }
 \value{
 Datasets before normalisation
