@@ -125,7 +125,7 @@ The user needs to select the data to use (before or after normalisation) to visu
   
   panel=data$panel
   
-  CytofRUV::launch_Shiny(daf)
+  CytofRUV::launch_Shiny()
 ```
 
 ## CytofRUV normalisation procedure
@@ -210,5 +210,5 @@ The R-shiny interface can also be used to visualise the normalised data.
   
   panel=data$panel
   
-  CytofRUV::launch_Shiny(daf)
+  CytofRUV::launch_Shiny()
 ```

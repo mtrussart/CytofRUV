@@ -27,3 +27,7 @@ cluster_data
 is used to cluster all the samples in the study using FlowSOM clustering
 and metaclustering into with ConsensusClusterPlus.
 }
+\examples{
+cluster_data(daf,w234,data$lineage_markers,20)
+
+}

@@ -9,10 +9,7 @@ from samples replicated across batches using four different diagnostics plots:
 Median Protein Expression, Protein Expression Distributions, Clustering Results
 and Cluster Proportions.}
 \usage{
-launch_Shiny(daf)
-}
-\arguments{
-\item{daf}{Dataset that the app's plots are based upon.}
+launch_Shiny()
 }
 \value{
 Opens a browser window with an interactive Shiny application.
