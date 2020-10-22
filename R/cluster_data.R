@@ -14,11 +14,6 @@
 #'
 #' @return daf data single cell experiment after clustering
 #' @export
-#'
-#' @examples
-#' cluster_data(daf,w234,data$lineage_markers,20)
-#'
-
 
 cluster_data <- function(daf,seed,markers_to_use,clusters_nb){
   set.seed(seed)

@@ -4,7 +4,7 @@
 #' contains all the functions to normalise several Cytof datasets by removing the
 #' unwanted variation between datasets arising from experimental artefacts.
 #'
-#' @param daf Datasets before normalisation
+#' @param data Datasets before normalisation
 #' @param raw_data Raw data
 #' @param rep_samples Replicated samples
 #' @param norm_clusters Clusters to be normalised
@@ -16,6 +16,10 @@
 #' and the panel file
 #'
 #' @return Normalised metadata file
+#'
+#' @importFrom rsvd rsvd
+#' @importFrom stats sd
+#' @importFrom flowCore exprs fsApply write.FCS
 #' @export
 #'
 
@@ -123,7 +127,7 @@ fastRUVIII = function(Y, M, ctl,res_mat,k=NULL, eta=NULL, average=FALSE, fullalp
   m = nrow(Y)
   #Y0 = fast_residop(Y, M)
   Y0=res_mat
-  fullalpha = diag(rsvd::rsvd(Y0)$d) %*% t(rsvd::rsvd(Y0)$v)
+  fullalpha = diag(rsvd(Y0)$d) %*% t(rsvd(Y0)$v)
   alpha = fullalpha[1:k,,drop=FALSE]
   ac = alpha[,ctl,drop=FALSE]
   W = Y[,ctl] %*% t(ac) %*% solve(ac %*% t(ac))

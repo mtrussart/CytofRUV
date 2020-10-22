@@ -26,7 +26,7 @@ medIntensities <- fluidPage(
       ## Plot 1
       h2("Multi-dimensional scaling plot computed using median protein expression"),
       ## Need to incl library("shinycssloaders") into the package
-      withSpinner(plotOutput(outputId="plotMDS", width="100%", height = "600px"), type = 2),
+      withSpinner(plotOutput(outputId="plotMDS", height = "600px"), type = 2),
       fluidRow(
         column(6,
                h5(strong("Select the parameter to color by:")),
@@ -64,7 +64,7 @@ markerDistribution <-fluidPage(
       12,
       ## Page 2 plot 1
       h2("Distribution of protein expression"),
-      withSpinner(plotOutput("exprsPlot", height="700px"), type = 2),
+      withSpinner(uiOutput("exprsPlot"), type=2)
     )
   ),
   fluidRow(
@@ -164,7 +164,7 @@ clusteringResults <-fluidPage(
       ## Plot 2
       hr(),
       h2(textOutput("TSNE_TEXT1")),
-      withSpinner(plotOutput("plot_TSNE1", width = "750px", height = "550px"), type = 2),
+      withSpinner(plotOutput("plot_TSNE1", height = "550px"), type = 2),
       fluidRow(
         column(6,
                selectInput("TSNE_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -185,7 +185,7 @@ clusteringResults <-fluidPage(
       ## Plot 3
       hr(),
       h2(textOutput("Umap_text_1")),
-      withSpinner(plotOutput("plot_UMAP1", width = "750px", height = "550px"), type = 2),
+      withSpinner(plotOutput("plot_UMAP1", height = "550px"), type = 2),
       fluidRow(
         column(6,
                selectInput("Umap_Colour_By1", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -205,11 +205,10 @@ clusteringResults <-fluidPage(
   fluidRow(
     column(
       6,
-      hr(),
       ## Plot 4
       hr(),
       h2(textOutput("TSNE_facet_Text")),
-      withSpinner(plotOutput("plotTSNE_facet", width = "700px", height = "600px"), type = 2),
+      withSpinner(plotOutput("plotTSNE_facet", height = "600px"), type = 2),
       fluidRow(
         column(6,
                selectInput("TSNE_facet_colourBy", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -227,11 +226,10 @@ clusteringResults <-fluidPage(
     ),
     column(
       6,
-      hr(),
       ## Plot 5
       hr(),
       h2(textOutput("UMAP_facet_Text")),
-      withSpinner(plotOutput("plot_UMAP_facet", width = "700px", height = "600px"), type = 2),
+      withSpinner(plotOutput("plot_UMAP_facet", height = "600px"), type = 2),
       fluidRow(
         column(6,
                selectInput("UMAP_facet_colour_by", "Select the parameter to color by:", list("Cluster"=cluster_var, "Antigen"="Antigen", "Batch"="batch")),
@@ -286,14 +284,18 @@ tab_plots <- shinydashboard::tabBox(
 
 header <- dashboardHeader(
   title = a(href="https://www.wehi.edu.au/",
-            img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
-                style="padding-top:5px;padding-right:5px;",
-                height="70px")
+            div(class=".box",
+                style="display:flex;justify-content:left",
+                img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
+                    style="padding-top:5px;",
+                    height="70px")
+                )
   ),
-  titleWidth = 250,
   tags$li(class = "dropdown",
-          tags$style(".main-header {max-height: 65px}"),
-          tags$style(".main-header .logo {height: 75px}"),
+          # Set height of dashboardHeader
+          tags$style(".main-header {max-height: 65px;}"),
+          tags$style(".main-header .logo {height: 75px;width:auto;}"),
+          tags$style(".main-header .navbar {margin-left: 252px;}"),
           # CheckBox inputs
           tags$style(
             HTML(".box {
