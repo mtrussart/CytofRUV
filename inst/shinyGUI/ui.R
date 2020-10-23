@@ -256,19 +256,59 @@ clusteringResults <-fluidPage(
 # =================================================================================================
 # Page 4: Cluster Proportions
 # -------------------------------------------------------------------------------------------------
+Cluster_Proportions_check_box <- fluidPage(
+  fluidRow(
+    column(
+      12,
+      list(tags$div(align = 'left',
+                    class = 'multicol',
+                    checkboxGroupInput("checkBox_Cluster_Proportions", NULL,
+                                       choices = sampleID_sorted,
+                                       selected = sampleID_sorted,
+                                       inline = FALSE,
+                                       width = "100%"))),
+      actionButton("deselectAll_Cluster_Proportions", "Deselect All Options")
+    )
+  )
+)
+
+checkBox_Cluster_Proportions<- shinydashboard::box(
+  title="Select Up Sample IDs",
+  solidHeader=TRUE,
+  status="warning",
+  id="box_3",
+  width=12,
+  collapsible=TRUE,
+  Cluster_Proportions_check_box,
+  inline = FALSE, choiceNames = NULL,
+  choiceValues = NULL
+)
+
 clusterProportions <- fluidPage(
   fluidRow(
     column(
       12,
-      h2("Cluster proportions across samples"),
+      # h2("Cluster proportions across samples"),
+      h2(textOutput("Cluster_Proportions_Text")),
       withSpinner(plotOutput("Abundance_cluster", height="800px"), type = 2),
-      h5(strong("Select the file type and Download Plot:")),
       fluidRow(
-        column(2, radioButtons("Abundance_cluster_tag", NULL, choices = list("pdf", "png"))),
-        column(2, downloadButton(outputId = "download_Abundance_cluster", label = "Download Plot"))
+        column(6,
+               selectInput("Cluster_Proportions_group_by", "Select the parameter to group data by:", list("Condition"="condition", "Sample ID"="")),
+               h5(strong("Press after updating parameter:")),
+               column(6,uiOutput("Cluster_Proportions_update_text")),
+               column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_Cluster_Proportions", "update")))
+        ),
+        column(6,
+               h5(strong("Select the file type and Download Plot:")),
+               radioButtons("Abundance_cluster_tag", NULL, choices = list("pdf", "png")),
+               downloadButton(outputId = "download_Abundance_cluster", label = "Download Plot")
+        )
       )
     )
-  )
+  ),
+  fluidRow(
+    column(4, uiOutput("Cluster_Proportions_Sample_Choice"))
+  ),
 )
 
 # =================================================================================================
