@@ -41,7 +41,19 @@ library(writexl)
 library(ComplexHeatmap)
 library(shinycssloaders)
 
+# Packages Required For Metrics
 library(reshape2)
+library(cluster)
+library(MASS)
+library(rsvd)
+library("gridExtra")
+library("ggpubr")
+library("tidyverse")
+library("RColorBrewer")
+library(purrr)
+library(matrixStats)
+library(RColorBrewer)
+library(pheatmap)
 ```
 
 ## Dataset
@@ -136,7 +148,7 @@ TThe normalize_data function allow the user to adjust for batch effects with par
 
 ```{r CytofRUV normalisation}
 #dir_name_norm_data = get_directory()
-dir_name_norm_data="CytofRUV_Norm_data_HC2_all_cl_20"
+dir_name_norm_data="CytofRUV_Norm_data_HC2_all_cl_20/"
 raw_data <- data.frame(sample = data$daf$sample_id, cluster=cluster_ids(data$daf,"meta20"), t(SummarizedExperiment::assay(data$daf,"exprs")))
 colnames(raw_data) <- gsub("^X", "",  colnames(raw_data))
 rep_samples=list(c("HC2_B1","HC2_B2"))
@@ -215,9 +227,85 @@ The R-shiny interface can also be used to visualise the normalised data.
   CytofRUV::launch_Shiny(daf)
 ```
 
-## Run metrics to compare batch effects before and after applying cytofruv
+# Run metrics to compare batch effects before and after applying cytofruv
 
 Insert description body here.
+
+## Preprocessing of data prior to running metrics.
+
+```{r}
+# ===== Example of computing the metrics for comparisons between raw and normalised data =====
+
+
+#  ========== Raw data  ==========
+# wd_data="/stornext/Bioinf/data/lab_speed/Marie/CytofRUV_Figures/"
+
+# Raw data was defined on line 152 -> before performing normalization
+## Raw data -> save for later use in the run_metrics
+saveRDS(raw_data,paste(wd_data,"Raw_Data.rds",sep="/"))
+
+## Compute Proportions table raw data, then save it.
+md=data$md
+samples_order=md$sample_id[order(md$patient_id)]
+raw_data$sample=factor(raw_data$sample,levels=samples_order)
+counts_table <- table(raw_data$cluster, raw_data$sample)
+props_table_raw <- t(t(counts_table) / colSums(counts_table)) * 100
+saveRDS(props_table_raw ,paste(wd_data,"props_table_raw.rds",sep="/"))
+
+
+#  ========== Norm data  ==========
+
+# dir_name_norm_data="CytofRUV_Norm_data_CLL2_HC1_all_cl_20_k5/" 
+
+# rep_samples=list(c("CLL2_B1","CLL2_B2"),c("HC1_B1","HC1_B2"))
+# cluster_list_rep_samples <- list(seq(1,20),seq(1,20))
+
+## Cluster the norm data
+# set.seed(seed)
+# norm_data$daf=cluster_data(norm_data$daf,seed,markers_to_use=norm_data$lineage_markers,clusters_nb)
+
+# Important to store the data to read from during run_metrics
+save_norm_data <- data.frame(sample = norm_data$daf$sample_id, cluster=cluster_ids(norm_data$daf,"meta20"), t(SummarizedExperiment::assay(norm_data$daf)))
+
+saveRDS(save_norm_data,paste(wd_norm,"Norm_Data.rds",sep="/"))
+
+## Compute Proportions table norm data, then save it.
+md=norm_data$md
+samples_order=md$sample_id[order(md$patient_id)]
+save_norm_data$sample=factor(save_norm_data$sample,levels=samples_order)
+counts_table_norm <- table(save_norm_data$cluster, save_norm_data$sample)
+props_table_norm <- t(t(counts_table_norm) / colSums(counts_table_norm)) * 100
+saveRDS(props_table_norm ,paste(wd_norm,"props_table_norm.rds",sep="/"))
+
+```
+
+## Preparing inputs to run_metrics() & running metrics calculations
+
+```{r}
+#  ========== Parameters to compute metrics ========== 
+
+## Raw files
+raw_files=paste(wd_data,"Raw_Data.rds",sep="/")
+props_table_raw=readRDS(paste(wd_data,"props_table_raw.rds",sep="/"))
+
+## Norm data
+wd_norm=paste(wd_data,dir_name_norm_data,sep="/")
+props_table_norm=readRDS(paste(wd_norm,"props_table_norm.rds",sep="/"))
+
+## Define parameters and sample to compute the silhouette and LDA
+nb_cells=10000
+rep_samples=c("CLL2_B1","CLL2_B2")
+
+## On specific cluster
+cluster_to_select_raw_data=c(9,2)
+cluster_to_select_norm_data=c(17,14)
+
+outdir = "/stornext/Bioinf/data/lab_speed/leong.l/outdir/"
+
+run_metrics(raw_files,cluster_to_select_raw_data,paste(wd_norm,"Norm_Data.rds",sep="/"),outdir,cluster_to_select_norm_data,rep_samples,nb_cells,props_table_raw,props_table_norm)
+
+```
+
 
 ### Earth Mover's Distance Plot 
 ```{r}
@@ -249,6 +337,7 @@ cols <- c("raw"="black","batchadj"="indianred4","cytofruv_k5"="#2B8CBE","cytofru
 
 plotEMD(daf, raw_dir,method_names,data_dir, k,filter_patients, x_axis_name, cols)
 ```
+
 
 ### Hellinger Distance Plot 
 
