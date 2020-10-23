@@ -242,7 +242,7 @@ Insert description body here.
 
 # Raw data was defined on line 152 -> before performing normalization
 ## Raw data -> save for later use in the run_metrics
-saveRDS(raw_data,paste(wd_data,"Raw_Data.rds",sep="/"))
+saveRDS(raw_data,paste(wd_data,"Raw_Data.rds",sep="/")) # not necessary to saved
 
 ## Compute Proportions table raw data, then save it.
 md=data$md
@@ -300,7 +300,7 @@ rep_samples=c("CLL2_B1","CLL2_B2")
 cluster_to_select_raw_data=c(9,2)
 cluster_to_select_norm_data=c(17,14)
 
-outdir = "/stornext/Bioinf/data/lab_speed/leong.l/outdir/"
+# Temporary outdir = "/stornext/Bioinf/data/lab_speed/leong.l/outdir/"
 
 run_metrics(raw_files,cluster_to_select_raw_data,paste(wd_norm,"Norm_Data.rds",sep="/"),outdir,cluster_to_select_norm_data,rep_samples,nb_cells,props_table_raw,props_table_norm)
 
