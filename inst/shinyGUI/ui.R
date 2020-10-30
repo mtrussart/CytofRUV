@@ -26,7 +26,7 @@ medIntensities <- fluidPage(
       ## Plot 1
       h2("Multi-dimensional scaling plot computed using median protein expression"),
       ## Need to incl library("shinycssloaders") into the package
-      withSpinner(plotOutput(outputId="plotMDS", width="100%", height = "600px"), type = 2),
+      withSpinner(plotOutput(outputId="plotMDS", height = "600px"), type = 2),
       fluidRow(
         column(6,
                h5(strong("Select the parameter to color by:")),
@@ -46,7 +46,7 @@ medIntensities <- fluidPage(
       7,
       ## Plot 2
       h2("Heatmap of the median protein expression"),
-      withSpinner(plotOutput(outputId="plotDendogram", width="80%", height = "600px"), type = 2),
+      # withSpinner(plotOutput(outputId="plotDendogram", width="80%", height = "600px"), type = 2),
       h5(strong("Select the file type and Download Plot:")),
       fluidRow(
         column(2, radioButtons("dendogram_tag", NULL, choices = list("pdf", "png"))),
@@ -267,7 +267,8 @@ Cluster_Proportions_check_box <- fluidPage(
                                        selected = sampleID_sorted,
                                        inline = FALSE,
                                        width = "100%"))),
-      actionButton("deselectAll_Cluster_Proportions", "Deselect All Options")
+      actionButton("deselectAll_Cluster_Proportions", "Deselect All Options"),
+      actionButton("selectAll_Cluster_Proportions", "Select All Options")
     )
   )
 )
@@ -293,7 +294,7 @@ clusterProportions <- fluidPage(
       withSpinner(plotOutput("Abundance_cluster", height="800px"), type = 2),
       fluidRow(
         column(6,
-               selectInput("Cluster_Proportions_group_by", "Select the parameter to group data by:", list("Condition"="condition", "Sample ID"="")),
+               selectInput("Cluster_Proportions_group_by", "Select the parameter to group data by:", c("Condition"="condition", "Sample ID"="sample_id")),
                h5(strong("Press after updating parameter:")),
                column(6,uiOutput("Cluster_Proportions_update_text")),
                column(6,div(style="margin-top:0px; margin-bottom:0px;", actionButton("update_Cluster_Proportions", "update")))
@@ -326,14 +327,19 @@ tab_plots <- shinydashboard::tabBox(
 
 header <- dashboardHeader(
   title = a(href="https://www.wehi.edu.au/",
-            img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
-                style="padding-top:5px;padding-right:5px;",
-                height="70px")
+          div(class=".box",
+              style="display:flex;justify-content:left",
+              img(src="https://www.wehi.edu.au/sites/default/files/wehi-logo-2020.png",
+                  style="padding-top:5px;",
+                  height="70px")
+              )
   ),
   titleWidth = 250,
   tags$li(class = "dropdown",
-          tags$style(".main-header {max-height: 65px}"),
-          tags$style(".main-header .logo {height: 75px}"),
+          # Set height of dashboardHeader
+          tags$style(".main-header {max-height: 65px;}"),
+          tags$style(".main-header .logo {height: 75px;width:auto;}"),
+          tags$style(".main-header .navbar {margin-left: 210px;}"),
           # CheckBox inputs
           tags$style(
             HTML(".box {
@@ -354,7 +360,9 @@ header <- dashboardHeader(
              #TSNE_update_text{color: blue; font-size: 13px;}
              #UMAP_update_text{color: blue; font-size: 13px;}
              #TSNE_facet_update_text{color: blue; font-size: 13px;}
-             #UMAP_facet_update_text{color: blue; font-size: 13px;}"
+             #UMAP_facet_update_text{color: blue; font-size: 13px;}
+             #Cluster_Proportions_update_text{color: blue; font-size: 13px;}
+            "
           ))
 )
 
