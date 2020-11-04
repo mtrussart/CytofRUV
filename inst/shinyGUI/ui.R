@@ -286,7 +286,7 @@ header <- dashboardHeader(
   title = a(href="https://www.wehi.edu.au/",
             div(class=".box",
                 style="display:flex;justify-content:left",
-                img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2016_0.png",
+                img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2020.png",
                     style="padding-top:5px;",
                     height="70px")
                 )
@@ -295,7 +295,7 @@ header <- dashboardHeader(
           # Set height of dashboardHeader
           tags$style(".main-header {max-height: 65px;}"),
           tags$style(".main-header .logo {height: 75px;width:auto;}"),
-          tags$style(".main-header .navbar {margin-left: 252px;}"),
+          tags$style(".main-header .navbar {margin-left: 210px;}"),
           # CheckBox inputs
           tags$style(
             HTML(".box {
