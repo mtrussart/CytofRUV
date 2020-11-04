@@ -7,6 +7,13 @@ sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
 batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
 
+# ========================================================================
+# Returns sample_IDs related to a given patient, found through patient_ID.
+# ------------------------------------------------------------------------
+patient_ids <- function(patient_id, dframe){
+  return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
+}
+
 shinyServer(function(input, output, session) {
   # If you want to break up the file, call source functions here, local = TRUE
 

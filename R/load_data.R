@@ -226,14 +226,6 @@ transform_data = function(fcs_raw,lineage_markers_fullname,functional_markers_fu
   #print("Arcsinh Transformation Complete!")
 }
 
-# ========================================================================
-# Returns sample_IDs related to a given patient, found through patient_ID.
-# ------------------------------------------------------------------------
-patient_ids <- function(patient_id, dframe){
-  return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
-}
-
-
 # ===========================================
 # Makes sure file_names in the metadata files have the correct extension "*.fcs"
 # -------------------------------------------
