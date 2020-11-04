@@ -1,4 +1,5 @@
 # Define type of markers
+daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
 daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
 daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
 sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
@@ -36,6 +37,7 @@ shinyServer(function(input, output, session) {
   no_sampleIds <- length(sampleID_sorted)
   nb_facets <- 10
   initial_sampleIDs <- if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
+  initial_samples_CP <- as.character(sampleID_sorted)
 
   def <- reactiveValues(
     choiceMDS       = "condition",
@@ -69,7 +71,12 @@ shinyServer(function(input, output, session) {
     choice_UMAP_Facet_Ant_Choice  = cluster_var,
     UMAP_facet_update_colourby = cluster_var,
     UMAP_facet_update_ant = panel$antigen[[1]],
-    UMAP_facet_update_text = ""
+    UMAP_facet_update_text = "",
+
+    Cluster_Proportions_update_text = "",
+    choice_Cluster_Proportions      = initial_samples_CP,
+    Cluster_Proportions_group_by     = "condition",
+    Cluster_Proportions_Text        = "condition"
   )
 
   # =================================================================================================
@@ -578,7 +585,7 @@ shinyServer(function(input, output, session) {
   # Checbox Deselect All Button:
   observeEvent(input$deselectAll_TSNE, {
     updateCheckboxGroupInput(session, "checkBox_TSNE", selected = list())
-    if (length(def$choice_TSNE_facet_colourBy) > 0) {def$TSNE_facet_update_text <- "Select at least one sample id."}
+    if (length(def$choice_TSNE_facet_colourBy) > my_min) {def$TSNE_facet_update_text <- "Select at least one sample id."}
   })
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
@@ -680,7 +687,7 @@ shinyServer(function(input, output, session) {
   # Checbox Deselect All Button:
   observeEvent(input$deselectAll_UMAP, {
     updateCheckboxGroupInput(session, "checkBox_UMAP", selected = list())
-    if (length(def$choice_UMAP_facet_colour_by) > 0) {def$UMAP_facet_update_text <- "Select at least one sample id."}
+    if (length(def$choice_UMAP_facet_colour_by) > my_min) {def$UMAP_facet_update_text <- "Select at least one sample id."}
   })
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
@@ -724,13 +731,29 @@ shinyServer(function(input, output, session) {
                                  axis.title = element_text(size = 14),
                                  legend.title = element_text(size = 14),
                                  legend.text = element_text(size = 12),
-                                 strip.text = element_blank())
+                                 strip.text = element_text(size = 14))
 
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
     plotAbundances(daf, k = cluster_var, by = "sample_id", col_clust = FALSE) +
       abundanceCluster_theme +
       facet_wrap(facets = NULL, scales="fixed")
+
+    if (def$Cluster_Proportions_group_by=="sample_id") {
+      plotAbundances(daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions], k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
+        theme(axis.text=element_text(size=12),
+              axis.title = element_text(size = 14),
+              legend.title = element_text(size = 14),
+              legend.text = element_text(size = 12),
+              strip.text = element_blank()) +
+        facet_wrap(facets = NULL, scales="fixed")
+    } else if (def$Cluster_Proportions_group_by=="condition") {
+      plotAbundances(daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions], k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
+        abundanceCluster_theme
+    }
+
+
+    # plotAbundances(daf[, sample_ids(daf)%in%c(initial_samples_CP)], k = cluster_var, by = "sample_id", group_by = "condition")
   })
 
   output$Abundance_cluster <- renderPlot({
@@ -745,5 +768,71 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(Abundance_cluster())
       ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = abundanceCluster_saveHeight, units = "cm")
-    }
-)})
+    })
+
+
+    # ======= Implementation of Interactivity below ========
+
+    # Sample ID Selection
+    output$Cluster_Proportions_Sample_Choice <- renderUI({
+      checkBox_Cluster_Proportions
+    })
+
+    Cluster_Proportions_Text <- reactive({
+      if (def$Cluster_Proportions_group_by == "condition") {
+        return("Condition")
+      }
+      return("Sample IDs")
+    })
+
+    # Cluster_Proportions_group_by <- reactive({
+    #   if (input$Cluster_Proportions_group_by == "condition") {return("condition")}
+    #   return("sample_id")
+    # })
+
+    # Update Button
+    observeEvent(input$update_Cluster_Proportions, {
+      def$Cluster_Proportions_group_by = input$Cluster_Proportions_group_by
+      def$choice_Cluster_Proportions = input$checkBox_Cluster_Proportions
+      # def$Cluster_Proportions_Text = Cluster_Proportions_Text()
+      def$Cluster_Proportions_Text = input$Cluster_Proportions_group_by
+      def$Cluster_Proportions_update_text <- ""
+    })
+
+    observeEvent({
+      input$Cluster_Proportions_group_by
+      input$checkBox_Cluster_Proportions
+    },
+    {
+      if ((is.null(input$Cluster_Proportions_group_by) && !is.null(def$Cluster_Proportions_group_by))
+          || (!is.null(input$Cluster_Proportions_group_by) && is.null(def$Cluster_Proportions_group_by))
+          || (input$Cluster_Proportions_group_by != def$Cluster_Proportions_group_by)) {
+        def$Cluster_Proportions_update_text <- "Press the update button."
+      }
+      else if ((!is.null(input$checkBox_Cluster_Proportions)) && !same_elements(input$checkBox_Cluster_Proportions, def$choice_Cluster_Proportions)) {
+        def$Cluster_Proportions_update_text <- "Press the update button."
+      }
+      else {
+        def$Cluster_Proportions_update_text <- ""
+      }
+    })
+
+    # Dynamic Title
+    output$Cluster_Proportions_Text <- renderText(paste0("Cluster proportions grouped by ", def$Cluster_Proportions_group_by))
+
+    # Renders Reminder Text
+    output$Cluster_Proportions_update_text <- renderText({ def$Cluster_Proportions_update_text })
+
+    # Checbox Deselect All Button:
+    observeEvent(input$deselectAll_Cluster_Proportions, {
+      updateCheckboxGroupInput(session, "checkBox_Cluster_Proportions", selected = list())
+      if (length(def$choice_Cluster_Proportions) > my_min) {def$Cluster_Proportions_update_text <- "Select at least one sample id."}
+    })
+
+    # Checbox Deselect All Button:
+    observeEvent(input$selectAll_Cluster_Proportions, {
+      updateCheckboxGroupInput(session, "checkBox_Cluster_Proportions", selected = initial_samples_CP)
+      if ((!is.null(input$checkBox_Cluster_Proportions)) && !same_elements(input$checkBox_Cluster_Proportions, def$choice_Cluster_Proportions)) {def$Cluster_Proportions_update_text <- "Press the update button."}
+    })
+
+})
