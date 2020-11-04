@@ -286,7 +286,7 @@ header <- dashboardHeader(
   title = a(href="https://www.wehi.edu.au/",
             div(class=".box",
                 style="display:flex;justify-content:left",
-                img(src="https://www.wehi.edu.au/sites/default/files/WEHI_logo_2020.png",
+                img(src="https://www.wehi.edu.au/sites/default/files/wehi-logo-2020.png",
                     style="padding-top:5px;",
                     height="70px")
                 )
