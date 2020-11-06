@@ -6,7 +6,6 @@ sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
 # Define batch
 batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
-daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
 
 # ========================================================================
 # Returns sample_IDs related to a given patient, found through patient_ID.
@@ -736,9 +735,17 @@ shinyServer(function(input, output, session) {
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
     new_daf <- daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions]
-    new_daf$sample_id<-factor(droplevels(new_daf$sample_id))
+    # new_sortedIDs <- order(new_daf$patient_id)
+    # new_daf$sample_id<-factor(new_daf$sample_id[new_sortedIDs], levels = unique(new_daf$sample_id[new_sortedIDs]))
+    # new_daf$condition<-factor(new_daf$condition[new_sortedIDs], levels = unique(new_daf$condition[new_sortedIDs]))
+    # new_daf$patient_id<-factor(new_daf$patient_id[new_sortedIDs], levels = unique(new_daf$patient_id[new_sortedIDs]))
+    # new_daf$cluster_id<-factor(new_daf$cluster_id[new_sortedIDs], levels = unique(new_daf$cluster_id[new_sortedIDs]))
+    #new_daf$sample_id<-factor(droplevels(new_daf$sample_id))
+    # new_daf$patient_id<-factor(new_daf$patient_id, levels = levels(new_daf$patient_id[order(new_daf$patient_id)]))
+    # new_daf$condition<-factor(new_daf$condition, levels = levels(new_daf$condition[order(new_daf$condition)]))
+    # new_daf$sample_id<-factor(new_daf$sample_id[temp_order])
     if (def$Cluster_Proportions_group_by=="sample_id") {
-      plotAbundances(new_daf, k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
+      plotAbundances(new_daf, k = cluster_var, by="sample_id", group_by = "patient_id") +
         theme(axis.text=element_text(size=12),
               axis.title = element_text(size = 14),
               legend.title = element_text(size = 14),
