@@ -735,12 +735,10 @@ shinyServer(function(input, output, session) {
 
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
-    plotAbundances(daf, k = cluster_var, by = "sample_id", col_clust = FALSE) +
-      abundanceCluster_theme +
-      facet_wrap(facets = NULL, scales="fixed")
-
+    new_daf <- daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions]
+    new_daf$sample_id<-factor(droplevels(new_daf$sample_id))
     if (def$Cluster_Proportions_group_by=="sample_id") {
-      plotAbundances(daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions], k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
+      plotAbundances(new_daf, k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
         theme(axis.text=element_text(size=12),
               axis.title = element_text(size = 14),
               legend.title = element_text(size = 14),
@@ -748,7 +746,7 @@ shinyServer(function(input, output, session) {
               strip.text = element_blank()) +
         facet_wrap(facets = NULL, scales="fixed")
     } else if (def$Cluster_Proportions_group_by=="condition") {
-      plotAbundances(daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions], k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
+      plotAbundances(new_daf, k = cluster_var, by="sample_id", group_by = def$Cluster_Proportions_group_by) +
         abundanceCluster_theme
     }
 
