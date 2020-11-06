@@ -265,7 +265,8 @@ Cluster_Proportions_check_box <- fluidPage(
                                        selected = sampleID_sorted,
                                        inline = FALSE,
                                        width = "100%"))),
-      actionButton("deselectAll_Cluster_Proportions", "Deselect All Options")
+      actionButton("deselectAll_Cluster_Proportions", "Deselect All Options"),
+      actionButton("selectAll_Cluster_Proportions", "Select All Options"),
     )
   )
 )
