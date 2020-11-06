@@ -1,5 +1,4 @@
 # Define type of markers
-daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
 daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
 daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
 sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
@@ -7,6 +6,7 @@ sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
 # Define batch
 batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
+daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
 
 # ========================================================================
 # Returns sample_IDs related to a given patient, found through patient_ID.
