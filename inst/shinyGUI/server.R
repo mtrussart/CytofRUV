@@ -728,7 +728,7 @@ shinyServer(function(input, output, session) {
 
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
-    plotAbundances(daf, k = cluster_var, by = "sample_id") +
+    plotAbundances(daf, k = cluster_var, by = "sample_id", col_clust = FALSE) +
       abundanceCluster_theme +
       facet_wrap(facets = NULL, scales="fixed")
   })

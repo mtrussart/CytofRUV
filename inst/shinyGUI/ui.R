@@ -287,7 +287,7 @@ header <- dashboardHeader(
             div(class=".box",
                 style="display:flex;justify-content:left",
                 img(src="https://www.wehi.edu.au/sites/default/files/wehi-logo-2020.png",
-                    style="padding-top:5px;",
+                    style="padding-top:5px;padding-left:5px;",
                     height="70px")
                 )
   ),
@@ -295,7 +295,7 @@ header <- dashboardHeader(
           # Set height of dashboardHeader
           tags$style(".main-header {max-height: 65px;}"),
           tags$style(".main-header .logo {height: 75px;width:auto;}"),
-          tags$style(".main-header .navbar {margin-left: 210px;}"),
+          tags$style(".main-header .navbar {margin-left: 215px;}"),
           # CheckBox inputs
           tags$style(
             HTML(".box {
@@ -325,7 +325,7 @@ sidebar <- dashboardSidebar(disable = TRUE)
 body <- dashboardBody(
   tags$head(tags$script(HTML(freezeButtonsScript))),
   fluidRow(
-    tabsetPanel(id = "tabset", tabPanel(h4("Diagnostic Plots"), ui_diagnostic_plots))
+    ui_diagnostic_plots
   )
 )
 
