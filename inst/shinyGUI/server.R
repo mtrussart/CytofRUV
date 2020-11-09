@@ -257,6 +257,7 @@ shinyServer(function(input, output, session) {
     def$Exprs_ant = input$exprs3
     def$Exprs_height = plotHeight()
     def$Exprs_width = plotWidth()
+    def$choiceTransformation = input$choiceTransformation
   })
 
   # Logic for Update Reminder Text:
