@@ -81,7 +81,8 @@ The first step is to load the metadata file, all the .fcs files, the panel file 
   clusters_nb=20
 
   ## Loading the data
-  data=load_data(wd_data,metadata_filename,panel_filename)
+  data=load_data(wd_data,metadata_filename,panel_filename,cofactor=NULL)
+  
   ## Cluster the data
   data$daf=cluster_data(data$daf,seed,markers_to_use=data$lineage_markers,clusters_nb)
 

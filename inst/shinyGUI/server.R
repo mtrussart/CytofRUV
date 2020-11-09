@@ -1,8 +1,17 @@
-# Define type of markers
+log_daf <- daf
+assay(log_daf, "exprs") = log(assay(daf, "counts"))
+
+# Define type of markers for default daf
 daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
 daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
 sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
 sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
+
+# Define type of markers for log daf
+log_daf_type  <- log_daf[SingleCellExperiment::rowData(log_daf)$marker_class=="type", sample(ncol(daf_state), n_subset_marker_specific)]
+log_daf_state <- log_daf[SingleCellExperiment::rowData(log_daf)$marker_class=="state", sample(ncol(daf_type), n_subset_marker_specific)]
+
+
 # Define batch
 batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
@@ -211,15 +220,27 @@ shinyServer(function(input, output, session) {
 
   # Provides appropriate data following change of parameters.
   daf_temp <- reactive({
-    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(sub_daf_state)
-    # Marker Class: Type
-    if (input$exprs3 == "type") {
-      patient_type = sub_daf_type[, sample_ids(sub_daf_type)%in%patient_ids(input$exprs2, sub_daf_type)]
-      return(patient_type)
+    if (input$choiceTransformation=="default") {
+      if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(sub_daf_state)
+      # Marker Class: Type
+      if (input$exprs3 == "type") {
+        patient_type = sub_daf_type[, sample_ids(sub_daf_type)%in%patient_ids(input$exprs2, sub_daf_type)]
+        return(patient_type)
+      }
+      # Marker Class: State
+      patient_state = sub_daf_state[, sample_ids(sub_daf_state)%in%patient_ids(input$exprs2, sub_daf_state)]
+      return(patient_state)
+    } else {
+      if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(log_daf_state)
+      # Marker Class: Type
+      if (input$exprs3 == "type") {
+        patient_type = log_daf_type[, sample_ids(log_daf_type)%in%patient_ids(input$exprs2, log_daf_type)]
+        return(patient_type)
+      }
+      # Marker Class: State
+      patient_state = log_daf_state[, sample_ids(log_daf_state)%in%patient_ids(input$exprs2, log_daf_state)]
+      return(patient_state)
     }
-    # Marker Class: State
-    patient_state = sub_daf_state[, sample_ids(sub_daf_state)%in%patient_ids(input$exprs2, sub_daf_state)]
-    return(patient_state)
   })
 
   # Upon Update Button Press:
