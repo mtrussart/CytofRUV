@@ -6,9 +6,8 @@
 #' Median Protein Expression, Protein Expression Distributions, Clustering Results
 #' and Cluster Proportions.
 #'
-#' @param subset_percentage Percentage of data that exploratory plots shall display, default is 50\%.
-#'
 #' @param daf Dataset that the app's plots are based upon.
+#' @param subset_percentage Percentage of data that exploratory plots shall display, default is 50\%.
 #'
 #' @return Opens a browser window with an interactive Shiny application.
 #'
@@ -17,9 +16,9 @@
 #' @export
 #'
 
-launch_Shiny<- function(subset_percentage=50){
+launch_Shiny<- function(daf, subset_percentage=50){
   assign("subset_percentage", subset_percentage/100, globalenv())
-launch_Shiny<- function(daf){
+
   if (!exists("md") || (!exists("daf"))) {
     stop("Prior to launching the shiny application, users need to load variables as shown",
          " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when variables",

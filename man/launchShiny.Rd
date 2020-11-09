@@ -9,8 +9,7 @@ from samples replicated across batches using four different diagnostics plots:
 Median Protein Expression, Protein Expression Distributions, Clustering Results
 and Cluster Proportions.}
 \usage{
-launch_Shiny(subset_percentage = 50)
-launch_Shiny(daf)
+launch_Shiny(daf, subset_percentage = 50)
 }
 \arguments{
 \item{subset_percentage}{Percentage of data that exploratory plots shall display, default is 50\%.}
