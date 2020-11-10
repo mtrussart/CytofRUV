@@ -725,7 +725,7 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 4: Cluster Proportions
   # -------------------------------------------------------------------------------------------------
-  abundanceCluster_saveHeight = 12
+  abundanceCluster_saveHeight = 20
   abundanceCluster_theme = theme(axis.text=element_text(size=12),
                                  axis.title = element_text(size = 14),
                                  legend.title = element_text(size = 14),
@@ -735,6 +735,7 @@ shinyServer(function(input, output, session) {
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
     new_daf <- daf[, sample_ids(daf)%in%def$choice_Cluster_Proportions]
+    new_daf$sample_id<-factor(droplevels(new_daf$sample_id))
     if (def$Cluster_Proportions_group_by=="sample_id") {
       plotAbundances(new_daf, k = cluster_var, by="sample_id", group_by = "patient_id", col_clust=FALSE) +
         theme(axis.text=element_text(size=12),
