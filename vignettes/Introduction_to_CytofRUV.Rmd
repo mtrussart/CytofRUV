@@ -75,7 +75,6 @@ The first step is to load the metadata file, all the .fcs files, the panel file 
     dir.create(output_dir)
   }
   wd_data=file.path(getwd(),output_dir)
-  wd_data=file.path("/stornext/Bioinf/data/lab_speed/Marie/CytofRUV_Figures_v2/Raw_data_clustered_v2.rds")
   metadata_filename="Metadata.xlsx"
   panel_filename="Panel.xlsx"
   seed=1234
