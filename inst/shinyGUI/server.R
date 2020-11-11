@@ -1,28 +1,6 @@
 log_daf <- daf
 assay(log_daf, "exprs") = log(assay(log_daf, "exprs"))
 
-# After utilising raw data to perform log, run this to do arcsinh to transform data. -> From CATALYST.
-# Link: https://rdrr.io/bioc/CATALYST/src/R/utils-preprocessing.R
-cf=5
-ain = "exprs"
-aout = "exprs"
-chs <- CATALYST::channels(daf)
-stopifnot(is.numeric(cf), cf > 0)
-if (length(cf) == 1) {
-  int_metadata(daf)$cofactor <- cf
-  cf <- rep(cf, nrow(daf))
-} else {
-  stopifnot(!is.null(names(cf)), chs %in% names(cf))
-  cf <- cf[match(chs, names(cf))]
-  int_metadata(daf)$cofactor <- cf
-}
-fun <- asinh
-op <- "/"
-y <- assay(daf, ain)
-y <- fun(sweep(y, 1, cf, op))
-assay(daf, aout, FALSE) <- y
-
-
 # Define type of markers for default daf
 daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
 daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
@@ -111,7 +89,7 @@ shinyServer(function(input, output, session) {
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
-
+    color_batch=c("#0072B2","#D55E00")
     # compute medians across samples
     cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
     es <- as.matrix(assay(x, "exprs"))
@@ -133,12 +111,14 @@ shinyServer(function(input, output, session) {
       ggrepel::geom_label_repel(aes_string(label="sample_id"),
                        show.legend=FALSE) + geom_point(alpha=.8, size=1.2) +
       guides(col=guide_legend(overide.aes=list(alpha=1, size=3))) +
-      theme_void() + theme(aspect.ratio=1,
-                           panel.grid.minor=element_blank(),
-                           panel.grid.major=element_line(color='lightgrey', size=.25),
-                           axis.title=element_text(face='bold'),
-                           axis.title.y=element_text(angle=90),
-                           axis.text=element_text())
+      theme_void() +
+      scale_color_manual(values = color_batch) +
+      theme(aspect.ratio=1,
+           panel.grid.minor=element_blank(),
+           panel.grid.major=element_line(color='lightgrey', size=.25),
+           axis.title=element_text(face='bold'),
+           axis.title.y=element_text(angle=90),
+           axis.text=element_text())
   }
 
   # Update Button Logic:
