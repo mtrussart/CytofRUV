@@ -15,14 +15,14 @@
 #' @export
 #'
 
-launch_Shiny<- function(daf){
-  if (!exists("md") || (!exists("daf"))) {
+launch_Shiny<- function(daf=NULL, log_daf=NULL){
+  if (!exists("md") || (is.null(daf)) || (is.null(log_daf))) {
     stop("Prior to launching the shiny application, users need to load variables as shown",
          " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when variables",
-         " such as 'md' and 'daf' have not been defined.")
+         " such as 'md', 'daf' and 'log_daf' have not been defined.")
   }
 
-  if (exists("daf")) {
+  if (!is.null(daf)) {
     if (!("cluster_codes" %in% names(metadata(daf)))) {
       stop("The app was launched without running clustering. Clustering data has to be loaded into the variable 'daf'. Please refer to the vignette",
            " Introduction_to_CytofRUV.Rmd for instructions about how to run clustering.")
