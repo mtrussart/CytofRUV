@@ -1,5 +1,27 @@
 log_daf <- daf
-assay(log_daf, "exprs") = log(assay(daf, "counts"))
+assay(log_daf, "exprs") = log(assay(log_daf, "exprs"))
+
+# After utilising raw data to perform log, run this to do arcsinh to transform data. -> From CATALYST.
+# Link: https://rdrr.io/bioc/CATALYST/src/R/utils-preprocessing.R
+cf=5
+ain = "exprs"
+aout = "exprs"
+chs <- CATALYST::channels(daf)
+stopifnot(is.numeric(cf), cf > 0)
+if (length(cf) == 1) {
+  int_metadata(daf)$cofactor <- cf
+  cf <- rep(cf, nrow(daf))
+} else {
+  stopifnot(!is.null(names(cf)), chs %in% names(cf))
+  cf <- cf[match(chs, names(cf))]
+  int_metadata(daf)$cofactor <- cf
+}
+fun <- asinh
+op <- "/"
+y <- assay(daf, ain)
+y <- fun(sweep(y, 1, cf, op))
+assay(daf, aout, FALSE) <- y
+
 
 # Define type of markers for default daf
 daf_type  <- daf[SingleCellExperiment::rowData(daf)$marker_class=="type", ]
@@ -7,7 +29,7 @@ daf_state <- daf[SingleCellExperiment::rowData(daf)$marker_class=="state", ]
 sub_daf_state <- daf_state[, sample(ncol(daf_state), n_subset_marker_specific)]
 sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
 
-# Define type of markers for log daf
+# # Define type of markers for log daf
 log_daf_type  <- log_daf[SingleCellExperiment::rowData(log_daf)$marker_class=="type", sample(ncol(daf_state), n_subset_marker_specific)]
 log_daf_state <- log_daf[SingleCellExperiment::rowData(log_daf)$marker_class=="state", sample(ncol(daf_type), n_subset_marker_specific)]
 
