@@ -1,4 +1,3 @@
-log_daf <- daf
 assay(log_daf, "exprs") = log(assay(log_daf, "exprs"))
 
 # Define type of markers for default daf
