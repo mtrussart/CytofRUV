@@ -83,7 +83,6 @@ The first step is to load the metadata file, all the .fcs files, the panel file 
   ## Loading the data
   data=load_data(wd_data,metadata_filename,panel_filename)
   log_data=load_data(wd_data,metadata_filename,panel_filename,cofactor=NULL)
-  log_daf <- log_data$daf
   
   ## Cluster the data
   data$daf=cluster_data(data$daf,seed,markers_to_use=data$lineage_markers,clusters_nb)
@@ -106,6 +105,10 @@ The user needs to select the data to use (before or after normalisation) to visu
   
   # Running Dimension Reduction -> TSNE & UMAP
   set.seed(seed)
+  
+  # Perform Log transformation on raw data for app.
+  log_daf <- log_data$daf
+  assay(log_daf, "exprs") = log(assay(log_daf, "exprs"))
   
   # Number of cells for tSNE plots marker specific
   TSNE_subset <- 2000
