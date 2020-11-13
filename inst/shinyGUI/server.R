@@ -231,18 +231,15 @@ shinyServer(function(input, output, session) {
       return(patient_state)
     } else {
       if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) {
-        print("condition!")
         return(log_daf_state)
       }
       # Marker Class: Type
       if (input$exprs3 == "type") {
-        print("Hi!!")
         patient_type = log_daf_type[, sample_ids(log_daf_type)%in%patient_ids(input$exprs2, log_daf_type)]
         return(patient_type)
       }
       # Marker Class: State
       patient_state = log_daf_state[, sample_ids(log_daf_state)%in%patient_ids(input$exprs2, log_daf_state)]
-      print("Hi2!")
       return(patient_state)
     }
   })
