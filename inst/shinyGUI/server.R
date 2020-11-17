@@ -7,6 +7,13 @@ sub_daf_type  <- daf_type[, sample(ncol(daf_type), n_subset_marker_specific)]
 batch_ids <- is.factor(rep(md$batch, nrow(daf)))
 sampleID_sorted <- md$sample_id[order(md$patient_id)]
 
+# ========================================================================
+# Returns sample_IDs related to a given patient, found through patient_ID.
+# ------------------------------------------------------------------------
+patient_ids <- function(patient_id, dframe){
+  return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
+}
+
 shinyServer(function(input, output, session) {
   # If you want to break up the file, call source functions here, local = TRUE
 
@@ -26,16 +33,16 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Save Default Plot Values:
   # -------------------------------------------------------------------------------------------------
-  no_sampleIds = length(sampleID_sorted)
-  nb_facets = 10
-  initial_sampleIDs = if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
+  no_sampleIds <- length(sampleID_sorted)
+  nb_facets <- 10
+  initial_sampleIDs <- if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
 
   def <- reactiveValues(
-    choiceMDS        = "condition",
+    choiceMDS       = "condition",
     MDS_update_text = "",
 
     choiceExprsParam = "condition",
-    choiceExprsClass = sub_daf_type,
+    choiceExprsClass = sub_daf_state,
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
@@ -69,11 +76,10 @@ shinyServer(function(input, output, session) {
   # Page 1: Median Intensities
   # -------------------------------------------------------------------------------------------------
 
-
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
-
+    color_batch=c("#0072B2","#D55E00")
     # compute medians across samples
     cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
     es <- as.matrix(assay(x, "exprs"))
@@ -95,7 +101,9 @@ shinyServer(function(input, output, session) {
       ggrepel::geom_label_repel(aes_string(label="sample_id"),
                        show.legend=FALSE) + geom_point(alpha=.8, size=1.2) +
       guides(col=guide_legend(overide.aes=list(alpha=1, size=3))) +
-      theme_void() + theme(aspect.ratio=1,
+      theme_void() +
+      scale_color_manual(values = color_batch) +
+      theme(aspect.ratio=1,
                            panel.grid.minor=element_blank(),
                            panel.grid.major=element_line(color='lightgrey', size=.25),
                            axis.title=element_text(face='bold'),
@@ -128,9 +136,7 @@ shinyServer(function(input, output, session) {
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12))
-    #+  (if (length(levels(sub_daf[[def$choiceMDS]])) <= 8) scale_color_manual(values = brewer.pal(n = 8, name = "Dark2")))
-    # If more than 8 options, default to default ggplot colour scheme. If < 8, colour blind friendly palette is used.
-  })
+    })
 
   output$plotMDS <- renderPlot({
     req(mds())
@@ -166,7 +172,7 @@ shinyServer(function(input, output, session) {
       if (input$dendogram_tag == "pdf") {
         pdf(file, width = 8)
       } else {
-        png(file, width=720, units = "px")
+        png(file, width = 720, units = "px")
       }
       ComplexHeatmap::draw(dendogram())
       dev.off()
@@ -176,12 +182,20 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 2: Markers Distribution
   # -------------------------------------------------------------------------------------------------
-  # Returns sample_IDs related to a given patient, found through patient_ID.
-  patient_ids <- function(patient_id, dframe){
-    return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
-  }
 
-  # First selectInput box choices: PatientIDS
+  ## Plot Dimension Variables
+  nb_cols_plotDistr <- 5
+  heightExprPlot <- 150
+  cmSaveHeight <- 4.5
+  cmSaveWidth <- 6
+
+  init_num_antigens <- table(panel$marker_class)[["state"]]
+  initial_rows <- ifelse(init_num_antigens %% nb_cols_plotDistr > 1, 1, 0)
+  def$Exprs_height <- (init_num_antigens %/% nb_cols_plotDistr + initial_rows)
+
+  def$Exprs_width <- ifelse(init_num_antigens %/% nb_cols_plotDistr < 1, num_antigens, nb_cols_plotDistr)
+
+    # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
     if (!(input$exprs1 == "sample_id")) return(NULL)
     selectInput("exprs2", "Select the patient:",
@@ -221,6 +235,8 @@ shinyServer(function(input, output, session) {
     def$Exprs_update_text = ''
     def$Exprs_patient = input$exprs2
     def$Exprs_ant = input$exprs3
+    def$Exprs_height = plotHeight()
+    def$Exprs_width = plotWidth()
   })
 
   # Logic for Update Reminder Text:
@@ -246,6 +262,29 @@ shinyServer(function(input, output, session) {
 
   output$Exprs_update_text <- renderText(def$Exprs_update_text)
 
+  plotHeight <- reactive({
+    num_antigens = -1
+    if (input$exprs1 == "condition") {
+      num_antigens = table(panel$marker_class)[["state"]]
+    } else {
+      # Temp adds 1 Row to height if there is a carry over of facets to the next row.
+      num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
+    }
+    temp = if(num_antigens %% nb_cols_plotDistr > 1) 1 else 0
+    out = (num_antigens %/% nb_cols_plotDistr + temp)
+  })
+
+  plotWidth<- reactive({
+    num_antigens = -1
+    if (input$exprs1 == "condition") {
+      num_antigens = table(panel$marker_class)[["state"]]
+    } else {
+      # Temp adds 1 Row to height if there is a carry over of facets to the next row.
+      num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
+    }
+    temp = if(num_antigens %/% nb_cols_plotDistr < 1) num_antigens else nb_cols_plotDistr
+  })
+
   # Define the Plot
   exprsPlot <- reactive({
     plotExprs(def$choiceExprsClass, color_by = def$choiceExprsParam) +
@@ -253,13 +292,20 @@ shinyServer(function(input, output, session) {
             axis.title = element_text(size = 14),
             legend.title = element_text(size = 14),
             legend.text = element_text(size = 12)
-      )
+      ) +
+      facet_wrap(~ antigen, scales = "free", ncol = nb_cols_plotDistr)
   })
 
-  output$exprsPlot  <- renderPlot({
+  output$exprsPlot.ui <- renderPlot({
     req(exprsPlot())
     exprsPlot()
   })
+
+  # For Adjusting the size!
+  output$exprsPlot  <- renderUI({
+    withSpinner(plotOutput("exprsPlot.ui", width="auto", height = def$Exprs_height*heightExprPlot), type=2)
+  })
+
 
   output$download_exprsPlot <- downloadHandler(
     filename = function() {
@@ -267,13 +313,28 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(exprsPlot())
-      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag, width = 34, height = 18, units = "cm")
+      ggsave(file, plot = exprsPlot(), device = input$exprsPlot_tag,
+            width = (def$Exprs_width*cmSaveWidth)+nb_cols_plotDistr,
+            height = def$Exprs_height*cmSaveHeight, units = "cm")
     }
   )
 
   # =================================================================================================
   # Page 3: Clustering Results
   # -------------------------------------------------------------------------------------------------
+  cluster_plot_guides<-guides(col = guide_legend(override.aes = list(alpha = 1, size = 3)))
+  heatmap_pdf_width <- 10
+  heatmap_png_width <- 720
+
+  plotDR_theme <- theme(axis.text=element_text(size=12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 12))
+
+  # Max and Minimum selected sample_ids for facetted TSNE and UMAP.
+  my_min <- 0
+  my_max <- 10
+
   # =================================================================================================
   #   Plot 1: Cluster Heatmap
   # -------------------------------------------------------------------------------------------------
@@ -293,17 +354,17 @@ shinyServer(function(input, output, session) {
     content = function(file) {
       req(cluster_heatmap())
       if (input$cluster_Heatmap_tag == "pdf") {
-        pdf(file, width = 10)
+        pdf(file, width = heatmap_pdf_width)
       } else {
-        png(file, width=720, units = "px")
+        png(file, width = heatmap_png_width, units = "px")
       }
-      ComplexHeatmap::draw(cluster_heatmap()[[1]])
+      ComplexHeatmap::draw(cluster_heatmap())
       dev.off()
     }
   )
 
   # =================================================================================================
-  #   Plot 2: TSNE Non Facetted
+  #   Plot 2: TSNE Non Faceted
   # -------------------------------------------------------------------------------------------------
   TSNE_TEXT1 <- reactive({
     if (def$choice_TSNE_Colour_By1 == cluster_var) {
@@ -360,11 +421,7 @@ shinyServer(function(input, output, session) {
 
   # Define Plot 2 Page 3 -
   plot_TSNE1 <- reactive({
-    plotDR(daf, "TSNE", color_by = def$choice_TSNE_Colour_By1) +
-      theme(axis.text=element_text(size=12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+    plotDR(daf, "TSNE", color_by = def$choice_TSNE_Colour_By1) + plotDR_theme + cluster_plot_guides
   })
 
   output$plot_TSNE1 <- renderPlot({
@@ -440,11 +497,7 @@ shinyServer(function(input, output, session) {
   # Reactive Title:
   output$Umap_text_1 <- renderText(paste0("UMAP: Coloured By ", text_UMAP_1()))
   plot_UMAP1 <- reactive({
-    plotDR(daf, "UMAP", color_by = def$choice_UMAP_Colour_By1) +
-      theme(axis.text=element_text(size=12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+    plotDR(daf, "UMAP", color_by = def$choice_UMAP_Colour_By1) + plotDR_theme + cluster_plot_guides
   })
 
   output$plot_UMAP1 <- renderPlot({
@@ -532,8 +585,6 @@ shinyServer(function(input, output, session) {
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
   observe({
-    my_min <- 0
-    my_max <- 10
     if(length(input$checkBox_TSNE) > my_max){
       updateCheckboxGroupInput(session, "checkBox_TSNE", selected = tail(input$checkBox_TSNE,my_max))
     }
@@ -547,11 +598,10 @@ shinyServer(function(input, output, session) {
   plotTSNE_facet <- reactive({
     plotDR(daf[, sample_ids(daf)%in%def$choice_TSNE_facet_colourBy],
            "TSNE",
-           color_by = def$choice_TSNE_Facet_Ant_Choice) + facet_wrap("sample_id") +
-      theme(axis.text=element_text(size=12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+           color_by = def$choice_TSNE_Facet_Ant_Choice) +
+      facet_wrap("sample_id") +
+      plotDR_theme +
+      cluster_plot_guides
   })
 
   output$plotTSNE_facet <- renderPlot({
@@ -637,8 +687,6 @@ shinyServer(function(input, output, session) {
 
   # CheckBoxGroup inputs: Limit to 10 Sample_IDs to select.
   observe({
-    my_min <- 0
-    my_max <- 10
     if(length(input$checkBox_UMAP) > my_max){
       updateCheckboxGroupInput(session, "checkBox_UMAP", selected = tail(input$checkBox_UMAP,my_max))
     }
@@ -650,10 +698,8 @@ shinyServer(function(input, output, session) {
   plot_UMAP_facet <- reactive({
     plotDR(daf[, sample_ids(daf)%in%def$choice_UMAP_facet_colour_by], "UMAP", color_by = def$choice_UMAP_Facet_Ant_Choice) +
       facet_wrap("sample_id") +
-      theme(axis.text=element_text(size=12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12))
+      plotDR_theme +
+      cluster_plot_guides
   })
 
   output$plot_UMAP_facet <- renderPlot({
@@ -675,14 +721,17 @@ shinyServer(function(input, output, session) {
   # =================================================================================================
   # Page 4: Cluster Proportions
   # -------------------------------------------------------------------------------------------------
+  abundanceCluster_saveHeight = 12
+  abundanceCluster_theme = theme(axis.text=element_text(size=12),
+                                 axis.title = element_text(size = 14),
+                                 legend.title = element_text(size = 14),
+                                 legend.text = element_text(size = 12),
+                                 strip.text = element_blank())
+
   Abundance_cluster <- reactive({
     daf$sample_id<-factor(daf$sample_id,levels = sampleID_sorted)
-    plotAbundances(daf, k = cluster_var, by = "sample_id") +
-      theme(axis.text=element_text(size=12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 14),
-            legend.text = element_text(size = 12),
-            strip.text = element_blank()) +
+    plotAbundances(daf, k = cluster_var, by = "sample_id", col_clust = FALSE) +
+      abundanceCluster_theme +
       facet_wrap(facets = NULL, scales="fixed")
   })
 
@@ -697,6 +746,6 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       req(Abundance_cluster())
-      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = 21, units = "cm")
+      ggsave(file, plot = Abundance_cluster(), device = input$Abundance_cluster_tag, width = 2*nlevels(md$sample_id), height = abundanceCluster_saveHeight, units = "cm")
     }
 )})

@@ -8,14 +8,16 @@
 #'
 #' @param wd_data Path to the directory containing all raw fcs files, the metadata file
 #' and the panel file
-#' @param metadata_name Metadata filename containing the details of each sample
+#' @param metadata_filename Metadata filename containing the details of each sample
 #' @param panel_filename Panel filename containing the details of each marker
 #' @param cofactor Cofactor for asinh transformation, default is 5 and set to NULL for untransformed data
 #'
-#'
 #' @return Datasets before normalisation
+#' @importFrom CATALYST sample_ids prepData
+#' @importFrom Biobase pData
+#' @importFrom flowCore parameters fsApply exprs
+#' @importFrom SummarizedExperiment assayNames
 #' @export
-#'
 
 
 #load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")
@@ -191,66 +193,6 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 #                        colData = cd, metadata = list(experiment_info = md, cofactor = cofactor))
 # }
 
-# ==============================================================================
-# split cell indices by cell metadata factor(s)
-#   - x:   a SCE with rows = cells, columns = features
-#   - by:  colData columns specifying factor(s) to aggregate by
-# ------------------------------------------------------------------------------
-#' @importFrom data.table data.table
-#' @importFrom SummarizedExperiment colData
-#' @importFrom purrr map_depth
-.split_cells <- function(x, by) {
-  stopifnot(is.character(by), by %in% colnames(colData(x)))
-  cd <- data.frame(colData(x))
-  dt <- data.table(cd, i = seq_len(ncol(x)))
-  dt_split <- split(dt, by = by, sorted = TRUE, flatten = FALSE)
-  map_depth(dt_split, length(by), "i")
-}
-
-# ==============================================================================
-# aggregation of single-cell to pseudobulk data;
-# e.g., median expression by cluster- or cluster-sample
-#   - x:   a SCE with rows = cells, columns = features
-#   - by:  colData columns specifying factor(s) to aggregate by
-#   - fun: aggregation function specifying the
-#          summary statistic, e.g., sum, mean, median
-# ------------------------------------------------------------------------------
-#' @importFrom dplyr bind_rows
-#' @importFrom Matrix rowMeans rowSums
-#' @importFrom matrixStats rowMedians
-#' @importFrom purrr map_depth
-.agg <- function(x, by, fun = c("median", "mean", "sum")) {
-  fun <- switch(match.arg(fun),
-                median = rowMedians, mean = rowMeans, sum = rowSums)
-  cs <- .split_cells(x, by)
-  pb <- map_depth(cs, -1, function(i) {
-    if (length(i) == 0) return(numeric(nrow(x)))
-    fun(assay(x, "exprs")[, i, drop = FALSE])
-  })
-  map_depth(pb, -2, function(u) as.matrix(data.frame(
-    u, row.names = rownames(x), check.names = FALSE)))
-}
-
-#' @importFrom ComplexHeatmap columnAnnotation rowAnnotation
-#' @importFrom grid gpar
-#' @importFrom methods is
-#' @importFrom scales hue_pal
-#' Function From CATALYST
-.anno_factors <- function(df, type = c("row", "column")) {
-  # check that all data.frame columns are factors
-  stopifnot(is(df, "data.frame"))
-  stopifnot(all(vapply(as.list(df), is.factor, logical(1))))
-  # for ea. factor, extract levels & nb. of levels
-  lvls <- lapply(as.list(df), levels)
-  nlvls <- vapply(lvls, length, numeric(1))
-  # cols <- pal.safe(parula, n = sum(nlvls), main = NULL)
-  names(cols) <- unlist(lvls)
-  cols <- split(cols, rep.int(seq_len(ncol(df)), nlvls))
-  names(cols) <- names(df)
-  HeatmapAnnotation(which = match.arg(type),
-                    df = df, col = cols, gp = gpar(col = "white"))
-}
-
 get_directory <- function() {
   print("Please refer to the console")
   directory<-""
@@ -283,14 +225,6 @@ transform_data = function(fcs_raw,lineage_markers_fullname,functional_markers_fu
   return (fcs)
   #print("Arcsinh Transformation Complete!")
 }
-
-# ========================================================================
-# Returns sample_IDs related to a given patient, found through patient_ID.
-# ------------------------------------------------------------------------
-patient_ids <- function(patient_id, dframe){
-  return(levels(factor(sample_ids(dframe)[grepl(patient_id,sample_ids(dframe))])))
-}
-
 
 # ===========================================
 # Makes sure file_names in the metadata files have the correct extension "*.fcs"
