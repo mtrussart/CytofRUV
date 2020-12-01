@@ -79,7 +79,9 @@ shinyServer(function(input, output, session) {
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
-    color_batch=c("#0072B2","#D55E00")
+    if (length(unique(x$color_by)) <= 4) {
+      color_batch=c("#0072B2","#D55E00", "#004D40", "#FFC107")
+    }
     # compute medians across samples
     cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
     es <- as.matrix(assay(x, "exprs"))
