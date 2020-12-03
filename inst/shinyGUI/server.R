@@ -79,9 +79,7 @@ shinyServer(function(input, output, session) {
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
-    if (length(unique(x$color_by)) <= 4) {
-      color_batch=c("#0072B2","#D55E00", "#004D40", "#FFC107")
-    }
+    color_batch=c("#0072B2","#D55E00", "#004D40", "#FFC107")
     # compute medians across samples
     cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
     es <- as.matrix(assay(x, "exprs"))
@@ -104,7 +102,7 @@ shinyServer(function(input, output, session) {
                        show.legend=FALSE) + geom_point(alpha=.8, size=1.2) +
       guides(col=guide_legend(overide.aes=list(alpha=1, size=3))) +
       theme_void() +
-      scale_color_manual(values = color_batch) +
+      {if(length(unique(x$color_by)) <= length(color_batch)){ scale_color_manual(values = color_batch)}} +
       theme(aspect.ratio=1,
                            panel.grid.minor=element_blank(),
                            panel.grid.major=element_line(color='lightgrey', size=.25),
