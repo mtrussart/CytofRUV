@@ -193,7 +193,7 @@ shinyServer(function(input, output, session) {
   initial_rows <- ifelse(init_num_antigens %% nb_cols_plotDistr > 1, 1, 0)
   def$Exprs_height <- (init_num_antigens %/% nb_cols_plotDistr + initial_rows)
 
-  def$Exprs_width <- ifelse(init_num_antigens %/% nb_cols_plotDistr < 1, num_antigens, nb_cols_plotDistr)
+  def$Exprs_width <- ifelse(init_num_antigens %/% nb_cols_plotDistr < 1, init_num_antigens, nb_cols_plotDistr)
 
     # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
