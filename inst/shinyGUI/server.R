@@ -189,7 +189,8 @@ shinyServer(function(input, output, session) {
   cmSaveHeight <- 4.5
   cmSaveWidth <- 6
 
-  init_num_antigens <- table(panel$marker_class)[["state"]]
+  init_marker_type <- ifelse(any(SingleCellExperiment::rowData(daf)$marker_class=="state"), "state", "type")
+  init_num_antigens <- table(panel$marker_class)[[init_marker_type]]
   initial_rows <- ifelse(init_num_antigens %% nb_cols_plotDistr > 1, 1, 0)
   def$Exprs_height <- (init_num_antigens %/% nb_cols_plotDistr + initial_rows)
 
@@ -212,7 +213,9 @@ shinyServer(function(input, output, session) {
 
   # Provides appropriate data following change of parameters.
   daf_temp <- reactive({
-    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) return(sub_daf_state)
+    if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) {
+      return(ifelse(init_marker_type=="state", sub_daf_state, sub_daf_type))
+    }
     # Marker Class: Type
     if (input$exprs3 == "type") {
       patient_type = sub_daf_type[, sample_ids(sub_daf_type)%in%patient_ids(input$exprs2, sub_daf_type)]
@@ -265,7 +268,7 @@ shinyServer(function(input, output, session) {
   plotHeight <- reactive({
     num_antigens = -1
     if (input$exprs1 == "condition") {
-      num_antigens = table(panel$marker_class)[["state"]]
+      num_antigens = table(panel$marker_class)[[init_marker_type]]
     } else {
       # Temp adds 1 Row to height if there is a carry over of facets to the next row.
       num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
@@ -277,7 +280,7 @@ shinyServer(function(input, output, session) {
   plotWidth<- reactive({
     num_antigens = -1
     if (input$exprs1 == "condition") {
-      num_antigens = table(panel$marker_class)[["state"]]
+      num_antigens = table(panel$marker_class)[[init_marker_type]]
     } else {
       # Temp adds 1 Row to height if there is a carry over of facets to the next row.
       num_antigens = table(panel$marker_class)[[def$Exprs_ant]]
