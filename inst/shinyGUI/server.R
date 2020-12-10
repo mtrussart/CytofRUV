@@ -79,7 +79,7 @@ shinyServer(function(input, output, session) {
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
-    color_batch=c("#0072B2","#D55E00")
+    color_batch=c("#0072B2","#D55E00", "#004D40", "#FFC107")
     # compute medians across samples
     cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
     es <- as.matrix(assay(x, "exprs"))
@@ -102,7 +102,7 @@ shinyServer(function(input, output, session) {
                        show.legend=FALSE) + geom_point(alpha=.8, size=1.2) +
       guides(col=guide_legend(overide.aes=list(alpha=1, size=3))) +
       theme_void() +
-      scale_color_manual(values = color_batch) +
+      {if(length(unique(x$color_by)) <= length(color_batch)){ scale_color_manual(values = color_batch)}} +
       theme(aspect.ratio=1,
                            panel.grid.minor=element_blank(),
                            panel.grid.major=element_line(color='lightgrey', size=.25),
@@ -193,7 +193,7 @@ shinyServer(function(input, output, session) {
   initial_rows <- ifelse(init_num_antigens %% nb_cols_plotDistr > 1, 1, 0)
   def$Exprs_height <- (init_num_antigens %/% nb_cols_plotDistr + initial_rows)
 
-  def$Exprs_width <- ifelse(init_num_antigens %/% nb_cols_plotDistr < 1, num_antigens, nb_cols_plotDistr)
+  def$Exprs_width <- ifelse(init_num_antigens %/% nb_cols_plotDistr < 1, init_num_antigens, nb_cols_plotDistr)
 
     # First selectInput box choices: PatientIDS
   output$exprs2 <- renderUI({
