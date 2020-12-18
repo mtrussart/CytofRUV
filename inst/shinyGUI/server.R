@@ -38,6 +38,7 @@ shinyServer(function(input, output, session) {
   initial_sampleIDs <- if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
   init_marker_type <- ifelse(any(SingleCellExperiment::rowData(daf)$marker_class=="state"), "state", "type")
   init_markers <- if (init_marker_type=="state") sub_daf_state else sub_daf_type
+  hasBothMarkers <- if (any(SingleCellExperiment::rowData(daf)$marker_class=="state") && any(SingleCellExperiment::rowData(daf)$marker_class=="type")) NULL else init_marker_type
 
   def <- reactiveValues(
     choiceMDS       = "condition",
@@ -343,7 +344,11 @@ shinyServer(function(input, output, session) {
   #   Plot 1: Cluster Heatmap
   # -------------------------------------------------------------------------------------------------
   cluster_heatmap <- reactive({
-    plotClusterHeatmap(sub_daf, hm2 = NULL, k = cluster_var, m = NULL, cluster_anno = TRUE, draw_freqs = TRUE)
+    # plotClusterHeatmap(sub_daf, hm2 = NULL, k = cluster_var, m = NULL, cluster_anno = TRUE, draw_freqs = TRUE)
+    plotExprHeatmap(sub_daf, features = hasBothMarkers,
+                    by = "cluster_id", k = cluster_var, scale = "first",
+                    col_anno = FALSE, col_clust = FALSE,
+                    col_dend = FALSE, bars = TRUE, perc = TRUE)
   })
 
   output$cluster_heatmap <- renderPlot({
