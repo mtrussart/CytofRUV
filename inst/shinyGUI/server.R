@@ -36,13 +36,14 @@ shinyServer(function(input, output, session) {
   no_sampleIds <- length(sampleID_sorted)
   nb_facets <- 10
   initial_sampleIDs <- if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
+  init_marker_type <- ifelse(any(SingleCellExperiment::rowData(daf)$marker_class=="state"), "state", "type")
 
   def <- reactiveValues(
     choiceMDS       = "condition",
     MDS_update_text = "",
 
     choiceExprsParam = "condition",
-    choiceExprsClass = sub_daf_state,
+    choiceExprsClass = ifelse(init_marker_type=="state", sub_daf_state, sub_daf_type),
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
@@ -189,7 +190,6 @@ shinyServer(function(input, output, session) {
   cmSaveHeight <- 4.5
   cmSaveWidth <- 6
 
-  init_marker_type <- ifelse(any(SingleCellExperiment::rowData(daf)$marker_class=="state"), "state", "type")
   init_num_antigens <- table(panel$marker_class)[[init_marker_type]]
   initial_rows <- ifelse(init_num_antigens %% nb_cols_plotDistr > 1, 1, 0)
   def$Exprs_height <- (init_num_antigens %/% nb_cols_plotDistr + initial_rows)
