@@ -37,13 +37,14 @@ shinyServer(function(input, output, session) {
   nb_facets <- 10
   initial_sampleIDs <- if(no_sampleIds < nb_facets) as.character(sampleID_sorted[1:no_sampleIds]) else as.character(sampleID_sorted[1:nb_facets])
   init_marker_type <- ifelse(any(SingleCellExperiment::rowData(daf)$marker_class=="state"), "state", "type")
+  init_markers <- if (init_marker_type=="state") sub_daf_state else sub_daf_type
 
   def <- reactiveValues(
     choiceMDS       = "condition",
     MDS_update_text = "",
 
     choiceExprsParam = "condition",
-    choiceExprsClass = if (init_marker_type=="state") sub_daf_state else sub_daf_type,
+    choiceExprsClass = init_markers,
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
@@ -214,7 +215,7 @@ shinyServer(function(input, output, session) {
   # Provides appropriate data following change of parameters.
   daf_temp <- reactive({
     if (input$exprs1 == "condition" | is.null(input$exprs2) | is.null(input$exprs3)) {
-      return(ifelse(init_marker_type=="state", sub_daf_state, sub_daf_type))
+      return(init_markers)
     }
     # Marker Class: Type
     if (input$exprs3 == "type") {
