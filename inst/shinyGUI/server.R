@@ -43,7 +43,7 @@ shinyServer(function(input, output, session) {
     MDS_update_text = "",
 
     choiceExprsParam = "condition",
-    choiceExprsClass = ifelse(init_marker_type=="state", sub_daf_state, sub_daf_type),
+    choiceExprsClass = if (init_marker_type=="state") sub_daf_state else sub_daf_type,
     Exprs_update_text = "",
     Exprs_patient = levels(md$patient_id)[[1]],
     Exprs_ant = levels(panel$marker_class)[[1]],
