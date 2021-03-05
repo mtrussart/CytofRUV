@@ -15,7 +15,8 @@ normalise_data(
   k,
   num_clusters,
   wd_data,
-  dir_norm_data
+  dir_norm_data,
+  other_markers_fcs_file = NULL
 )
 }
 \arguments{
@@ -36,6 +37,8 @@ and the panel file}
 
 \item{dir_norm_data}{Directory name containing all norm fcs files, the metadata file
 and the panel file}
+
+\item{other_markers_fcs_file}{Optional to add more markers to be saved in the .fcs file not normalised}
 }
 \value{
 Normalised metadata file
