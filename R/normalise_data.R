@@ -4,7 +4,7 @@
 #' contains all the functions to normalise several Cytof datasets by removing the
 #' unwanted variation between datasets arising from experimental artefacts.
 #'
-#' @param daf Datasets before normalisation
+#' @param data Datasets before normalisation
 #' @param raw_data Raw data
 #' @param rep_samples Replicated samples
 #' @param norm_clusters Clusters to be normalised
@@ -14,12 +14,17 @@
 #' and the panel file
 #' @param dir_norm_data Directory name containing all norm fcs files, the metadata file
 #' and the panel file
+#' @param other_markers_fcs_file Optional to add more markers to be saved in the .fcs file not normalised
 #'
 #' @return Normalised metadata file
+#'
+#' @importFrom rsvd rsvd
+#' @importFrom stats sd
+#' @importFrom flowCore exprs fsApply write.FCS
 #' @export
 #'
 
-normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clusters,wd_data,dir_norm_data){
+normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clusters,wd_data,dir_norm_data,other_markers_fcs_file=NULL){
 
   # Normalise the cells
   norm_cells <- run_RUVIII(raw_data, norm_clusters,k,rep_samples)
@@ -30,7 +35,7 @@ normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clus
   }
   # Save data into fcs files
   #print(data$md)
-  new_md=save_norm_files(data,norm_cells, data$fcs_raw, data$md,data$panel,output_dir,k)
+  new_md=save_norm_files(data,norm_cells, data$fcs_raw, data$md,data$panel,output_dir,k,other_markers_fcs_file)
   # Save Metadata file
   writexl::write_xlsx(new_md, path=file.path(output_dir,"Norm_Metadata.xlsx"),
                       col_names=TRUE, format_headers = TRUE)
@@ -45,15 +50,16 @@ normalise_data <- function(data,raw_data,rep_samples, norm_clusters, k, num_clus
 
 }
 
-save_norm_files<- function(data,norm_cells, fcs_raw, md,panel,output_dir,k){
+save_norm_files<- function(data,norm_cells, fcs_raw, md,panel,output_dir,k,other_markers_fcs_file){
 
   # All the file names
   file_ids <- rep(md$file_name, flowCore::fsApply(fcs_raw, nrow))
   #Number of files
   num_files <- length(data$fcs_raw)
   # Panel markers fullname
-  all_fullname_markers=c("Time",c(panel$fcs_colname[panel$antigen%in%data$lineage_markers],
-                                  panel$fcs_colname[panel$antigen%in%data$functional_markers]))
+  length_other_markers=length(other_markers_fcs_file)
+  all_fullname_markers=c("Time",other_markers_fcs_file,c(panel$fcs_colname[panel$antigen%in%data$lineage_markers],
+                                                         panel$fcs_colname[panel$antigen%in%data$functional_markers]))
 
   fcs_raw_asinh=fsApply(fcs_raw,function(x,cofactor = 5){
     expr <- exprs(x)
@@ -89,7 +95,7 @@ save_norm_files<- function(data,norm_cells, fcs_raw, md,panel,output_dir,k){
       dir_new_md$file_name[i] <- file.path(output_dir,paste("Norm_RUVIII_k",k,"_",md$file_name[i],sep=""))
       new_md$file_name[i] <- file.path(paste("Norm_RUVIII_k",k,"_",md$file_name[i],sep=""))
       tmp_exp=exprs(fcs_norm[[i]])
-      tmp_exp[,all_fullname_markers[2:length(all_fullname_markers)]]= norm_cells[inds,c(data$lineage_markers,data$functional_markers)]
+      tmp_exp[,all_fullname_markers[(2+length_other_markers):length(all_fullname_markers)]]= norm_cells[inds,c(data$lineage_markers,data$functional_markers)]
       exprs(fcs_norm[[i]])=tmp_exp
       write.FCS(subset_flowframe(fcs_norm[[i]], corrected_inds), dir_new_md$file_name[i])
     }

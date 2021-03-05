@@ -4,7 +4,25 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setup--------------------------------------------------------------------
+## ----setup, include=FALSE, cache = FALSE--------------------------------------
+require("knitr")
+## setting working directory
+output_dir="CytofRUV_output"
+  if (!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+  wd_data=file.path(getwd(),output_dir)
+
+knitr::opts_chunk$set(echo = FALSE
+                      , comment = NA
+                      , warning = FALSE
+                      , error = FALSE
+                      , message = FALSE
+                      , tidy = TRUE)
+
+knitr::opts_knit$set(root.dir = wd_data)
+
+## ----lib----------------------------------------------------------------------
 library(CytofRUV)
 library(CATALYST)
 library(flowCore)

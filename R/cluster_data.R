@@ -15,8 +15,6 @@
 #' @return daf data single cell experiment after clustering
 #' @export
 #'
-#' @examples
-#' cluster_data(daf,w234,data$lineage_markers,20)
 #'
 
 
