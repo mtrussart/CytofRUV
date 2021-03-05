@@ -4,25 +4,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-## ----setup, include=FALSE, cache = FALSE--------------------------------------
-require("knitr")
-## setting working directory
-output_dir="CytofRUV_output"
-  if (!dir.exists(output_dir)){
-    dir.create(output_dir)
-  }
-  wd_data=file.path(getwd(),output_dir)
-
-knitr::opts_chunk$set(echo = FALSE
-                      , comment = NA
-                      , warning = FALSE
-                      , error = FALSE
-                      , message = FALSE
-                      , tidy = TRUE)
-
-knitr::opts_knit$set(root.dir = wd_data)
-
-## ----lib----------------------------------------------------------------------
+## ----setup--------------------------------------------------------------------
 library(CytofRUV)
 library(CATALYST)
 library(flowCore)
@@ -104,7 +86,7 @@ library(shinycssloaders)
 #  
 #    panel=data$panel
 #  
-#    CytofRUV::launch_Shiny()
+#    CytofRUV::launch_Shiny(daf)
 
 ## ----CytofRUV normalisation---------------------------------------------------
 #dir_name_norm_data = get_directory()
@@ -173,5 +155,5 @@ normalise_data(data=data,raw_data=raw_data,rep_samples=rep_samples, norm_cluster
 #  
 #    panel=data$panel
 #  
-#    CytofRUV::launch_Shiny()
+#    CytofRUV::launch_Shiny(daf)
 

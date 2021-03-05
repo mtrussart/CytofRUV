@@ -20,6 +20,7 @@
 #' @export
 
 
+#load_data("/Users/trussart.m/WEHI/CytofRUV/CytofRUV/data/",metadata_filename="Metadata.xlsx",panel_filename="panel.xlsx")
 load_data<- function(wd_data,metadata_filename,panel_filename,cofactor=5){
   if (!is.null(cofactor)){
     transform=TRUE
@@ -93,7 +94,7 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
   (functional_markers <- panel$antigen[panel$marker_class == "state"])
   (functional_markers_fullname <- panel$fcs_colname[panel$marker_class == "state"])
 
-  daf <- CATALYST::prepData(fcs_raw, panel, md, md_cols = list(file="file_name", id="sample_id", factors = c("batch", "condition", "patient_id")),transform=transform,cofactor = cofact)
+  daf <- prepData(fcs_raw, panel, md, md_cols = list(file="file_name", id="sample_id", factors = c("batch", "condition", "patient_id")),transform=transform,cofactor = cofact)
   if (isFALSE(transform)){
     assayNames(daf) = "exprs"
   }
@@ -103,74 +104,6 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
   data=list(fcs_raw=fcs_raw,md=md,panel=panel,lineage_markers=lineage_markers,functional_markers=functional_markers,daf=daf)
   return(data)
 }
-<<<<<<< HEAD
-#'
-#' # ==============================================================================
-#' # split cell indices by cell metadata factor(s) from CATALYST package
-#' #   - x:   a SCE with rows = cells, columns = features
-#' #   - by:  colData columns specifying factor(s) to aggregate by
-#' # ------------------------------------------------------------------------------
-#' #' @importFrom data.table data.table
-#' #' @importFrom SummarizedExperiment colData
-#' #' @importFrom purrr map_depth
-#' .split_cells <- function(x, by) {
-#'   stopifnot(is.character(by), by %in% colnames(colData(x)))
-#'   cd <- data.frame(colData(x))
-#'   dt <- data.table(cd, i = seq_len(ncol(x)))
-#'   dt_split <- split(dt, by = by, sorted = TRUE, flatten = FALSE)
-#'   map_depth(dt_split, length(by), "i")
-#' }
-#'
-#' # ==============================================================================
-#' # aggregation of single-cell to pseudobulk data from CATALYST package
-#' # e.g., median expression by cluster- or cluster-sample
-#' #   - x:   a SCE with rows = cells, columns = features
-#' #   - by:  colData columns specifying factor(s) to aggregate by
-#' #   - fun: aggregation function specifying the
-#' #          summary statistic, e.g., sum, mean, median
-#' # ------------------------------------------------------------------------------
-#' #' @importFrom dplyr bind_rows
-#' #' @importFrom Matrix rowMeans rowSums
-#' #' @importFrom matrixStats rowMedians
-#' #' @importFrom purrr map_depth
-#' .agg <- function(x, by, fun = c("median", "mean", "sum")) {
-#'   fun <- switch(match.arg(fun),
-#'                 median = rowMedians, mean = rowMeans, sum = rowSums)
-#'   cs <- .split_cells(x, by)
-#'   pb <- map_depth(cs, -1, function(i) {
-#'     if (length(i) == 0) return(numeric(nrow(x)))
-#'     fun(assay(x, "exprs")[, i, drop = FALSE])
-#'   })
-#'   map_depth(pb, -2, function(u) as.matrix(data.frame(
-#'     u, row.names = rownames(x), check.names = FALSE)))
-#' }
-#'
-#' # ==============================================================================
-#' # wrapper for ComplexHeatmap annotations from CATALYST package
-#' # ------------------------------------------------------------------------------
-#' #' @importFrom ComplexHeatmap columnAnnotation rowAnnotation
-#' #' @importFrom grid gpar
-#' #' @importFrom methods is
-#' #' @importFrom scales hue_pal
-#' .anno_factors <- function(df, type = c("row", "column")) {
-#'   # check that all data.frame columns are factors
-#'   stopifnot(is(df, "data.frame"))
-#'   stopifnot(all(vapply(as.list(df), is.factor, logical(1))))
-#'   # for ea. factor, extract levels & nb. of levels
-#'   lvls <- lapply(as.list(df), levels)
-#'   nlvls <- vapply(lvls, length, numeric(1))
-#'   # cols <- pal.safe(parula, n = sum(nlvls), main = NULL)
-#'   names(cols) <- unlist(lvls)
-#'   cols <- split(cols, rep.int(seq_len(ncol(df)), nlvls))
-#'   names(cols) <- names(df)
-#'   HeatmapAnnotation(which = match.arg(type),
-#'                     df = df, col = cols, gp = gpar(col = "white"))
-#' }
-
-# ==============================================================================
-# Get the working directory
-# ------------------------------------------------------------------------------
-=======
 #
 # create_data=function (x, panel, md, features = NULL, cofactor = 5, panel_cols = list(channel = "fcs_colname",
 #   antigen = "antigen", class = "marker_class"), md_cols = list(file = "file_name", id = "sample_id", factors = c("condition", "patient_id"))){
@@ -260,7 +193,6 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 #                        colData = cd, metadata = list(experiment_info = md, cofactor = cofactor))
 # }
 
->>>>>>> 05a093b638a3384d20cb0cbe01c63c7721dcb5ff
 get_directory <- function() {
   print("Please refer to the console")
   directory<-""
@@ -279,9 +211,7 @@ get_directory <- function() {
   return(directory)
 }
 
-# ==============================================================================
-# Arcsinh transformation
-# ------------------------------------------------------------------------------
+
 transform_data = function(fcs_raw,lineage_markers_fullname,functional_markers_fullname) {
   ## arcsinh transformation and column subsetting
   print("Arcsinh Transformation")
