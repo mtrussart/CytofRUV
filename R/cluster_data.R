@@ -14,9 +14,12 @@
 #'
 #' @return daf data single cell experiment after clustering
 #' @export
+<<<<<<< HEAD
 #'
 #'
 
+=======
+>>>>>>> 05a093b638a3384d20cb0cbe01c63c7721dcb5ff
 
 cluster_data <- function(daf,seed,markers_to_use,clusters_nb){
   set.seed(seed)

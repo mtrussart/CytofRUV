@@ -6,12 +6,16 @@
 #' Median Protein Expression, Protein Expression Distributions, Clustering Results
 #' and Cluster Proportions.
 #'
+#' @param daf Dataset that the app's plots are based upon.
+#'
 #' @return Opens a browser window with an interactive Shiny application.
 #'
+#' @importFrom SingleCellExperiment reducedDimNames
+#' @importFrom S4Vectors metadata
 #' @export
 #'
 
-launch_Shiny<- function(){
+launch_Shiny<- function(daf){
   if (!exists("md") || (!exists("daf"))) {
     stop("Prior to launching the shiny application, users need to load variables as shown",
          " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when variables",
@@ -30,6 +34,11 @@ launch_Shiny<- function(){
     else if (!("UMAP" %in% reducedDimNames(daf))) {
       stop("The app was launched without running UMAP dimension reduction. UMAP data has to be loaded into the variable 'daf'. Please refer to the vignette",
            " Introduction_to_CytofRUV.Rmd for instructions about how to run them")
+    }
+    else if (!exists("sub_daf")) {
+      stop("Prior to launching the shiny application, users need to load variables as shown",
+           " in the vignette Introduction_to_CytofRUV.Rmd. This error is thrown when 'sub_daf'",
+           " has not been defined.")
     }
   }
 
