@@ -5,6 +5,11 @@
 <!-- badges: end -->
 
 CytofRUV: Removing unwanted variation to integrate multiple CyTOF datasets.
+Please cite the appropriate article when you use results from the software in a publication. Such citations are the main means by which the authors receive professional credit for their work.
+
+The CytofRUV software package itself can be cited as:
+
+Trussart M, Teh CE, Tan T, Leong L, Gray DH, Speed TP. Removing unwanted variation with CytofRUV to integrate multiple CyTOF datasets. Elife. 2020 Sep 7;9:e59630. doi: 10.7554/eLife.59630. PMID: 32894218; PMCID: PMC7500954.
 
 ## CytofRUV Installation
 
