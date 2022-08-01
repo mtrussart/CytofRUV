@@ -37,7 +37,7 @@ read_data<- function(wd_data,metadata_filename,panel_filename,transform,cofact=5
 
   ## Load the metadata file
   print("Reading MetaData")
-  md <- readxl::read_excel(file.path(wd_data, metadata_filename))
+  md <-readxl::read_excel(file.path(wd_data, metadata_filename))
 
   ## Check the metadata file
   # print("Checking md ColNames")

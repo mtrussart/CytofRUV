@@ -6,6 +6,7 @@ library(flowCore)
 library(purrr)
 library(CATALYST)
 library(CytofRUV)
+library(RColorBrewer) # Added by RMG 07/27/2022
 
 ## All Code Below Gets The Scope of the Global Environment.
 

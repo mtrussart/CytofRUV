@@ -79,7 +79,7 @@ shinyServer(function(input, output, session) {
   ### PlotMDS function
 
   plot_MDS <- function (x, color_by="condition") {
-    color_batch=c("#0072B2","#D55E00", "#004D40", "#FFC107")
+    #color_batch=c("#0072B2","#D55E00", "#004D40", "#FFC107")
     # compute medians across samples
     cs_by_s <- split(seq_len(ncol(x)), x$sample_id)
     es <- as.matrix(assay(x, "exprs"))
@@ -91,9 +91,13 @@ shinyServer(function(input, output, session) {
     # get MDS coordinates
     mds <- limma::plotMDS(ms, plot=FALSE)
     df <- data.frame(MDS1=mds$x, MDS2=mds$y)
+    rownames(df) <- rownames(mds$distance.matrix.squared) # Modified by RMG 07/27/2022
 
     # add metadata information
     md <- metadata(x)$experiment_info
+    n_colors <- length(levels(as.factor(md[[color_by]])))    # Modified by RMG 07/27/2022
+    color_batch <- brewer.pal(n = n_colors, name = "Dark2")
+
     m <- match(rownames(df), md$sample_id)
     df <- data.frame(df, md[m, ])
 
